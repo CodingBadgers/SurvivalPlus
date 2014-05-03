@@ -4,12 +4,14 @@
  * and open the template in the editor.
  */
 
-package uk.codingbadgers.SurvivalPlus.module;
+package uk.codingbadgers.mining;
+
+import uk.codingbadgers.skillz.PlayerSkillData;
 
 /**
  *
  * @author n3wton
  */
-public abstract class SkillBase extends Module {
+public class SkillMiningData extends PlayerSkillData {
 	
 }

@@ -47,6 +47,7 @@ import uk.codingbadgers.SurvivalPlus.commands.ModuleCommandHandler;
 import uk.codingbadgers.SurvivalPlus.config.ConfigFactory;
 import uk.codingbadgers.SurvivalPlus.config.ConfigFile;
 import uk.codingbadgers.SurvivalPlus.module.loader.Loadable;
+import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.SurvivalPlus.update.UpdateThread;
 import uk.codingbadgers.SurvivalPlus.update.Updater;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
@@ -100,6 +101,14 @@ public abstract class Module extends Loadable implements Listener {
 		m_updater.start();
 	}
 
+	/**
+	 * 
+	 * @return 
+	 */
+	public Class<? extends PlayerData> getPlayerDataClass() {
+		return null;
+	}
+	
 	/**
 	 * Load language file.
 	 */

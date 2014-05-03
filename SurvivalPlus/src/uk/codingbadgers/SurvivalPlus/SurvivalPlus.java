@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.chat.Chat;
@@ -56,6 +57,7 @@ import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.module.ModuleLoader;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayerArray;
+import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.SurvivalPlus.serialization.AchievementSerializer;
 import uk.codingbadgers.SurvivalPlus.serialization.ItemStackSerializer;
 import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
@@ -378,6 +380,19 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		FundamentalPlayer newPlayer = new FundamentalPlayer(event.getPlayer());
 		SurvivalPlus.Players.add(newPlayer);
+		
+		List<Module> modules = m_moduleLoader.getModules();
+		for (Module module : modules) {
+			Class<? extends PlayerData> playerDataClass = module.getPlayerDataClass();
+			if (playerDataClass != null) {
+				try {
+					newPlayer.addPlayerData((PlayerData)playerDataClass.newInstance());
+				}
+				catch (Exception ex) {
+					SurvivalPlus.log(Level.WARNING, "Failed to create new player data for '" + event.getPlayer().getName() + "' for module '" + module.getName() + "'", ex);
+				}
+			}			
+		} 
 	}
 	
 	/**
@@ -426,4 +441,51 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 		return players;		
 	}
 
+	/**
+	 * 
+	 * @param time
+	 * @return 
+	 */
+	public static String formatTime(Long time) {
+		
+		Long days = TimeUnit.MILLISECONDS.toDays(time);
+		time = time - TimeUnit.DAYS.toMillis(days);
+		
+		Long hours = TimeUnit.MILLISECONDS.toHours(time);
+		time = time - TimeUnit.HOURS.toMillis(hours);
+		
+		Long minutes = TimeUnit.MILLISECONDS.toMinutes(time);
+		time = time - TimeUnit.MINUTES.toMillis(minutes);
+		
+		Long seconds = TimeUnit.MILLISECONDS.toSeconds(time);
+		
+		String formattedTime = "";
+		if (days != 0) {
+			formattedTime += (days == 1 ? "1 Day" : days + " Days");
+		}
+		
+		if (hours != 0) {
+			if (days != 0) {
+				formattedTime += ", ";
+			}
+			formattedTime += (hours == 1 ? "1 Hour" : hours + " Hours");
+		}
+		
+		if (minutes != 0) {
+			if (days != 0 || hours != 0) {
+				formattedTime += ", ";
+			}
+			formattedTime += (minutes == 1 ? "1 Minute" : minutes + " Minutes");
+		}
+		
+		if (seconds != 0) {
+			if (days != 0 || hours != 0 || minutes != 0) {
+				formattedTime += ", ";
+			}
+			formattedTime += (seconds == 1 ? "1 Second" : seconds + " Seconds");
+		}
+		
+		return formattedTime;
+	}
+	
 }

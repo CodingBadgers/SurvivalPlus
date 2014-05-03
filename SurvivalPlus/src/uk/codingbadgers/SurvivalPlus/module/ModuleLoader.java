@@ -113,10 +113,13 @@ public class ModuleLoader {
 		}
 			
 		m_modules.clear();
-		m_modules.addAll(m_loader.sort(m_loader.load(file)));
-				
-		module.onLoad();
-		module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
+		
+		if (m_loader.load(file) == Loader.LoadResult.Success) {
+			m_modules.addAll(m_loader.sort(m_loader.getLoadables()));
+
+			module.onLoad();
+			module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
+		}
 	}
 	
 	/**

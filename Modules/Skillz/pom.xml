@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>SkillMining</artifactId>
+    <artifactId>Skillz</artifactId>
 
     <dependencies>	
         <dependency>
@@ -16,12 +16,6 @@
             <groupId>uk.codingbadgers</groupId>
             <version>1.0</version>
         </dependency>
-        
-        <dependency>
-            <artifactId>Skillz</artifactId>
-            <groupId>uk.codingbadgers</groupId>
-            <version>1.0</version>
-        </dependency>        
     </dependencies>
 	
 </project>

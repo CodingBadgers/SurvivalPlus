@@ -17,24 +17,21 @@
  */
 package uk.codingbadgers.SurvivalPlus.player;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.messaging.Messenger;
-
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.backup.BackupFactory;
 import uk.codingbadgers.SurvivalPlus.backup.PlayerBackup;
@@ -76,7 +73,7 @@ public class FundamentalPlayer {
 		String[] messages = msg.split("\n");
 		
 		for (String message : messages) {
-			m_player.sendMessage(ChatColor.DARK_PURPLE + "[bFundamentals] " + ChatColor.RESET + message);
+			m_player.sendMessage(ChatColor.DARK_PURPLE + "[SurvivalPlus] " + ChatColor.RESET + message);
 		}
 	}
 	

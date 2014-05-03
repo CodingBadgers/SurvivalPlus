@@ -24,6 +24,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +66,21 @@ public class Loader {
 	private final List<Module> loadables;
 	private ClassLoader loader;
 
+	public enum LoadResult {
+		Success,
+		Fail,
+		WaitingForDepends,
+		AlreadyLoaded
+	}
+	
+	/**
+	 * 
+	 * @return 
+	 */
+	public List<Module> getLoadables() {
+		return this.loadables;
+	}
+	
 	/**
 	 * Instantiates a new loader.
 	 * 
@@ -118,9 +134,28 @@ public class Loader {
 	 * @return List of loaded loadables
 	 */
 	public final List<Module> load() {
-		for (File file : files) {
-			load(file);
+		return this.load(this.files);
+	}
+	
+	public final List<Module> load(List<File> filesToLoad) {
+		
+		int noofToLoad = filesToLoad.size();
+		
+		List<File> waitingForDepends = new ArrayList<File>();
+		for (File file : filesToLoad) {
+			LoadResult result = load(file);
+			if (result == LoadResult.WaitingForDepends) {
+				getLogger().log(Level.INFO, "The loadable " + file.getName() + " is waiting for dependancies!");
+				waitingForDepends.add(file);
+			}
 		}
+		
+		if (!waitingForDepends.isEmpty()) {
+			if (waitingForDepends.size() != noofToLoad) {
+				return load(waitingForDepends);
+			}	
+		}
+				
 		return loadables;
 	}
 
@@ -132,19 +167,37 @@ public class Loader {
 	 * @return the list
 	 * @TODO support module dependencies
 	 */
-	public List<Module> load(File file) {
+	public LoadResult load(File file) {
 		try {
 			JarFile jarFile = new JarFile(file);
 			String mainClass = null;
 			LoadableDescriptionFile ldf = null;
-
+			Collection<String> depends = null;
+			
 			if (jarFile.getEntry("path.yml") != null) {
 				JarEntry element = jarFile.getJarEntry("path.yml");
 				ldf = new LoadableDescriptionFile(jarFile.getInputStream(element));
 				mainClass = ldf.getMainClass();
+				depends = ldf.getDependencies();
 			}
 
-			if (mainClass != null) {
+			if (depends != null && !depends.isEmpty()) {
+				for (String depend : depends) {
+					boolean dependLoaded = false;
+					for (Module loadable : loadables) {
+						if (loadable.getName().equalsIgnoreCase(depend)) {
+							dependLoaded = true;
+							getLogger().log(Level.INFO, "The loadable " + file.getName() + " found dependancy '" + depend + "'");
+							break;
+						}
+					}			
+					if (dependLoaded == false) {
+						return LoadResult.WaitingForDepends;
+					}
+				}			
+			}
+			
+			if (mainClass != null) {				
 				Class<?> clazz = Class.forName(mainClass, true, loader);
 
 				if (clazz != null) {
@@ -156,7 +209,7 @@ public class Loader {
 						getLogger().log(Level.WARNING, "The loadable " + file.getName() + " is already loaded, make sure to disable the module first");
 						getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
 						jarFile.close();
-						return loadables;
+						return LoadResult.AlreadyLoaded;
 					}
 
 					loadable.setFile(file);
@@ -169,6 +222,8 @@ public class Loader {
 
 					ModuleLoadEvent event = new ModuleLoadEvent(plugin, loadable, jarFile);
 					plugin.getServer().getPluginManager().callEvent(event);
+					
+					return LoadResult.Success;
 
 				} else {
 					jarFile.close();
@@ -197,7 +252,8 @@ public class Loader {
 			getLogger().log(Level.WARNING, "Unknown cause.");
 			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
 		}
-		return loadables;
+		
+		return LoadResult.Fail;
 	}
 
 	/**
