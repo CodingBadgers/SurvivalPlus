@@ -20,11 +20,9 @@ package uk.codingbadgers.SurvivalPlus.update;
 import java.io.File;
 import java.net.URL;
 import java.util.logging.Logger;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 
@@ -71,9 +69,11 @@ public abstract class Updater {
 		m_updaterName = string;
 		m_log = new UpdateLogger(this);
 		
-		m_downloadFolder = new File(SurvivalPlus.getModuleLoader().getModuleDir() + File.separator + ".update" + File.separator);
+		//TODO:SO Dont use first module dir
+		m_downloadFolder = new File(SurvivalPlus.getModuleLoader().getModuleDirs()[0] + File.separator + ".update" + File.separator);
 		m_downloadFolder.mkdirs();
-		m_backupFolder = new File(SurvivalPlus.getModuleLoader().getModuleDir() + File.separator + ".backup" + File.separator);
+		
+		m_backupFolder = new File(SurvivalPlus.getModuleLoader().getModuleDirs()[0] + File.separator + ".backup" + File.separator);
 		m_backupFolder.mkdirs();
 	}
 	

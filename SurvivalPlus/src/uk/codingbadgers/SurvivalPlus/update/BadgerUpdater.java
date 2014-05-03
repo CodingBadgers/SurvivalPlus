@@ -17,6 +17,7 @@
  */
 package uk.codingbadgers.SurvivalPlus.update;
 
+import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,9 +28,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-
-import com.google.common.io.Files;
-
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 
@@ -192,7 +190,8 @@ public class BadgerUpdater extends Updater {
 			return;
 		}
 		
-		File dest = new File(SurvivalPlus.getModuleLoader().getModuleDir() + File.separator + m_module.getFile().getName() + ".jar");
+		// TODO:SO Use correct module folder not just the first one.
+		File dest = new File(SurvivalPlus.getModuleLoader().getModuleDirs()[0] + File.separator + m_module.getFile().getName() + ".jar");
 		File backup = new File(m_backupFolder + File.separator + m_module + ".jar");
 		
 		if (dest.exists()) {

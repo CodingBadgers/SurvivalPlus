@@ -17,17 +17,17 @@
  */
 package uk.codingbadgers.SurvivalPlus;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -43,15 +43,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-
 import uk.codingbadgers.SurvivalPlus.bungee.BungeeMessenger;
 import uk.codingbadgers.SurvivalPlus.bungee.SimpleBungeeMessenger;
 import uk.codingbadgers.SurvivalPlus.message.ClickEventType;
@@ -63,9 +58,9 @@ import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayerArray;
 import uk.codingbadgers.SurvivalPlus.serialization.AchievementSerializer;
 import uk.codingbadgers.SurvivalPlus.serialization.ItemStackSerializer;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
-import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 
 public class SurvivalPlus extends JavaPlugin implements Listener {
 	
@@ -93,7 +88,7 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 		setInstance(this);
 		setupGson();
 		m_log = getLogger();
-		log(Level.INFO, "bFundamentals Loading");
+		log(Level.INFO, "SurvivalPlus Loading");
 	}
 	
 	/**
@@ -128,9 +123,9 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 		// Register this as a listener
 		this.getServer().getPluginManager().registerEvents(this, this);
 		
-		getCommand("bFundamentals").setExecutor(new CommandHandler());
+		getCommand("SurvivalPlus").setExecutor(new CommandHandler());
 		
-		SurvivalPlus.log(Level.INFO, "bFundamentals Loaded.");
+		SurvivalPlus.log(Level.INFO, "SurvivalPlus Loaded.");
 	}
 
 	/**
@@ -139,7 +134,7 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 	 */
 	@Override
 	public void onDisable() {
-		SurvivalPlus.log(Level.INFO, "bFundamentals Disabled.");
+		SurvivalPlus.log(Level.INFO, "SurvivalPlus Disabled.");
 		m_moduleLoader.disable();
 		m_database.freeDatabase();
 

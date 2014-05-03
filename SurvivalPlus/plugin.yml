@@ -1,13 +1,13 @@
-name: bFundamentals
-main: uk.codingbadgers.bFundamentals.bFundamentals
+name: SurvivalPlus
+main: uk.codingbadgers.SurvivalPlus.SurvivalPlus
 version: 1.0
-authors: [n3wton, thefish97]
-depends: [BukkitDatabaseManager, Vault, NC-BukkitLib]
-softdepend: [Multiverse, WorldEdit, WorldGuard, RemoteEntities]
+authors: [thefish97, n3wton]
+depends: [BukkitDatabaseManager, Vault]
+softdepend: []
 description: Fundamental plugins root plugin
 
 commands:
-    bFundamentals:
+    SurvivalPlus:
         description: Main command for the plugin
         usage: /<command> 
     modules:

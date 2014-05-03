@@ -23,11 +23,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.error.ExceptionHandler;
 import uk.codingbadgers.SurvivalPlus.module.loader.Loader;
@@ -46,8 +44,12 @@ public class ModuleLoader {
 	 */
 	public ModuleLoader() {
 		m_modules = new LinkedList<Module>();
-		if (getModuleDir().mkdir())
-			SurvivalPlus.log(Level.INFO, "Creating Module Directory...");
+		
+		for (File dir : getModuleDirs()) {
+			if (dir.mkdir()) {
+				SurvivalPlus.log(Level.INFO, "Creating '" + dir.getName() + "' Directory...");	
+			}
+		}
 	}
 	
 	/**
@@ -55,15 +57,22 @@ public class ModuleLoader {
 	 *
 	 * @return the module dir
 	 */
-	public File getModuleDir() {
-		return new File(SurvivalPlus.getInstance().getDataFolder(), "modules");
+	public File[] getModuleDirs() {
+		
+		File pluginDir = new File(SurvivalPlus.getInstance().getDataFolder().getParent());	
+		
+		File[] moduleDirs = new File[2];
+		moduleDirs[0] = new File(pluginDir, "SurvivalPlus-Modules");
+		moduleDirs[1] = new File(pluginDir, "SurvivalPlus-Skills");
+		return moduleDirs;
+		
 	}
 	
 	/**
 	 * Loads all the modules in the base modules directory.
 	 */
 	public void load() {
-		m_loader = new Loader(SurvivalPlus.getInstance(), getModuleDir());
+		m_loader = new Loader(SurvivalPlus.getInstance(), getModuleDirs());
 		m_modules.addAll(m_loader.sort(m_loader.load()));
 		
 		for (Module module : m_modules) {
@@ -85,8 +94,7 @@ public class ModuleLoader {
 	 * @param fileName the files name
 	 */
 	public void load(String fileName) {
-		File module = new File(getModuleDir() + File.separator + fileName + ".jar");
-		load(module);
+		load(new File(fileName + ".jar"));
 	}
 	
 	/**
@@ -95,16 +103,18 @@ public class ModuleLoader {
 	 * @param file the jar file for this module
 	 */
 	public void load(File file) {
-		if (m_loader == null) 
-			m_loader = new Loader(SurvivalPlus.getInstance(), getModuleDir());
-		
-		if (getModule(file) != null)
-			throw new IllegalArgumentException("Module " + file.getName() + " is already loaded");
-		
-		m_modules.clear();
-		m_modules.addAll(m_loader.sort(m_loader.load(file)));
+		if (m_loader == null) {
+			m_loader = new Loader(SurvivalPlus.getInstance(), getModuleDirs());
+		}
 		
 		Module module = getModule(file);
+		if (module != null) {
+			throw new IllegalArgumentException("Module " + file.getName() + " is already loaded");
+		}
+			
+		m_modules.clear();
+		m_modules.addAll(m_loader.sort(m_loader.load(file)));
+				
 		module.onLoad();
 		module.log(Level.INFO, module.getName() + " v:" + module.getVersion() + " has been loaded successfuly");
 	}

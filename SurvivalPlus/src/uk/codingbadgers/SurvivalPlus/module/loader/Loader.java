@@ -22,13 +22,17 @@ import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.plugin.Plugin;
-
 import uk.codingbadgers.SurvivalPlus.error.ExceptionHandler;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.module.ModuleLoadEvent;
@@ -69,9 +73,15 @@ public class Loader {
 	 * @param dir
 	 *            the directory to load modules from
 	 */
-	public Loader(Plugin plugin, File dir) {
+	public Loader(Plugin plugin, File[] dirs) {
 		this.plugin = plugin;
-		this.files = Arrays.asList(dir.listFiles(new FileExtensionFilter(".jar")));
+		this.files = new ArrayList<File>();
+		
+		FileExtensionFilter filter = new FileExtensionFilter(".jar");
+		for (File dir : dirs)
+		{
+			this.files.addAll(Arrays.asList(dir.listFiles(filter)));
+		}
 		this.loadables = new ArrayList<Module>();
 
 		generateClassLoader();
