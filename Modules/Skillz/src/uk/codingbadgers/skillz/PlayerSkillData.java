@@ -15,6 +15,27 @@ import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 public class PlayerSkillData implements PlayerData {
 	
 	/**
+	 * The name of the skill data
+	 */
+	private final String m_skillDataName;
+	
+	/**
+	 * 
+	 * @param skillName 
+	 */
+	public PlayerSkillData(String skillName) {
+		m_skillDataName = skillName;
+	}
+	
+	/**
+	 * Get the name of the skill for this data
+	 * @return 
+	 */
+	public String getSkillName() {
+		return m_skillDataName;
+	}
+	
+	/**
 	 * The current level of xp for this skill
 	 */
 	private Long m_xp = 0L;
@@ -92,7 +113,7 @@ public class PlayerSkillData implements PlayerData {
 	 * @return 
 	 */
 	public Long getAbilityLength() {
-		return 4L + (getLevel() * 1000L);
+		return 4000L + (getLevel() * 1000L);
 	}
 	
 	/**

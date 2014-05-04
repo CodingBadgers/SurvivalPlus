@@ -19,6 +19,7 @@ package uk.codingbadgers.skillz;
 
 import org.bukkit.event.Listener;
 import uk.codingbadgers.SurvivalPlus.module.Module;
+import uk.codingbadgers.skillz.commands.SkillCommand;
 
 public class Skillz extends Module implements Listener {
 
@@ -35,6 +36,8 @@ public class Skillz extends Module implements Listener {
 	 */
     @Override
 	public void onEnable() {
+		
+		this.registerCommand(new SkillCommand(this));
 		
 	}
 

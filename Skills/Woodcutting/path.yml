@@ -1,0 +1,4 @@
+name: ${project.artifactId}
+version: ${project.version}
+main-class: uk.codingbadgers.woodcutting.SkillWoodCutting
+dependencies: [Skillz]

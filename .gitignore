@@ -3,3 +3,6 @@ SurvivalPlus/target/*
 /Skills/Mining/target/
 Test Server/*
 /Modules/Skillz/target/
+/Skills/Mining - Copy/target/
+/Skills/Woodcutting/target/
+*.jar

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package uk.codingbadgers.mining;
+package uk.codingbadgers.woodcutting;
 
 import uk.codingbadgers.skillz.PlayerSkillData;
 
@@ -12,10 +12,10 @@ import uk.codingbadgers.skillz.PlayerSkillData;
  *
  * @author n3wton
  */
-public class SkillMiningData extends PlayerSkillData {
+public class SkillWoodCuttingData extends PlayerSkillData {
 
-	public SkillMiningData() {
-		super("Mining");
+	public SkillWoodCuttingData() {
+		super("WoodCutting");
 	}
 	
 }

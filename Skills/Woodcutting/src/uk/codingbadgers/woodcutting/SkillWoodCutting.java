@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.mining;
+package uk.codingbadgers.woodcutting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.PlayerSkillData;
 import uk.codingbadgers.skillz.SkillBase;
 
-public class SkillMining extends SkillBase implements Listener {
+public class SkillWoodCutting extends SkillBase implements Listener {
 
 	/**
 	 * The blocks that are used by the mining skill
@@ -60,23 +60,13 @@ public class SkillMining extends SkillBase implements Listener {
     @Override
 	public void onEnable() {
 		
-		m_blocks.put(Material.STONE, 1L);
-		m_blocks.put(Material.SANDSTONE, 1L);
-		m_blocks.put(Material.NETHERRACK, 1L);		
-		m_blocks.put(Material.COAL_ORE, 2L);		
-		m_blocks.put(Material.IRON_ORE, 5L);
-		m_blocks.put(Material.QUARTZ_ORE, 5L);		
-		m_blocks.put(Material.GOLD_ORE, 10L);
-		m_blocks.put(Material.REDSTONE_ORE, 10L);
-		m_blocks.put(Material.LAPIS_ORE, 10L);
-		m_blocks.put(Material.EMERALD_ORE, 15L);		
-		m_blocks.put(Material.DIAMOND_ORE, 20L);
+		m_blocks.put(Material.LOG, 5L);
 			
-		m_axes.add(Material.WOOD_PICKAXE);
-		m_axes.add(Material.STONE_PICKAXE);
-		m_axes.add(Material.IRON_PICKAXE);
-		m_axes.add(Material.GOLD_PICKAXE);
-		m_axes.add(Material.DIAMOND_PICKAXE);
+		m_axes.add(Material.WOOD_AXE);
+		m_axes.add(Material.STONE_AXE);
+		m_axes.add(Material.IRON_AXE);
+		m_axes.add(Material.GOLD_AXE);
+		m_axes.add(Material.DIAMOND_AXE);
 		
 	}
 	
@@ -86,7 +76,7 @@ public class SkillMining extends SkillBase implements Listener {
 	 */
 	@Override
 	public String getAbilityName() {
-		return "Dwarven Strength";
+		return "Tree Fucker";
 	}
 	
 	/**
@@ -117,7 +107,7 @@ public class SkillMining extends SkillBase implements Listener {
 	 */
 	@Override
 	public Class<? extends PlayerData> getPlayerDataClass() {
-		return SkillMiningData.class;
+		return SkillWoodCuttingData.class;
 	}
 	
 	/**
@@ -145,7 +135,7 @@ public class SkillMining extends SkillBase implements Listener {
 	@Override
 	protected void onPlayerDamageBlock(FundamentalPlayer player, PlayerSkillData data, BlockDamageEvent event) {
 		
-		SkillMiningData skillData = (SkillMiningData)data;
+		SkillWoodCuttingData skillData = (SkillWoodCuttingData)data;
 		if (!skillData.isAbilityActive()) {
 			return;
 		}

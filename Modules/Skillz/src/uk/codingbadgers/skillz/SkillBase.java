@@ -41,6 +41,13 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
 	
 	/**
 	 * 
+	 * @param event
+	 * @return 
+	 */
+	public abstract boolean canActivateAbility(PlayerInteractEvent event);
+	
+	/**
+	 * 
 	 * @param player
 	 * @param data
 	 * @param event 
@@ -74,12 +81,19 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
 		
 		Action action = event.getAction();
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+			
+			if (!canActivateAbility(event)) {
+				return;
+			}
+			
 			if (!data.enableAbility()) {
 				final Long timeTillUse = data.getTimeUntilAbilityRefresh();
-				player.sendMessage(ChatColor.RED + SurvivalPlus.formatTime(timeTillUse) + " until you can use your mining ability...");
+				player.sendMessage(ChatColor.RED + SurvivalPlus.formatTime(timeTillUse) + " until you can use the " + ChatColor.GOLD + this.getAbilityName() + ChatColor.RED + " ability...");
 			}
 			else {
-				player.sendMessage(ChatColor.GOLD + this.getAbilityName() + ChatColor.YELLOW + " activated!");
+				player.sendMessage(ChatColor.GOLD + this.getAbilityName() + ChatColor.YELLOW + " activated for " + SurvivalPlus.formatTime(data.getAbilityLength()) + ".");
+				
+				Long lengthInTicks = (long)((data.getAbilityLength() * 0.001) * 20L);
 				
 				Bukkit.getScheduler().scheduleSyncDelayedTask(SurvivalPlus.getInstance(), 
 				new Runnable() {
@@ -88,7 +102,7 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
 						player.sendMessage(ChatColor.GOLD + getAbilityName() + ChatColor.YELLOW + " has ended.");
 					}					
 				}, 
-				data.getAbilityLength());
+				lengthInTicks);
 			}
 		}
 		

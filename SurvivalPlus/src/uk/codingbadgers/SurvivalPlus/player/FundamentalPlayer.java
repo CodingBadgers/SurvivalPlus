@@ -23,8 +23,10 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -144,6 +146,23 @@ public class FundamentalPlayer {
 	 */
 	public PlayerData getPlayerdata(String clazz) throws ClassNotFoundException {
 		return m_playerData.get(Class.forName(clazz));
+	}
+	
+	/**
+	 * Get a list of all player data that is an instance of a given class
+	 * @param <T>
+	 * @param dataID
+	 * @return 
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends PlayerData> List<T> getAllPlayerData(Class<? extends T> dataID) {
+		List<T> allData = new ArrayList<T>();
+		for (PlayerData data : m_playerData.values()) {
+			if (dataID.isInstance(data)) {
+				allData.add((T)data);
+			}			
+		}
+		return allData;
 	}
 	
 	/**
