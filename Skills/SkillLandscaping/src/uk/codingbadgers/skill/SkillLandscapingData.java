@@ -17,7 +17,7 @@
  */
 package uk.codingbadgers.skill;
 
-import uk.codingbadgers.skillz.PlayerSkillData;
+import uk.codingbadgers.skillz.skill.PlayerSkillData;
 
 /**
  *

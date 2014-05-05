@@ -15,8 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.skillz;
+package uk.codingbadgers.skillz.skill;
 
+import org.bukkit.ChatColor;
+import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
+import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 
 /**
@@ -77,7 +80,17 @@ public class PlayerSkillData implements PlayerData {
 	 * @param amount The amount to add (can be negative)
 	 */
 	public void addXP(Long amount) {
+		final int oldLevel = this.getLevel();
 		m_xp += amount;
+		
+		final int level = this.getLevel();
+		if (oldLevel != level) {
+			FundamentalPlayer player = SurvivalPlus.getDataOwner(this);
+			if (player != null) {
+				player.sendMessage(ChatColor.YELLOW + "Your " + ChatColor.GOLD + this.getSkillName() + ChatColor.YELLOW 
+						+ " skill has increased to level " + ChatColor.GOLD + level + ChatColor.YELLOW + "!");
+			}
+		}
 	}
 	
 	/**

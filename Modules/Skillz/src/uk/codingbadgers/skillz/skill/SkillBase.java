@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.skillz;
+package uk.codingbadgers.skillz.skill;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -105,7 +105,8 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
 			
 			if (!data.enableAbility()) {
 				final Long timeTillUse = data.getTimeUntilAbilityRefresh();
-				player.sendMessage(ChatColor.RED + SurvivalPlus.formatTime(timeTillUse) + " until you can use the " + ChatColor.GOLD + this.getAbilityName() + ChatColor.RED + " ability...");
+				player.sendMessage(ChatColor.RED + SurvivalPlus.formatTime(timeTillUse) + " until you can use");
+				player.sendMessage(ChatColor.RED + "the " + ChatColor.GOLD + this.getAbilityName() + ChatColor.RED + " ability...");
 			}
 			else {
 				player.sendMessage(ChatColor.GOLD + this.getAbilityName() + ChatColor.YELLOW + " activated for " + SurvivalPlus.formatTime(data.getAbilityLength()) + ".");

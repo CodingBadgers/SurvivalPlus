@@ -488,4 +488,19 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 		return formattedTime;
 	}
 	
+	/**
+	 * Find the player a specific instance of player data belongs to
+	 * @param data THe data to test
+	 * @return The player the data belongs to or null
+	 */
+	public static FundamentalPlayer getDataOwner(PlayerData data) {
+		
+		for (FundamentalPlayer player : SurvivalPlus.Players) {
+			if (player.isDataOwner(data)) {
+				return player;
+			}
+		}		
+		return null;		
+	}
+	
 }

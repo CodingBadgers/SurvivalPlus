@@ -29,8 +29,6 @@ import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
-import uk.codingbadgers.skillz.PlayerSkillData;
-import uk.codingbadgers.skillz.SkillBase;
 
 /**
  *

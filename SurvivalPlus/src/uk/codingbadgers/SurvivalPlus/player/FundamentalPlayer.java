@@ -137,6 +137,15 @@ public class FundamentalPlayer {
 	}
 	
 	/**
+	 * Return true if a specified instance of player data belongs to this player
+	 * @param data The data to test
+	 * @return True if the data belongs to this player
+	 */
+	public boolean isDataOwner(PlayerData data) {
+		return m_playerData.values().contains(data);
+	}
+	
+	/**
 	 * Gets the player data for a given data id
 	 *
 	 * @param clazz the string representation of the datatype class

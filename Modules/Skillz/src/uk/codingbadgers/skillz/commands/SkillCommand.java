@@ -25,7 +25,7 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.commands.ModuleCommand;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
-import uk.codingbadgers.skillz.PlayerSkillData;
+import uk.codingbadgers.skillz.skill.PlayerSkillData;
 import uk.codingbadgers.skillz.Skillz;
 
 /**
