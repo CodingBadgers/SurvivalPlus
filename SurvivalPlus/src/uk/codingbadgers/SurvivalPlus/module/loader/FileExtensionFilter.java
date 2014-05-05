@@ -1,6 +1,6 @@
 /**
- * bFundamentals 1.2-SNAPSHOT
- * Copyright (C) 2013  CodingBadgers <plugins@mcbadgercraft.com>
+ * SurvivalPlus 1.0
+ * Copyright (C) 2014 CodingBadgers <plugins@mcbadgercraft.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
