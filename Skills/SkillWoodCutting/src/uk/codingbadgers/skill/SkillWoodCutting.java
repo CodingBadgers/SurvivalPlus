@@ -23,6 +23,7 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
+import uk.codingbadgers.skillz.skill.ToolData;
 
 public class SkillWoodCutting extends SkillBlockBase implements Listener {
 
@@ -34,11 +35,11 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
 
         RegisterBlock(Material.LOG, new BlockData(5L, 1, SurvivalPlus.timeToTicks(0, 15)));
 
-        RegisterTool(Material.WOOD_AXE);
-        RegisterTool(Material.STONE_AXE);
-        RegisterTool(Material.IRON_AXE);
-        RegisterTool(Material.GOLD_AXE);
-        RegisterTool(Material.DIAMOND_AXE);
+        RegisterTool(Material.WOOD_AXE, new ToolData(1));
+        RegisterTool(Material.STONE_AXE, new ToolData(5));
+        RegisterTool(Material.IRON_AXE, new ToolData(15));
+        RegisterTool(Material.GOLD_AXE, new ToolData(20));
+        RegisterTool(Material.DIAMOND_AXE, new ToolData(40));
 
     }
 

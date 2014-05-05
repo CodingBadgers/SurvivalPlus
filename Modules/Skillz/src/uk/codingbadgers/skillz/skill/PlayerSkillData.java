@@ -147,9 +147,10 @@ public class PlayerSkillData implements PlayerData {
     }
 
     /**
+     * 
      * @return
      */
     public int getLevel() {
-        return (int) ((Math.pow(m_xp, 0.75) * 0.1) + 1);
+        return (int) ((Math.pow(m_xp, 0.5) * 0.3) + 1);
     }
 }

@@ -17,9 +17,7 @@
  */
 package uk.codingbadgers.skillz.skill;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -43,13 +41,13 @@ public abstract class SkillBlockBase extends SkillBase {
     /**
      * The tools that have the mining ability
      */
-    private final List<Material> m_tools = new ArrayList<Material>();
+    private final Map<Material, ToolData> m_tools = new EnumMap<Material, ToolData>(Material.class);
 
     /**
      * Register a block with this skill and the amount of xp gained for breaking said block
      *
      * @param block The material of the block to register
-     * @param xp    The amount of xp to be given when this block is broken
+     * @param blockData    The block data associated with this block
      */
     protected void RegisterBlock(Material block, BlockData blockData) {
         m_blocks.put(block, blockData);
@@ -59,9 +57,10 @@ public abstract class SkillBlockBase extends SkillBase {
      * Register a tool which can be used with this skills ability
      *
      * @param tool The material of the tool to register
+     * @param toolData The tool data associated with this block
      */
-    protected void RegisterTool(Material tool) {
-        m_tools.add(tool);
+    protected void RegisterTool(Material tool, ToolData toolData) {
+        m_tools.put(tool, toolData);
     }
 
     /**
@@ -80,10 +79,15 @@ public abstract class SkillBlockBase extends SkillBase {
     @Override
     public boolean canActivateAbility(PlayerInteractEvent event) {
 
+        // todo, abilities
+        if (true == true) {
+            return false;
+        }
+        
         final Player player = event.getPlayer();
         final ItemStack item = player.getItemInHand();
 
-        if (!m_tools.contains(item.getType())) {
+        if (!m_tools.containsKey(item.getType())) {
             return false;
         }
 
@@ -105,12 +109,12 @@ public abstract class SkillBlockBase extends SkillBase {
      */
     @Override
     protected void onPlayerBreakBlock(FundamentalPlayer player, PlayerSkillData data, BlockBreakEvent event, boolean placedByPlayer) {
-
+        
         final Block block = event.getBlock();
         if (!m_blocks.containsKey(block.getType())) {
             return;
-        }
-
+        }  
+        
         if (!placedByPlayer) {
             data.addXP(m_blocks.get(block.getType()).getXp());
         }
@@ -127,16 +131,29 @@ public abstract class SkillBlockBase extends SkillBase {
      */
     @Override
     protected void onPlayerDamageBlock(FundamentalPlayer player, PlayerSkillData data, BlockDamageEvent event, boolean placedByPlayer) {
-
-        if (!data.isAbilityActive()) {
-            return;
-        }
-
+        
         final Block block = event.getBlock();
         if (!m_blocks.containsKey(block.getType())) {
             return;
         }
+        
+        ItemStack tool = player.getPlayer().getItemInHand();
+        if (tool == null || !m_tools.containsKey(tool.getType())) {
+            event.setCancelled(true);
+            return;
+        }
+        
+        ToolData toolData = m_tools.get(tool.getType());
+        if (data.getLevel() < toolData.getMinimumLevel()) {
+            player.sendMessage("You arent a high enough level to use that tool.");
+            event.setCancelled(true);
+            return;
+        }
 
+        if (!data.isAbilityActive()) {
+            return;
+        }
+        
         if (!placedByPlayer) {
             // Give them then xp
             data.addXP(m_blocks.get(block.getType()).getXp());
@@ -155,7 +172,7 @@ public abstract class SkillBlockBase extends SkillBase {
      * @param block
      * @return
      */
-    public boolean canUseBlock(FundamentalPlayer player, Block block) {
+    public boolean canBreakBlock(FundamentalPlayer player, Block block) {
 
         if (!m_blocks.containsKey(block.getType())) {
             return false;

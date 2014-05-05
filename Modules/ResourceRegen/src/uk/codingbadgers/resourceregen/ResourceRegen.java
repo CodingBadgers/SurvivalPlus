@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -99,6 +98,11 @@ public class ResourceRegen extends Module implements Listener {
         if (player.getGameMode() == GameMode.CREATIVE) {
             return;
         }
+        
+        // Already canceled, don't do anything
+        if (event.isCancelled()) {
+            return;
+        }
 
         // Always cancel an event if not in creative
         event.setCancelled(true);
@@ -149,6 +153,11 @@ public class ResourceRegen extends Module implements Listener {
             return;
         }
 
+        // Already canceled, don't do anything
+        if (event.isCancelled()) {
+            return;
+        }
+        
         final FundamentalPlayer survivalPlayer = SurvivalPlus.Players.getPlayer(player);
         if (survivalPlayer == null) {
             return;
@@ -158,7 +167,7 @@ public class ResourceRegen extends Module implements Listener {
 
         List<SkillBlockBase> blockSkills = m_plugin.getModuleInstances(SkillBlockBase.class);
         for (SkillBlockBase skill : blockSkills) {
-            if (skill.canUseBlock(survivalPlayer, block)) {
+            if (skill.canBreakBlock(survivalPlayer, block)) {
                 return;
             }
         }

@@ -23,6 +23,7 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
+import uk.codingbadgers.skillz.skill.ToolData;
 
 public class SkillMining extends SkillBlockBase implements Listener {
 
@@ -44,11 +45,11 @@ public class SkillMining extends SkillBlockBase implements Listener {
         RegisterBlock(Material.EMERALD_ORE, new BlockData(15L, 40, SurvivalPlus.timeToTicks(15, 0)));
         RegisterBlock(Material.DIAMOND_ORE, new BlockData(50L, 55, SurvivalPlus.timeToTicks(30, 0)));
 
-        RegisterTool(Material.WOOD_PICKAXE);
-        RegisterTool(Material.STONE_PICKAXE);
-        RegisterTool(Material.IRON_PICKAXE);
-        RegisterTool(Material.GOLD_PICKAXE);
-        RegisterTool(Material.DIAMOND_PICKAXE);
+        RegisterTool(Material.WOOD_PICKAXE, new ToolData(1));
+        RegisterTool(Material.STONE_PICKAXE, new ToolData(5));
+        RegisterTool(Material.IRON_PICKAXE, new ToolData(15));
+        RegisterTool(Material.GOLD_PICKAXE, new ToolData(20));
+        RegisterTool(Material.DIAMOND_PICKAXE, new ToolData(30));
 
     }
 

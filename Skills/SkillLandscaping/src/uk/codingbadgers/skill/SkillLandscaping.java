@@ -23,6 +23,7 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
+import uk.codingbadgers.skillz.skill.ToolData;
 
 public class SkillLandscaping extends SkillBlockBase implements Listener {
 
@@ -39,11 +40,11 @@ public class SkillLandscaping extends SkillBlockBase implements Listener {
         RegisterBlock(Material.SOUL_SAND, new BlockData(2L, 15, SurvivalPlus.timeToTicks(0, 30)));
         RegisterBlock(Material.CLAY, new BlockData(2L, 20, SurvivalPlus.timeToTicks(1, 0)));
 
-        RegisterTool(Material.WOOD_SPADE);
-        RegisterTool(Material.STONE_SPADE);
-        RegisterTool(Material.IRON_SPADE);
-        RegisterTool(Material.GOLD_SPADE);
-        RegisterTool(Material.DIAMOND_SPADE);
+        RegisterTool(Material.WOOD_SPADE, new ToolData(1));
+        RegisterTool(Material.STONE_SPADE, new ToolData(5));
+        RegisterTool(Material.IRON_SPADE, new ToolData(15));
+        RegisterTool(Material.GOLD_SPADE, new ToolData(20));
+        RegisterTool(Material.DIAMOND_SPADE, new ToolData(30));
 
     }
 
