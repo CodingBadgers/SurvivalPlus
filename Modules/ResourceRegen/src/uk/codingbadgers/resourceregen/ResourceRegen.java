@@ -38,15 +38,10 @@ import org.bukkit.inventory.ItemStack;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
-import uk.codingbadgers.skillz.Skillz;
+import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
 
 public class ResourceRegen extends Module implements Listener {
-
-	/**
-	 * 
-	 */
-	private Skillz m_skillz = null;
 	
 	/**
 	 * 
@@ -78,18 +73,18 @@ public class ResourceRegen extends Module implements Listener {
     @Override
 	public void onEnable() {
 		
-		m_skillz = (Skillz)m_plugin.getModuleInstance(Skillz.class);
-		
 		register(this);
+	
+		List<SkillBlockBase> blockSkills = m_plugin.getModuleInstances(SkillBlockBase.class);
+		for (SkillBlockBase skill : blockSkills) {
+			Map<Material, BlockData> blocks = skill.getBlocks();
+			for (Entry<Material, BlockData> entry : blocks.entrySet()) {
+				Material type = entry.getKey();
+				BlockData data = entry.getValue();
+				m_blocks.put(type, data.getRegenTime());
+			}
+		}
 		
-		final Long oneMinute = 20L * 60L;
-		m_blocks.put(Material.STONE, (long)(oneMinute * 0.5));
-		m_blocks.put(Material.COAL_ORE, oneMinute * 1L);
-		m_blocks.put(Material.IRON_ORE, oneMinute * 2L);
-		m_blocks.put(Material.GOLD_ORE, oneMinute * 3L);
-		m_blocks.put(Material.EMERALD_ORE, oneMinute * 5L);
-		m_blocks.put(Material.DIAMOND_ORE, oneMinute * 10L);
-				
 	}
 	
 	/**

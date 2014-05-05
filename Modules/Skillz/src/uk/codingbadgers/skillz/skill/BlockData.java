@@ -22,9 +22,15 @@ public class BlockData {
 	 */
 	private final int m_minLevel;
 	
-	public BlockData(Long xp, int minLevel) {
+	/**
+	 * 
+	 */
+	private final Long m_regenTime;
+	
+	public BlockData(Long xp, int minLevel, Long regenTime) {
 		m_xp = xp;
 		m_minLevel = minLevel;
+		m_regenTime = regenTime;
 	}
 	
 	/**
@@ -41,5 +47,13 @@ public class BlockData {
 	 */
 	public int getMinimumLevel() {
 		return m_minLevel;
+	}
+	
+	/**
+	 * 
+	 * @return 
+	 */
+	public Long getRegenTime() {
+		return m_regenTime;
 	}
 }

@@ -114,7 +114,7 @@ public class ModuleLoader {
 			
 		m_modules.clear();
 		
-		if (m_loader.load(file) == Loader.LoadResult.Success) {
+		if (m_loader.load(file, false) == Loader.LoadResult.Success) {
 			m_modules.addAll(m_loader.sort(m_loader.getLoadables()));
 
 			module.onLoad();

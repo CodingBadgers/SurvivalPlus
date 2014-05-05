@@ -19,6 +19,7 @@ package uk.codingbadgers.skill;
 
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
+import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
@@ -39,12 +40,12 @@ public class SkillLandscaping extends SkillBlockBase implements Listener {
     @Override
 	public void onEnable() {
 		
-		RegisterBlock(Material.GRASS, new BlockData(1L, 1));
-		RegisterBlock(Material.DIRT, new BlockData(1L, 1));
-		RegisterBlock(Material.SAND, new BlockData(1L, 5));
-		RegisterBlock(Material.GRAVEL, new BlockData(1L, 10));
-		RegisterBlock(Material.SOUL_SAND, new BlockData(2L, 15));
-		RegisterBlock(Material.CLAY, new BlockData(2L, 20));
+		RegisterBlock(Material.GRASS, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
+		RegisterBlock(Material.DIRT, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
+		RegisterBlock(Material.SAND, new BlockData(1L, 5, SurvivalPlus.timeToTicks(0, 30)));
+		RegisterBlock(Material.GRAVEL, new BlockData(1L, 10, SurvivalPlus.timeToTicks(0, 30)));
+		RegisterBlock(Material.SOUL_SAND, new BlockData(2L, 15, SurvivalPlus.timeToTicks(0, 30)));
+		RegisterBlock(Material.CLAY, new BlockData(2L, 20, SurvivalPlus.timeToTicks(1, 0)));
 			
 		RegisterTool(Material.WOOD_SPADE);
 		RegisterTool(Material.STONE_SPADE);

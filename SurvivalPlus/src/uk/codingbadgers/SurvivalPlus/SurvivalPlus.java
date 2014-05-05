@@ -489,6 +489,16 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 	}
 	
 	/**
+	 * 
+	 * @param minutes
+	 * @param seconds
+	 * @return 
+	 */
+	public static Long timeToTicks(int minutes, int seconds) {
+		return seconds * 20L + (minutes * (20L * 60L));		
+	}
+	
+	/**
 	 * Find the player a specific instance of player data belongs to
 	 * @param data THe data to test
 	 * @return The player the data belongs to or null

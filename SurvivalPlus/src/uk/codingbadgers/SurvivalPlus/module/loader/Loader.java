@@ -70,7 +70,8 @@ public class Loader {
 		Success,
 		Fail,
 		WaitingForDepends,
-		AlreadyLoaded
+		AlreadyLoaded,
+		LoadLast
 	}
 	
 	/**
@@ -134,26 +135,43 @@ public class Loader {
 	 * @return List of loaded loadables
 	 */
 	public final List<Module> load() {
-		return this.load(this.files);
+		return this.load(this.files, false);
 	}
 	
-	public final List<Module> load(List<File> filesToLoad) {
+	public final List<Module> load(List<File> filesToLoad, boolean force) {
 		
 		int noofToLoad = filesToLoad.size();
+		int noofToLoaded = 0;
 		
 		List<File> waitingForDepends = new ArrayList<File>();
+		List<File> waitingForLast = new ArrayList<File>();
+		
 		for (File file : filesToLoad) {
-			LoadResult result = load(file);
+			LoadResult result = load(file, force);
 			if (result == LoadResult.WaitingForDepends) {
 				getLogger().log(Level.INFO, "The loadable " + file.getName() + " is waiting for dependancies!");
 				waitingForDepends.add(file);
 			}
+			else if (result == LoadResult.LoadLast) {
+				getLogger().log(Level.INFO, "The loadable " + file.getName() + " is waiting to be loaded last!");
+				waitingForLast.add(file);
+			}
+			else if (result == LoadResult.Success) {
+				noofToLoaded++;
+			}
 		}
-		
+				
 		if (!waitingForDepends.isEmpty()) {
 			if (waitingForDepends.size() != noofToLoad) {
-				return load(waitingForDepends);
+				load(waitingForDepends, false);
 			}	
+		}
+		
+		if (!waitingForLast.isEmpty()) {
+			if (waitingForLast.size() == (noofToLoad - noofToLoaded)) {
+				getLogger().log(Level.INFO, "THE LOADING OF THE LASTS HAST BEGINETH!");
+				load(waitingForLast, true);
+			}
 		}
 				
 		return loadables;
@@ -167,18 +185,24 @@ public class Loader {
 	 * @return the list
 	 * @TODO support module dependencies
 	 */
-	public LoadResult load(File file) {
+	public LoadResult load(File file, boolean force) {
 		try {
 			JarFile jarFile = new JarFile(file);
 			String mainClass = null;
 			LoadableDescriptionFile ldf = null;
 			Collection<String> depends = null;
+			boolean loadLast = false;
 			
 			if (jarFile.getEntry("path.yml") != null) {
 				JarEntry element = jarFile.getJarEntry("path.yml");
 				ldf = new LoadableDescriptionFile(jarFile.getInputStream(element));
 				mainClass = ldf.getMainClass();
 				depends = ldf.getDependencies();
+				loadLast = ldf.getLoadLast();
+			}
+			
+			if (loadLast && !force) {				
+				return LoadResult.LoadLast;
 			}
 
 			if (depends != null && !depends.isEmpty()) {

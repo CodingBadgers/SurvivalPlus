@@ -17,14 +17,12 @@
  */
 package uk.codingbadgers.SurvivalPlus.module.loader;
 
+import com.google.common.collect.ImmutableList;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
 import org.bukkit.configuration.file.YamlConfiguration;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * The Class LoadableDescriptionFile, represents the data stored in the
@@ -40,6 +38,7 @@ public class LoadableDescriptionFile {
     private final String mainClass;
 	private final List<String> authors;
 	private final Collection<String> dependencies;
+	private final boolean loadLast;
     
     /**
      * Instantiates a new loadable description file.
@@ -56,6 +55,7 @@ public class LoadableDescriptionFile {
         mainClass = ldf.getString("main-class");
         authors = ImmutableList.of(ldf.getStringList("authors").toArray(new String[0]));
         dependencies = Collections.unmodifiableCollection(ldf.getStringList("dependencies"));
+		loadLast = ldf.getBoolean("load-last");
     }
     
     /**
@@ -111,5 +111,13 @@ public class LoadableDescriptionFile {
 	 */
 	public Collection<String> getDependencies() {
 		return dependencies;
+	}
+	
+	/**
+	 * 
+	 * @return 
+	 */
+	public boolean getLoadLast() {
+		return loadLast;
 	}
 }

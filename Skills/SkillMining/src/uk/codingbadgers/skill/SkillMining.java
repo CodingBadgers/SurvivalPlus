@@ -19,6 +19,7 @@ package uk.codingbadgers.skill;
 
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
+import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
@@ -39,17 +40,17 @@ public class SkillMining extends SkillBlockBase implements Listener {
     @Override
 	public void onEnable() {
 		
-		RegisterBlock(Material.STONE, new BlockData(1L, 1));
-		RegisterBlock(Material.SANDSTONE, new BlockData(1L, 1));
-		RegisterBlock(Material.NETHERRACK, new BlockData(1L, 1));		
-		RegisterBlock(Material.COAL_ORE, new BlockData(2L, 5));		
-		RegisterBlock(Material.IRON_ORE, new BlockData(5L, 10));
-		RegisterBlock(Material.QUARTZ_ORE, new BlockData(5L, 15));		
-		RegisterBlock(Material.GOLD_ORE, new BlockData(10L, 20));
-		RegisterBlock(Material.REDSTONE_ORE, new BlockData(10L, 20));
-		RegisterBlock(Material.LAPIS_ORE, new BlockData(10L, 25));
-		RegisterBlock(Material.EMERALD_ORE, new BlockData(15L, 40));		
-		RegisterBlock(Material.DIAMOND_ORE, new BlockData(50L, 55));
+		RegisterBlock(Material.STONE, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 15)));
+		RegisterBlock(Material.SANDSTONE, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 15)));
+		RegisterBlock(Material.NETHERRACK, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 15)));		
+		RegisterBlock(Material.COAL_ORE, new BlockData(2L, 5, SurvivalPlus.timeToTicks(0, 30)));		
+		RegisterBlock(Material.IRON_ORE, new BlockData(5L, 10, SurvivalPlus.timeToTicks(1, 0)));
+		RegisterBlock(Material.QUARTZ_ORE, new BlockData(5L, 15, SurvivalPlus.timeToTicks(1, 0)));		
+		RegisterBlock(Material.GOLD_ORE, new BlockData(10L, 20, SurvivalPlus.timeToTicks(2, 30)));
+		RegisterBlock(Material.REDSTONE_ORE, new BlockData(10L, 20, SurvivalPlus.timeToTicks(4, 0)));
+		RegisterBlock(Material.LAPIS_ORE, new BlockData(10L, 25, SurvivalPlus.timeToTicks(5, 0)));
+		RegisterBlock(Material.EMERALD_ORE, new BlockData(15L, 40, SurvivalPlus.timeToTicks(15, 0)));		
+		RegisterBlock(Material.DIAMOND_ORE, new BlockData(50L, 55, SurvivalPlus.timeToTicks(30, 0)));
 			
 		RegisterTool(Material.WOOD_PICKAXE);
 		RegisterTool(Material.STONE_PICKAXE);

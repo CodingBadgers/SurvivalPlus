@@ -64,6 +64,14 @@ public abstract class SkillBlockBase extends SkillBase {
 	}
 	
 	/**
+	 * 
+	 * @return 
+	 */
+	public Map<Material, BlockData> getBlocks() {
+		return m_blocks;
+	}
+	
+	/**
 	 * See if the skill will allow the ability to activate
 	 * @param event The player interact event
 	 * @return True if it can be used, false otherwise
