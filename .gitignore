@@ -6,3 +6,6 @@ Test Server/*
 /Skills/Mining - Copy/target/
 /Skills/Woodcutting/target/
 *.jar
+/Skills/SkillMining/target/
+/Skills/SkillWoodCutting/target/
+/target/
