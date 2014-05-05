@@ -162,6 +162,12 @@ public abstract class SkillBlockBase extends SkillBase {
 		final BlockData blockData = m_blocks.get(block.getType());
 		final PlayerSkillData playerData = (PlayerSkillData)player.getPlayerData(this.getPlayerDataClass());
 		
-		return playerData.getLevel() >= blockData.getMinimumLevel();		
+        if (playerData.getLevel() <= blockData.getMinimumLevel()) {
+            if (block.getType() != Material.BEDROCK) {
+                player.sendMessage("You are not a high enough level to break this...");
+            }
+        }
+        
+		return true;		
 	}
 }

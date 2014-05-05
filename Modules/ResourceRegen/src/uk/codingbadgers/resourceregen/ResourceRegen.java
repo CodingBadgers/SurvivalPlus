@@ -162,11 +162,7 @@ public class ResourceRegen extends Module implements Listener {
 				return;
 			}
 		}
-		
-		if (block.getType() != Material.BEDROCK) {
-			survivalPlayer.sendMessage("You are not a high enough level to break this...");
-		}
-		
+				
 		// No skills alowed the use of that block for the player, cancel
 		event.setCancelled(true);
 	}
