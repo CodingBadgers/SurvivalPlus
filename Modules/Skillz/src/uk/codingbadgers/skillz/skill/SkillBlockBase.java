@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -165,7 +164,7 @@ public abstract class SkillBlockBase extends SkillBase {
         final BlockData blockData = m_blocks.get(block.getType());
         final PlayerSkillData playerData = (PlayerSkillData) player.getPlayerData(this.getPlayerDataClass());
 
-        if (playerData.getLevel() <= blockData.getMinimumLevel()) {
+        if (playerData.getLevel() < blockData.getMinimumLevel()) {
             if (block.getType() != Material.BEDROCK) {
                 player.sendMessage("You are not a high enough level to break this...");
             }
