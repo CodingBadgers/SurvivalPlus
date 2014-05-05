@@ -1,24 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package uk.codingbadgers.skillz;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.Plugin;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
+import uk.codingbadgers.skillz.metakey.BlockMeta;
 
 /**
  *
@@ -52,7 +52,7 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
 	 * @param data
 	 * @param event 
 	 */
-	protected void onPlayerDamageBlock(FundamentalPlayer player, PlayerSkillData data, BlockDamageEvent event) {}
+	protected void onPlayerDamageBlock(FundamentalPlayer player, PlayerSkillData data, BlockDamageEvent event, boolean placedByPlayer) {}
 	
 	/**
 	 * 
@@ -60,7 +60,7 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
 	 * @param data
 	 * @param event 
 	 */
-	protected void onPlayerBreakBlock(FundamentalPlayer player, PlayerSkillData data, BlockBreakEvent event) {}
+	protected void onPlayerBreakBlock(FundamentalPlayer player, PlayerSkillData data, BlockBreakEvent event, boolean placedByPlayer) {}
 	
 	/**
 	 * 
@@ -125,7 +125,10 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
 			return;
 		}
 		
-		this.onPlayerDamageBlock(player, data, event);
+		final Block block = event.getBlock();		
+		final boolean placedByPlayer = block.hasMetadata(BlockMeta.PlacedBy);
+		
+		this.onPlayerDamageBlock(player, data, event, placedByPlayer);
 		
 	}
 	
@@ -146,7 +149,26 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
 			return;
 		}
 		
-		this.onPlayerBreakBlock(player, data, event);
+		final Block block = event.getBlock();		
+		final boolean placedByPlayer = block.hasMetadata(BlockMeta.PlacedBy);
+		
+		this.onPlayerBreakBlock(player, data, event, placedByPlayer);
+		
+	}
+	
+		/**
+	 * 
+	 * @param event 
+	 */
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onBlockPlace(BlockPlaceEvent event) {
+		
+		final Block block = event.getBlock();
+		final Player player = event.getPlayer();
+		final Plugin plugin = SurvivalPlus.getInstance();
+		
+		// Set who the block was place by
+		block.setMetadata(BlockMeta.PlacedBy, new FixedMetadataValue(plugin, player.getName()));
 		
 	}
 }
