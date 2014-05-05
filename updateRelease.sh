@@ -1,1 +1,1 @@
-mvn assembly:assembly
+mvn -P release
