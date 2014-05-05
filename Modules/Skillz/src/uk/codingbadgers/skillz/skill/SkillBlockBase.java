@@ -39,7 +39,7 @@ public abstract class SkillBlockBase extends SkillBase {
 	/**
 	 * The blocks that are used by this skill
 	 */
-	private final Map<Material, Long> m_blocks = new EnumMap<Material, Long>(Material.class);
+	private final Map<Material, BlockData> m_blocks = new EnumMap<Material, BlockData>(Material.class);
 	
 	/**
 	 * The tools that have the mining ability
@@ -51,8 +51,8 @@ public abstract class SkillBlockBase extends SkillBase {
 	 * @param block The material of the block to register
 	 * @param xp The amount of xp to be given when this block is broken
 	 */
-	protected void RegisterBlock(Material block, Long xp) {
-		m_blocks.put(block, xp);
+	protected void RegisterBlock(Material block, BlockData blockData) {
+		m_blocks.put(block, blockData);
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public abstract class SkillBlockBase extends SkillBase {
 		}
 		
 		if (!placedByPlayer) {
-			data.addXP(m_blocks.get(block.getType()));		
+			data.addXP(m_blocks.get(block.getType()).getXp());		
 		}
 		
 	}
@@ -128,7 +128,7 @@ public abstract class SkillBlockBase extends SkillBase {
 
 		if (!placedByPlayer) {
 			// Give them then xp
-			data.addXP(m_blocks.get(block.getType()));	
+			data.addXP(m_blocks.get(block.getType()).getXp());	
 		}
 		
 		// Cancel the event and we will break the block ourselves
@@ -137,5 +137,23 @@ public abstract class SkillBlockBase extends SkillBase {
 		// destroy the block
 		block.breakNaturally();
 				
+	}
+	
+	/**
+	 * 
+	 * @param player
+	 * @param block 
+	 * @return  
+	 */
+	public boolean canUseBlock(FundamentalPlayer player, Block block) {
+		
+		if (!m_blocks.containsKey(block.getType())) {
+			return false;
+		}
+		
+		final BlockData blockData = m_blocks.get(block.getType());
+		final PlayerSkillData playerData = (PlayerSkillData)player.getPlayerData(this.getPlayerDataClass());
+		
+		return playerData.getLevel() >= blockData.getMinimumLevel();		
 	}
 }

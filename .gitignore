@@ -11,3 +11,5 @@ Test Server/*
 /target/
 /Skills/SkillMining - Copy/target/
 /Skills/SkillLandscaping/target/
+/Modules/ResourceRegen/target/
+updateTestServer.bat

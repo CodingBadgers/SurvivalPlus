@@ -20,6 +20,7 @@ package uk.codingbadgers.skill;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
+import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
 
 public class SkillWoodCutting extends SkillBlockBase implements Listener {
@@ -38,13 +39,13 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
     @Override
 	public void onEnable() {
 		
-		RegisterBlock(Material.LOG, 5L);
+		RegisterBlock(Material.LOG, new BlockData(5L, 1));
 		
 		// So the ability will work on these, but no xp is given
-		RegisterBlock(Material.WOOD, 0L);
-		RegisterBlock(Material.WOOD_STAIRS, 0L);
-		RegisterBlock(Material.WOOD_STEP, 0L);
-		RegisterBlock(Material.WOOD_DOUBLE_STEP, 0L);
+		RegisterBlock(Material.WOOD, new BlockData(0L, 1));
+		RegisterBlock(Material.WOOD_STAIRS, new BlockData(0L, 1));
+		RegisterBlock(Material.WOOD_STEP, new BlockData(0L, 1));
+		RegisterBlock(Material.WOOD_DOUBLE_STEP, new BlockData(0L, 1));
 		
 		RegisterTool(Material.WOOD_AXE);
 		RegisterTool(Material.STONE_AXE);

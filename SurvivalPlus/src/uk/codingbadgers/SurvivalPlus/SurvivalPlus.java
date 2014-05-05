@@ -502,5 +502,34 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 		}		
 		return null;		
 	}
+
+	/**
+	 * Get a module of a given class type
+	 * @param moduleClass The class of the module to find
+	 * @return The module if found, or null
+	 */
+	public Module getModuleInstance(Class moduleClass) {
+		for (Module module : m_moduleLoader.getModules()) {
+			if (moduleClass.isInstance(module)) {
+				return module;
+			}
+		}		
+		return null;
+	}
+	
+	/**
+	 * Get all modules of a given class type
+	 * @param moduleClass The class of the module to find
+	 * @return The modules if found, or null
+	 */
+	public <T extends PlayerData> List<T> getModuleInstances(Class<? extends T> moduleClass) {
+		List<T> modules = new ArrayList<T>();		
+		for (Module module : m_moduleLoader.getModules()) {
+			if (moduleClass.isInstance(module)) {
+				modules.add((T)module);
+			}
+		}		
+		return modules;
+	}
 	
 }
