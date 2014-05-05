@@ -1,15 +1,17 @@
-jars/*
-SurvivalPlus/target/*
-/Skills/Mining/target/
-Test Server/*
-/Modules/Skillz/target/
-/Skills/Mining - Copy/target/
-/Skills/Woodcutting/target/
-*.jar
-/Skills/SkillMining/target/
-/Skills/SkillWoodCutting/target/
-/target/
-/Skills/SkillMining - Copy/target/
-/Skills/SkillLandscaping/target/
-/Modules/ResourceRegen/target/
+# Random n3wton files
+Test Server/
 updateTestServer.bat
+
+# Build files
+target/
+jars/
+dependency-reduced-pom.xml
+*.jar
+
+# Eclipse files
+.project
+.classpath
+
+# Idea files
+.idea/
+*.iml
