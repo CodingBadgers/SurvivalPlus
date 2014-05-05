@@ -27,6 +27,22 @@ import uk.codingbadgers.skillz.skill.SkillBlockBase;
 public class SkillWoodCutting extends SkillBlockBase implements Listener {
 
 	/**
+	 * 
+	 */
+	@Override
+	public void onLoad() {
+		
+		RegisterBlock(Material.LOG, new BlockData(5L, 1, SurvivalPlus.timeToTicks(0, 15)));
+		
+		RegisterTool(Material.WOOD_AXE);
+		RegisterTool(Material.STONE_AXE);
+		RegisterTool(Material.IRON_AXE);
+		RegisterTool(Material.GOLD_AXE);
+		RegisterTool(Material.DIAMOND_AXE);
+		
+	}
+	
+	/**
 	 * Called when the module is disabled.
 	 */
     @Override
@@ -39,15 +55,7 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
 	 */
     @Override
 	public void onEnable() {
-		
-		RegisterBlock(Material.LOG, new BlockData(5L, 1, SurvivalPlus.timeToTicks(0, 15)));
-		
-		RegisterTool(Material.WOOD_AXE);
-		RegisterTool(Material.STONE_AXE);
-		RegisterTool(Material.IRON_AXE);
-		RegisterTool(Material.GOLD_AXE);
-		RegisterTool(Material.DIAMOND_AXE);
-		
+				
 	}
 	
 	/**

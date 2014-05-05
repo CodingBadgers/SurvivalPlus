@@ -27,18 +27,10 @@ import uk.codingbadgers.skillz.skill.SkillBlockBase;
 public class SkillMining extends SkillBlockBase implements Listener {
 	
 	/**
-	 * Called when the module is disabled.
+	 * 
 	 */
-    @Override
-	public void onDisable() {
-		
-	}
-
-	/**
-	 * Called when the module is loaded.
-	 */
-    @Override
-	public void onEnable() {
+	@Override
+	public void onLoad() {
 		
 		RegisterBlock(Material.STONE, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 15)));
 		RegisterBlock(Material.SANDSTONE, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 15)));
@@ -57,6 +49,22 @@ public class SkillMining extends SkillBlockBase implements Listener {
 		RegisterTool(Material.IRON_PICKAXE);
 		RegisterTool(Material.GOLD_PICKAXE);
 		RegisterTool(Material.DIAMOND_PICKAXE);
+		
+	}
+	
+	/**
+	 * Called when the module is disabled.
+	 */
+    @Override
+	public void onDisable() {
+		
+	}
+
+	/**
+	 * Called when the module is loaded.
+	 */
+    @Override
+	public void onEnable() {
 		
 	}
 	

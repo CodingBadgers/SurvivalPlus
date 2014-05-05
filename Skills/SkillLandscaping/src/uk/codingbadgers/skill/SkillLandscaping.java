@@ -27,18 +27,10 @@ import uk.codingbadgers.skillz.skill.SkillBlockBase;
 public class SkillLandscaping extends SkillBlockBase implements Listener {
 	
 	/**
-	 * Called when the module is disabled.
+	 * 
 	 */
-    @Override
-	public void onDisable() {
-		
-	}
-
-	/**
-	 * Called when the module is loaded.
-	 */
-    @Override
-	public void onEnable() {
+	@Override
+	public void onLoad() {
 		
 		RegisterBlock(Material.GRASS, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
 		RegisterBlock(Material.DIRT, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
@@ -53,6 +45,22 @@ public class SkillLandscaping extends SkillBlockBase implements Listener {
 		RegisterTool(Material.GOLD_SPADE);
 		RegisterTool(Material.DIAMOND_SPADE);
 		
+	}
+	
+	/**
+	 * Called when the module is disabled.
+	 */
+    @Override
+	public void onDisable() {
+		
+	}
+
+	/**
+	 * Called when the module is loaded.
+	 */
+    @Override
+	public void onEnable() {
+				
 	}
 	
 	/**
