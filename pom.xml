@@ -24,6 +24,7 @@
 		<module>Modules/Skillz</module>
 		
 		<!-- Skills -->
+		<module>Skills/SkillLandscaping</module>
 		<module>Skills/SkillMining</module>
 		<module>Skills/SkillWoodCutting</module>
     </modules>

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.mining;
+package uk.codingbadgers.skill;
 
 import uk.codingbadgers.skillz.PlayerSkillData;
 
@@ -23,10 +23,10 @@ import uk.codingbadgers.skillz.PlayerSkillData;
  *
  * @author n3wton
  */
-public class SkillMiningData extends PlayerSkillData {
+public class SkillLandscapingData extends PlayerSkillData {
 
-	public SkillMiningData() {
-		super("Mining");
+	public SkillLandscapingData() {
+		super("Landscaping");
 	}
 	
 }

@@ -1,4 +1,4 @@
 name: ${project.artifactId}
 version: ${project.version}
-main-class: uk.codingbadgers.skill.SkillMining
+main-class: uk.codingbadgers.skill.SkillLandscaping
 dependencies: [Skillz]

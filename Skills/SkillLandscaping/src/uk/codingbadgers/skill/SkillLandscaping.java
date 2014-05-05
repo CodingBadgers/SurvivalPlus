@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.woodcutting;
+package uk.codingbadgers.skill;
 
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
 
-public class SkillWoodCutting extends SkillBlockBase implements Listener {
-
+public class SkillLandscaping extends SkillBlockBase implements Listener {
+	
 	/**
 	 * Called when the module is disabled.
 	 */
@@ -38,19 +38,18 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
     @Override
 	public void onEnable() {
 		
-		RegisterBlock(Material.LOG, 5L);
-		
-		// So the ability will work on these, but no xp is given
-		RegisterBlock(Material.WOOD, 0L);
-		RegisterBlock(Material.WOOD_STAIRS, 0L);
-		RegisterBlock(Material.WOOD_STEP, 0L);
-		RegisterBlock(Material.WOOD_DOUBLE_STEP, 0L);
-		
-		RegisterTool(Material.WOOD_AXE);
-		RegisterTool(Material.STONE_AXE);
-		RegisterTool(Material.IRON_AXE);
-		RegisterTool(Material.GOLD_AXE);
-		RegisterTool(Material.DIAMOND_AXE);
+		RegisterBlock(Material.GRASS, 1L);
+		RegisterBlock(Material.SAND, 1L);
+		RegisterBlock(Material.DIRT, 1L);
+		RegisterBlock(Material.GRAVEL, 1L);
+		RegisterBlock(Material.SOUL_SAND, 2L);
+		RegisterBlock(Material.CLAY, 2L);
+			
+		RegisterTool(Material.WOOD_SPADE);
+		RegisterTool(Material.STONE_SPADE);
+		RegisterTool(Material.IRON_SPADE);
+		RegisterTool(Material.GOLD_SPADE);
+		RegisterTool(Material.DIAMOND_SPADE);
 		
 	}
 	
@@ -60,14 +59,14 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
 	 */
 	@Override
 	public String getAbilityName() {
-		return "Tree Fucker";
+		return "Charlie Dimmock";
 	}
-	    
+    
 	/**
 	 * @return The data class for this skill
 	 */
 	@Override
 	public Class<? extends PlayerData> getPlayerDataClass() {
-		return SkillWoodCuttingData.class;
+		return SkillLandscapingData.class;
 	}
 }
