@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 /**
  * Repersents a class that is serialised in a config file by the
  * bFundamentals {@link ConfigFactory} as a category inside the file.
- * 
+ *
  * @author James Fitzpatrick
  * @see ConfigFile
  */
@@ -35,10 +35,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Catagory {
 
-	/**
-	 * The config key from this category, if left at {@code ""} (default value) 
-	 * it will use a lower case representation of the class name.
-	 */
-	String value() default "";
-	
+    /**
+     * The config key from this category, if left at {@code ""} (default value)
+     * it will use a lower case representation of the class name.
+     */
+    String value() default "";
+
 }

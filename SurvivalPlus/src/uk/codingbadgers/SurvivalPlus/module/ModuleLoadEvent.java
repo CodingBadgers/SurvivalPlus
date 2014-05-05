@@ -25,8 +25,8 @@ import uk.codingbadgers.SurvivalPlus.module.loader.LoadEvent;
 
 public class ModuleLoadEvent extends LoadEvent<Module> {
 
-	public ModuleLoadEvent(Plugin plugin, Module loadable, JarFile jarFile) {
-		super(plugin, loadable, jarFile);
-	}
+    public ModuleLoadEvent(Plugin plugin, Module loadable, JarFile jarFile) {
+        super(plugin, loadable, jarFile);
+    }
 
 }

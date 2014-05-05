@@ -26,11 +26,12 @@ import uk.codingbadgers.SurvivalPlus.ConfigManager;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 
 public class TestConfigManager implements InvocationHandler {
-	private static interface MethodHandler {
+    private static interface MethodHandler {
         Object handle(TestConfigManager server, Object[] args);
     }
-	
+
     private static final HashMap<Method, MethodHandler> methods = new HashMap<Method, MethodHandler>();
+
     static {
         try {
             methods.put(
@@ -40,7 +41,7 @@ public class TestConfigManager implements InvocationHandler {
                             return "Password";
                         }
                     }
-                );
+            );
             methods.put(
                     ConfigManager.class.getMethod("isDebugEnabled"),
                     new MethodHandler() {
@@ -48,16 +49,20 @@ public class TestConfigManager implements InvocationHandler {
                             return true;
                         }
                     }
-                );
+            );
             SurvivalPlus.setConfigManager(Proxy.getProxyClass(ConfigManager.class.getClassLoader(), ConfigManager.class).asSubclass(ConfigManager.class).getConstructor(InvocationHandler.class).newInstance(new TestConfigManager()));
         } catch (Throwable t) {
             throw new Error(t);
         }
     }
 
-    public static void setup() {}
+    public static void setup() {
+    }
 
-    private TestConfigManager() {};
+    private TestConfigManager() {
+    }
+
+    ;
 
     public Object invoke(Object proxy, Method method, Object[] args) {
         MethodHandler handler = methods.get(method);

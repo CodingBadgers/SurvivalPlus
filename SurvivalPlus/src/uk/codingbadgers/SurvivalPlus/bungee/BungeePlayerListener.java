@@ -32,7 +32,7 @@ public class BungeePlayerListener implements Listener {
     public BungeePlayerListener(BungeeMessenger messenger) {
         this.messenger = messenger;
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Bukkit.getScheduler().runTaskLater(SurvivalPlus.getInstance(), new Runnable() {
@@ -41,7 +41,7 @@ public class BungeePlayerListener implements Listener {
             public void run() {
                 messenger.sendQueuedCommands();
             }
-            
+
         }, 5);
     }
 }

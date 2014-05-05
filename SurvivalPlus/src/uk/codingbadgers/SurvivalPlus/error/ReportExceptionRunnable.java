@@ -40,63 +40,63 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 
 public class ReportExceptionRunnable {
 
-	private Throwable throwable;
+    private Throwable throwable;
 
-	public ReportExceptionRunnable(Throwable ex) {
-		this.throwable = ex;
-	}
-	
-	public boolean run() {
-		try {
-			List<NameValuePair> data = new ArrayList<NameValuePair>();
-			data.add(new BasicNameValuePair("password", DigestUtils.md5Hex(SurvivalPlus.getConfigurationManager().getCrashPassword())));
-			data.add(new BasicNameValuePair("project", "bFundamentals"));
-			data.add(new BasicNameValuePair("cause", getException(throwable)));
-			data.add(new BasicNameValuePair("message", getMessage(throwable)));
-			data.add(new BasicNameValuePair("st", buildStackTrace(throwable)));
-			HttpPost post = new HttpPost("http://server.mcbadgercraft.com/crash/report.php");
-			post.setEntity(new UrlEncodedFormEntity(data));
-			
-			DefaultHttpClient client = new DefaultHttpClient();
-			HttpResponse responce = client.execute(post);
+    public ReportExceptionRunnable(Throwable ex) {
+        this.throwable = ex;
+    }
+
+    public boolean run() {
+        try {
+            List<NameValuePair> data = new ArrayList<NameValuePair>();
+            data.add(new BasicNameValuePair("password", DigestUtils.md5Hex(SurvivalPlus.getConfigurationManager().getCrashPassword())));
+            data.add(new BasicNameValuePair("project", "bFundamentals"));
+            data.add(new BasicNameValuePair("cause", getException(throwable)));
+            data.add(new BasicNameValuePair("message", getMessage(throwable)));
+            data.add(new BasicNameValuePair("st", buildStackTrace(throwable)));
+            HttpPost post = new HttpPost("http://server.mcbadgercraft.com/crash/report.php");
+            post.setEntity(new UrlEncodedFormEntity(data));
+
+            DefaultHttpClient client = new DefaultHttpClient();
+            HttpResponse responce = client.execute(post);
             String result = EntityUtils.toString(responce.getEntity());
-            
+
             if (SurvivalPlus.getConfigurationManager().isDebugEnabled()) System.out.println(result);
-            
+
             JSONObject object = (JSONObject) new JSONParser().parse(result);
             boolean success = (Boolean) object.get("success");
             if (!success) System.err.println(object.get("error"));
             return success;
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-		return false;
-	}
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-	private String getException(Throwable cause) {
-		while (cause.getCause() != null) {
-			cause = cause.getCause();
-		}
-		
-		return cause.getClass().getName();
-	}
+        return false;
+    }
 
-	private String getMessage(Throwable cause) {
-		while (cause.getCause() != null) {
-			cause = cause.getCause();
-		}
-		
-		return cause.getMessage();
-	}
-	
-	private String buildStackTrace(Throwable cause) {
-		StringWriter writer = new StringWriter();
-		cause.printStackTrace(new PrintWriter(writer));
-		return writer.toString();
-	}
+    private String getException(Throwable cause) {
+        while (cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+
+        return cause.getClass().getName();
+    }
+
+    private String getMessage(Throwable cause) {
+        while (cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+
+        return cause.getMessage();
+    }
+
+    private String buildStackTrace(Throwable cause) {
+        StringWriter writer = new StringWriter();
+        cause.printStackTrace(new PrintWriter(writer));
+        return writer.toString();
+    }
 }

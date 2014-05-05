@@ -28,20 +28,20 @@ import java.nio.channels.ReadableByteChannel;
  */
 public class UpdaterUtils {
 
-	/**
-	 * Download a file from a specific url.
-	 *
-	 * @param link the link
-	 * @param outputFile the output file
-	 * @throws Exception the exception
-	 */
-	public static void download(URL link, File outputFile) throws Exception{
-		if (link == null) 
-			throw new IllegalArgumentException ("dl link cannot be null");
-		
+    /**
+     * Download a file from a specific url.
+     *
+     * @param link       the link
+     * @param outputFile the output file
+     * @throws Exception the exception
+     */
+    public static void download(URL link, File outputFile) throws Exception {
+        if (link == null)
+            throw new IllegalArgumentException("dl link cannot be null");
+
         ReadableByteChannel rbc = Channels.newChannel(link.openStream());
         FileOutputStream output = new FileOutputStream(outputFile);
         output.getChannel().transferFrom(rbc, 0, 1 << 24);
         output.close();
-	}
+    }
 }

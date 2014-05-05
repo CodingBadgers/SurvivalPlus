@@ -31,14 +31,14 @@ import uk.codingbadgers.SurvivalPlus.serialization.ItemStackSerializer;
 
 public class TestPlugin extends SurvivalPlus {
 
-	public TestPlugin() {
-		m_gson = new GsonBuilder()
-						.registerTypeAdapter(Message.class, new Message.MessageSerializer())
-						.registerTypeAdapter(ClickEventType.class, new ClickEventType.ClickEventSerializer())
-						.registerTypeAdapter(HoverEventType.class, new HoverEventType.HoverEventSerializer())
-						.registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
-						.registerTypeAdapter(Achievement.class, new AchievementSerializer())
-						.create();
-	}
-	
+    public TestPlugin() {
+        m_gson = new GsonBuilder()
+                .registerTypeAdapter(Message.class, new Message.MessageSerializer())
+                .registerTypeAdapter(ClickEventType.class, new ClickEventType.ClickEventSerializer())
+                .registerTypeAdapter(HoverEventType.class, new HoverEventType.HoverEventSerializer())
+                .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
+                .registerTypeAdapter(Achievement.class, new AchievementSerializer())
+                .create();
+    }
+
 }

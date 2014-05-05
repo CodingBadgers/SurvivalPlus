@@ -19,8 +19,8 @@ package uk.codingbadgers.SurvivalPlus.config.deserialiser;
 
 public interface ConfigMapper<T> {
 
-	public T deserialise(Object mapping);
-	
-	public Object serialise(T object);
-	
+    public T deserialise(Object mapping);
+
+    public Object serialise(T object);
+
 }

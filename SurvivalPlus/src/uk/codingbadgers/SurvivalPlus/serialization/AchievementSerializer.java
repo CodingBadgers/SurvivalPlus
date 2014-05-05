@@ -34,8 +34,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 public class AchievementSerializer implements JsonSerializer<Achievement>, JsonDeserializer<Achievement> { // Copied from org.bukkit.craftbukkit.CraftAchievement
-	private final BiMap<String, Achievement> achievements;
-	
+    private final BiMap<String, Achievement> achievements;
+
     public AchievementSerializer() {
         ImmutableMap<String, Achievement> specialCases = ImmutableMap.<String, Achievement>builder()
                 .put("achievement.buildWorkBench", Achievement.BUILD_WORKBENCH)
@@ -53,7 +53,7 @@ public class AchievementSerializer implements JsonSerializer<Achievement>, JsonD
             if (specialCases.values().contains(achievement)) {
                 continue;
             }
-            builder.put("achievement."+CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, achievement.name()), achievement);
+            builder.put("achievement." + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, achievement.name()), achievement);
         }
 
         builder.putAll(specialCases);
@@ -68,15 +68,15 @@ public class AchievementSerializer implements JsonSerializer<Achievement>, JsonD
     public Achievement getAchievement(String name) {
         return achievements.get(name);
     }
-    
-	@Override
-	public Achievement deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-		return json.isJsonPrimitive() ? getAchievement(json.getAsString()) : null;
-	}
 
-	@Override
-	public JsonElement serialize(Achievement src, Type typeOfSrc, JsonSerializationContext context) {
-		return new JsonPrimitive(getAchievementName(src));
-	}
-	
+    @Override
+    public Achievement deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        return json.isJsonPrimitive() ? getAchievement(json.getAsString()) : null;
+    }
+
+    @Override
+    public JsonElement serialize(Achievement src, Type typeOfSrc, JsonSerializationContext context) {
+        return new JsonPrimitive(getAchievementName(src));
+    }
+
 }

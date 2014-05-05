@@ -31,45 +31,44 @@ import com.google.gson.JsonSerializer;
 
 public enum ClickEventType {
 
-	RUN_COMMAND("run_command"),
-	SUGGEST_COMMAND("suggest_command"),
-	OPEN_URL("open_url"),
-	OPEN_FILE("open_file"),
-	;
+    RUN_COMMAND("run_command"),
+    SUGGEST_COMMAND("suggest_command"),
+    OPEN_URL("open_url"),
+    OPEN_FILE("open_file"),;
 
-	private static final Map<String, ClickEventType> BY_ID = new HashMap<String, ClickEventType>();
-	
-	static {
-		for (ClickEventType type : values()) {
-			BY_ID.put(type.id, type);
-		}
-	}
-	
-	private String id;
+    private static final Map<String, ClickEventType> BY_ID = new HashMap<String, ClickEventType>();
 
-	private ClickEventType(String id) {
-		this.id = id;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	public static class ClickEventSerializer implements JsonSerializer<ClickEventType>, JsonDeserializer<ClickEventType> {
+    static {
+        for (ClickEventType type : values()) {
+            BY_ID.put(type.id, type);
+        }
+    }
 
-		@Override
-		public ClickEventType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (!json.isJsonPrimitive()) {
-				return null;
-			}
-			
-			return BY_ID.get(json.getAsString());
-		}
+    private String id;
 
-		@Override
-		public JsonElement serialize(ClickEventType src, Type typeOfSrc, JsonSerializationContext context) {
-			return new JsonPrimitive(src.id.toLowerCase());
-		}
-		
-	}
+    private ClickEventType(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public static class ClickEventSerializer implements JsonSerializer<ClickEventType>, JsonDeserializer<ClickEventType> {
+
+        @Override
+        public ClickEventType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (!json.isJsonPrimitive()) {
+                return null;
+            }
+
+            return BY_ID.get(json.getAsString());
+        }
+
+        @Override
+        public JsonElement serialize(ClickEventType src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(src.id.toLowerCase());
+        }
+
+    }
 }

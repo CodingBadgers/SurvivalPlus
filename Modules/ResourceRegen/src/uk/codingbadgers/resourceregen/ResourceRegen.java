@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -42,129 +43,128 @@ import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
 
 public class ResourceRegen extends Module implements Listener {
-	
-	/**
-	 * 
-	 */
-	private final Map<Material, Long> m_blocks = new EnumMap<Material, Long>(Material.class);
-	
-	/**
-	 * 
-	 */
-	private final Map<Block, Material> m_blocksToRegen = new HashMap<Block, Material>();
-	
-	/**
-	 * Called when the module is disabled.
-	 */
-    @Override
-	public void onDisable() {
-	
-		for (Entry<Block, Material> entry : m_blocksToRegen.entrySet()) {
-			final Block block = entry.getKey();
-			final Material type = entry.getValue();
-			block.setType(type);			
-		}
-		
-	}
 
-	/**
-	 * Called when the module is loaded.
-	 */
+    /**
+     *
+     */
+    private final Map<Material, Long> m_blocks = new EnumMap<Material, Long>(Material.class);
+
+    /**
+     *
+     */
+    private final Map<Block, Material> m_blocksToRegen = new HashMap<Block, Material>();
+
+    /**
+     * Called when the module is disabled.
+     */
     @Override
-	public void onEnable() {
-		
-		register(this);
-	
-		List<SkillBlockBase> blockSkills = m_plugin.getModuleInstances(SkillBlockBase.class);
-		for (SkillBlockBase skill : blockSkills) {
-			Map<Material, BlockData> blocks = skill.getBlocks();
-			for (Entry<Material, BlockData> entry : blocks.entrySet()) {
-				Material type = entry.getKey();
-				BlockData data = entry.getValue();
-				m_blocks.put(type, data.getRegenTime());
-			}
-		}
-		
-	}
-	
-	/**
-	 * 
-	 * @param event 
-	 */
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onBlockBreak(BlockBreakEvent event) {
-		
-		// If the player is in creative, let them do what they want
-		final Player player = event.getPlayer();
-		if (player.getGameMode() == GameMode.CREATIVE) {
-			return;
-		}
-		
-		// Always cancel an event if not in creative
-		event.setCancelled(true);
-				
-		final Block block = event.getBlock();
-		final Material type = block.getType();
-		
-		// If this block isn't registered just cancel the event
-		if (!m_blocks.containsKey(type)) {
-			return;
-		}
-		
-		// Give the player the drops directly
-		final Inventory playerInvent = player.getInventory();
-		Collection<ItemStack> drops = block.getDrops();
-		for (ItemStack drop : drops) {
-			playerInvent.addItem(drop);
-		}
-		
-		// Set the block to bedrock
-		block.setType(Material.BEDROCK);
-		m_blocksToRegen.put(block, type);
-		
-		// Start a timer for when the block should regen
-		Bukkit.getScheduler().scheduleSyncDelayedTask(
-			m_plugin, 
-			new Runnable() {
-				@Override
-				public void run() {
-					block.setType(type);
-					m_blocksToRegen.remove(block);
-				}
-			}, 
-			m_blocks.get(type));
-		
-	}
-	
-	/**
-	 * 
-	 * @param event 
-	 */
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onBlockDamage(BlockDamageEvent event) {
-		
-		// If the player is in creative, let them do what they want
-		final Player player = event.getPlayer();
-		if (player.getGameMode() == GameMode.CREATIVE) {
-			return;
-		}
-		
-		final FundamentalPlayer survivalPlayer = SurvivalPlus.Players.getPlayer(player);
-		if (survivalPlayer == null) {
-			return;
-		}
-		
-		final Block block = event.getBlock();
-		
-		List<SkillBlockBase> blockSkills = m_plugin.getModuleInstances(SkillBlockBase.class);
-		for (SkillBlockBase skill : blockSkills) {
-			if (skill.canUseBlock(survivalPlayer, block)) {
-				return;
-			}
-		}
-				
-		// No skills alowed the use of that block for the player, cancel
-		event.setCancelled(true);
-	}
+    public void onDisable() {
+
+        for (Entry<Block, Material> entry : m_blocksToRegen.entrySet()) {
+            final Block block = entry.getKey();
+            final Material type = entry.getValue();
+            block.setType(type);
+        }
+
+    }
+
+    /**
+     * Called when the module is loaded.
+     */
+    @Override
+    public void onEnable() {
+
+        register(this);
+
+        List<SkillBlockBase> blockSkills = m_plugin.getModuleInstances(SkillBlockBase.class);
+        for (SkillBlockBase skill : blockSkills) {
+            Map<Material, BlockData> blocks = skill.getBlocks();
+            for (Entry<Material, BlockData> entry : blocks.entrySet()) {
+                Material type = entry.getKey();
+                BlockData data = entry.getValue();
+                m_blocks.put(type, data.getRegenTime());
+            }
+        }
+
+    }
+
+    /**
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onBlockBreak(BlockBreakEvent event) {
+
+        // If the player is in creative, let them do what they want
+        final Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+
+        // Always cancel an event if not in creative
+        event.setCancelled(true);
+
+        final Block block = event.getBlock();
+        final Material type = block.getType();
+
+        // If this block isn't registered just cancel the event
+        if (!m_blocks.containsKey(type)) {
+            return;
+        }
+
+        // Give the player the drops directly
+        final Inventory playerInvent = player.getInventory();
+        Collection<ItemStack> drops = block.getDrops();
+        for (ItemStack drop : drops) {
+            playerInvent.addItem(drop);
+        }
+
+        // Set the block to bedrock
+        block.setType(Material.BEDROCK);
+        m_blocksToRegen.put(block, type);
+
+        // Start a timer for when the block should regen
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                m_plugin,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        block.setType(type);
+                        m_blocksToRegen.remove(block);
+                    }
+                },
+                m_blocks.get(type)
+        );
+
+    }
+
+    /**
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onBlockDamage(BlockDamageEvent event) {
+
+        // If the player is in creative, let them do what they want
+        final Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+
+        final FundamentalPlayer survivalPlayer = SurvivalPlus.Players.getPlayer(player);
+        if (survivalPlayer == null) {
+            return;
+        }
+
+        final Block block = event.getBlock();
+
+        List<SkillBlockBase> blockSkills = m_plugin.getModuleInstances(SkillBlockBase.class);
+        for (SkillBlockBase skill : blockSkills) {
+            if (skill.canUseBlock(survivalPlayer, block)) {
+                return;
+            }
+        }
+
+        // No skills alowed the use of that block for the player, cancel
+        event.setCancelled(true);
+    }
 
 }

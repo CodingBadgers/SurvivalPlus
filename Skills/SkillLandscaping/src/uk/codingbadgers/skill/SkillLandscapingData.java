@@ -20,13 +20,12 @@ package uk.codingbadgers.skill;
 import uk.codingbadgers.skillz.skill.PlayerSkillData;
 
 /**
- *
  * @author n3wton
  */
 public class SkillLandscapingData extends PlayerSkillData {
 
-	public SkillLandscapingData() {
-		super("Landscaping");
-	}
-	
+    public SkillLandscapingData() {
+        super("Landscaping");
+    }
+
 }

@@ -23,22 +23,22 @@ import uk.codingbadgers.skillz.commands.SkillCommand;
 
 public class Skillz extends Module implements Listener {
 
-	/**
-	 * Called when the module is disabled.
-	 */
+    /**
+     * Called when the module is disabled.
+     */
     @Override
-	public void onDisable() {
-		
-	}
+    public void onDisable() {
 
-	/**
-	 * Called when the module is loaded.
-	 */
+    }
+
+    /**
+     * Called when the module is loaded.
+     */
     @Override
-	public void onEnable() {
-		
-		this.registerCommand(new SkillCommand(this));
-		
-	}
+    public void onEnable() {
+
+        this.registerCommand(new SkillCommand(this));
+
+    }
 
 }

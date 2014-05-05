@@ -27,24 +27,24 @@ import uk.thecodingbadgers.bFundamentals.support.TestConfigManager;
 
 public class TestContainer {
 
-	private static boolean setup = false;
-	
-	@BeforeClass
-	public static void setup() {
-		if (setup) {
-			return;
-		}
-		
-		// Setup craftbukkit, copied from AbstractTestingBase
+    private static boolean setup = false;
+
+    @BeforeClass
+    public static void setup() {
+        if (setup) {
+            return;
+        }
+
+        // Setup craftbukkit, copied from AbstractTestingBase
         DispenserRegistry.b();
         DummyServer.setup();
         DummyPotions.setup();
         DummyEnchantments.setup();
-        
+
         // Setup bFundamentals
         SurvivalPlus.setupGson();
         TestConfigManager.setup();
-		
-		setup = true;
-	}
+
+        setup = true;
+    }
 }

@@ -26,52 +26,53 @@ import uk.codingbadgers.skillz.skill.SkillBlockBase;
 
 public class SkillWoodCutting extends SkillBlockBase implements Listener {
 
-	/**
-	 * 
-	 */
-	@Override
-	public void onLoad() {
-		
-		RegisterBlock(Material.LOG, new BlockData(5L, 1, SurvivalPlus.timeToTicks(0, 15)));
-		
-		RegisterTool(Material.WOOD_AXE);
-		RegisterTool(Material.STONE_AXE);
-		RegisterTool(Material.IRON_AXE);
-		RegisterTool(Material.GOLD_AXE);
-		RegisterTool(Material.DIAMOND_AXE);
-		
-	}
-	
-	/**
-	 * Called when the module is disabled.
-	 */
+    /**
+     *
+     */
     @Override
-	public void onDisable() {
-		
-	}
+    public void onLoad() {
 
-	/**
-	 * Called when the module is loaded.
-	 */
+        RegisterBlock(Material.LOG, new BlockData(5L, 1, SurvivalPlus.timeToTicks(0, 15)));
+
+        RegisterTool(Material.WOOD_AXE);
+        RegisterTool(Material.STONE_AXE);
+        RegisterTool(Material.IRON_AXE);
+        RegisterTool(Material.GOLD_AXE);
+        RegisterTool(Material.DIAMOND_AXE);
+
+    }
+
+    /**
+     * Called when the module is disabled.
+     */
     @Override
-	public void onEnable() {
-				
-	}
-	
-	/**
-	 * Get the name of this skills ability
-	 * @return 
-	 */
-	@Override
-	public String getAbilityName() {
-		return "Tree Fucker";
-	}
-	    
-	/**
-	 * @return The data class for this skill
-	 */
-	@Override
-	public Class<? extends PlayerData> getPlayerDataClass() {
-		return SkillWoodCuttingData.class;
-	}
+    public void onDisable() {
+
+    }
+
+    /**
+     * Called when the module is loaded.
+     */
+    @Override
+    public void onEnable() {
+
+    }
+
+    /**
+     * Get the name of this skills ability
+     *
+     * @return
+     */
+    @Override
+    public String getAbilityName() {
+        return "Tree Fucker";
+    }
+
+    /**
+     * @return The data class for this skill
+     */
+    @Override
+    public Class<? extends PlayerData> getPlayerDataClass() {
+        return SkillWoodCuttingData.class;
+    }
 }

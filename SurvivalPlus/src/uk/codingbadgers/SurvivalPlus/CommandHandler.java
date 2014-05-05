@@ -32,170 +32,170 @@ import com.google.common.collect.ImmutableList.Builder;
 
 public class CommandHandler implements TabExecutor {
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command commmand, String label, String[] args) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command commmand, String label, String[] args) {
 
-		if (args.length < 1) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals commands");
-			sender.sendMessage(ChatColor.DARK_AQUA + "module " + ChatColor.WHITE + "- access module load/unload/reload commands");
-			sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a given module");
-			sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload the plugin");
-			return true;	
-		}
-		
-		if (!SurvivalPlus.getPermissions().has(sender, "bfundamentals.admin")) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry you do not have permission to do that");
-			return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("reload")) {
-			SurvivalPlus.getInstance().getPluginLoader().disablePlugin(SurvivalPlus.getInstance());
-			SurvivalPlus.getInstance().getPluginLoader().enablePlugin(SurvivalPlus.getInstance());
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloading plugin");
-			return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("module")) {
-			if (args.length < 1) {
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals module commands");
-				sender.sendMessage(ChatColor.DARK_AQUA + "unload " + ChatColor.WHITE + "- unload a module");
-				sender.sendMessage(ChatColor.DARK_AQUA + "load " + ChatColor.WHITE + "- load a module");
-				sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload a module");
-				sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a module");
-				return true;
-			}
-			
-			if (args[1].equalsIgnoreCase("unload")) {
-				if (args.length == 3) {
-					Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
-					
-					if (module == null) {
-						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry that module isn't enabled on bFundamentals.getInstance() server, do /modules for a list that are");
-						return true;
-					}
-					SurvivalPlus.getModuleLoader().unload(module);
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Unloaded " + args[2]);
-					return true;
-				}
-				
-				SurvivalPlus.getModuleLoader().unload();
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "UnLoaded all modules");			
-				return true;
-			}
-			
-			if (args[1].equalsIgnoreCase("load")) {
-				
-				if (args.length == 3) {
-					SurvivalPlus.getModuleLoader().load(args[2]);
-					Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
-					
-					if(module == null) {
-						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Error loading module " + args[2]);
-						return true;
-					}
-					
-					module.onEnable();
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded " + args[2]);
-					return true;
-				}
-				
-				SurvivalPlus.getModuleLoader().load();
-				SurvivalPlus.getModuleLoader().enable();
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded all modules");			
-				return true;
-			}
-			
-			if (args[1].equalsIgnoreCase("reload")) {
-				
-				if (args.length == 3) {
-					Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
-					
-					if (module == null) {
-						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry that module isn't enabled on this server, do /modules for a list that are");
-						return true;
-					}
-					SurvivalPlus.getModuleLoader().unload(module);
-					SurvivalPlus.getModuleLoader().load(args[2]);
-					module = SurvivalPlus.getModuleLoader().getModule(args[2]);
-					
-					if(module == null) {
-						sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Error loading module " + args[2]);
-						return true;
-					}
-					
-					module.onEnable();
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "ReLoaded " + args[2]);
-					return true;
-				}
-				
-				SurvivalPlus.getModuleLoader().unload();
-				SurvivalPlus.getModuleLoader().load();
-				SurvivalPlus.getModuleLoader().enable();
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloaded all modules");			
-				return true;
-			}
-			
-			if (args[1].equalsIgnoreCase("debug")) {
-				
-				if (args.length != 3) {
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bfundamentals module debug <module>");
-					return true;
-				}
-				
-				Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
-				
-				if (module == null) {
-					sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Module " + args[2] + " isn't loaded");
-					return true;
-				}
-				
-				module.setDebug(!module.isDebug());
-				sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + module.getName() + ": debug " + (module.isDebug() ? "enabled" : "disabled"));
-				return true;
-			}
-			
-			sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals module commands");
-			sender.sendMessage(ChatColor.DARK_AQUA + "unload " + ChatColor.WHITE + "- unload a module");
-			sender.sendMessage(ChatColor.DARK_AQUA + "load " + ChatColor.WHITE + "- load a module");
-			sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload a module");
-			sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a module");
-			return true;
-		}
+        if (args.length < 1) {
+            sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals commands");
+            sender.sendMessage(ChatColor.DARK_AQUA + "module " + ChatColor.WHITE + "- access module load/unload/reload commands");
+            sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a given module");
+            sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload the plugin");
+            return true;
+        }
 
-		sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals commands");
-		sender.sendMessage(ChatColor.DARK_AQUA + "module " + ChatColor.WHITE + "- access module load/unload/reload commands");
-		sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a given module");
-		sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload the plugin");
-		return true;
-	}
+        if (!SurvivalPlus.getPermissions().has(sender, "bfundamentals.admin")) {
+            sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry you do not have permission to do that");
+            return true;
+        }
 
-	@Override
-	public List<String> onTabComplete(CommandSender sebder, Command command, String label, String[] args) {
-		if (args.length == 0) {
-			return ImmutableList.of("module", "debug", "reload");
-		}
-		
-		if (args.length == 1) {
-			Builder<String> list = ImmutableList.builder();
-			for (String string : Arrays.asList("module", "debug", "reload")) {
-				if (string.startsWith(args[0])) {
-					list.add(string);
-				}
-			}
-			return list.build();
-		}
-		
-		if (args.length == 2) {
-			Builder<String> list = ImmutableList.builder();
-			for (String string : Arrays.asList("unload", "load", "reload", "debug")) {
-				if (string.startsWith(args[0])) {
-					list.add(string);
-				}
-			}
-			return list.build();
-		}
-		
-		return ImmutableList.of();
-	}
+        if (args[0].equalsIgnoreCase("reload")) {
+            SurvivalPlus.getInstance().getPluginLoader().disablePlugin(SurvivalPlus.getInstance());
+            SurvivalPlus.getInstance().getPluginLoader().enablePlugin(SurvivalPlus.getInstance());
+            sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloading plugin");
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("module")) {
+            if (args.length < 1) {
+                sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals module commands");
+                sender.sendMessage(ChatColor.DARK_AQUA + "unload " + ChatColor.WHITE + "- unload a module");
+                sender.sendMessage(ChatColor.DARK_AQUA + "load " + ChatColor.WHITE + "- load a module");
+                sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload a module");
+                sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a module");
+                return true;
+            }
+
+            if (args[1].equalsIgnoreCase("unload")) {
+                if (args.length == 3) {
+                    Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
+
+                    if (module == null) {
+                        sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry that module isn't enabled on bFundamentals.getInstance() server, do /modules for a list that are");
+                        return true;
+                    }
+                    SurvivalPlus.getModuleLoader().unload(module);
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Unloaded " + args[2]);
+                    return true;
+                }
+
+                SurvivalPlus.getModuleLoader().unload();
+                sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "UnLoaded all modules");
+                return true;
+            }
+
+            if (args[1].equalsIgnoreCase("load")) {
+
+                if (args.length == 3) {
+                    SurvivalPlus.getModuleLoader().load(args[2]);
+                    Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
+
+                    if (module == null) {
+                        sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Error loading module " + args[2]);
+                        return true;
+                    }
+
+                    module.onEnable();
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded " + args[2]);
+                    return true;
+                }
+
+                SurvivalPlus.getModuleLoader().load();
+                SurvivalPlus.getModuleLoader().enable();
+                sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded all modules");
+                return true;
+            }
+
+            if (args[1].equalsIgnoreCase("reload")) {
+
+                if (args.length == 3) {
+                    Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
+
+                    if (module == null) {
+                        sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Sorry that module isn't enabled on this server, do /modules for a list that are");
+                        return true;
+                    }
+                    SurvivalPlus.getModuleLoader().unload(module);
+                    SurvivalPlus.getModuleLoader().load(args[2]);
+                    module = SurvivalPlus.getModuleLoader().getModule(args[2]);
+
+                    if (module == null) {
+                        sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Error loading module " + args[2]);
+                        return true;
+                    }
+
+                    module.onEnable();
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "ReLoaded " + args[2]);
+                    return true;
+                }
+
+                SurvivalPlus.getModuleLoader().unload();
+                SurvivalPlus.getModuleLoader().load();
+                SurvivalPlus.getModuleLoader().enable();
+                sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloaded all modules");
+                return true;
+            }
+
+            if (args[1].equalsIgnoreCase("debug")) {
+
+                if (args.length != 3) {
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "/bfundamentals module debug <module>");
+                    return true;
+                }
+
+                Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
+
+                if (module == null) {
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Module " + args[2] + " isn't loaded");
+                    return true;
+                }
+
+                module.setDebug(!module.isDebug());
+                sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + module.getName() + ": debug " + (module.isDebug() ? "enabled" : "disabled"));
+                return true;
+            }
+
+            sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals module commands");
+            sender.sendMessage(ChatColor.DARK_AQUA + "unload " + ChatColor.WHITE + "- unload a module");
+            sender.sendMessage(ChatColor.DARK_AQUA + "load " + ChatColor.WHITE + "- load a module");
+            sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload a module");
+            sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a module");
+            return true;
+        }
+
+        sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "bFundamentals commands");
+        sender.sendMessage(ChatColor.DARK_AQUA + "module " + ChatColor.WHITE + "- access module load/unload/reload commands");
+        sender.sendMessage(ChatColor.DARK_AQUA + "debug " + ChatColor.WHITE + "- debug a given module");
+        sender.sendMessage(ChatColor.DARK_AQUA + "reload " + ChatColor.WHITE + "- reload the plugin");
+        return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sebder, Command command, String label, String[] args) {
+        if (args.length == 0) {
+            return ImmutableList.of("module", "debug", "reload");
+        }
+
+        if (args.length == 1) {
+            Builder<String> list = ImmutableList.builder();
+            for (String string : Arrays.asList("module", "debug", "reload")) {
+                if (string.startsWith(args[0])) {
+                    list.add(string);
+                }
+            }
+            return list.build();
+        }
+
+        if (args.length == 2) {
+            Builder<String> list = ImmutableList.builder();
+            for (String string : Arrays.asList("unload", "load", "reload", "debug")) {
+                if (string.startsWith(args[0])) {
+                    list.add(string);
+                }
+            }
+            return list.build();
+        }
+
+        return ImmutableList.of();
+    }
 
 }

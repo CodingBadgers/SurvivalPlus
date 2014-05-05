@@ -25,58 +25,59 @@ import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
 
 public class SkillLandscaping extends SkillBlockBase implements Listener {
-	
-	/**
-	 * 
-	 */
-	@Override
-	public void onLoad() {
-		
-		RegisterBlock(Material.GRASS, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
-		RegisterBlock(Material.DIRT, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
-		RegisterBlock(Material.SAND, new BlockData(1L, 5, SurvivalPlus.timeToTicks(0, 30)));
-		RegisterBlock(Material.GRAVEL, new BlockData(1L, 10, SurvivalPlus.timeToTicks(0, 30)));
-		RegisterBlock(Material.SOUL_SAND, new BlockData(2L, 15, SurvivalPlus.timeToTicks(0, 30)));
-		RegisterBlock(Material.CLAY, new BlockData(2L, 20, SurvivalPlus.timeToTicks(1, 0)));
-			
-		RegisterTool(Material.WOOD_SPADE);
-		RegisterTool(Material.STONE_SPADE);
-		RegisterTool(Material.IRON_SPADE);
-		RegisterTool(Material.GOLD_SPADE);
-		RegisterTool(Material.DIAMOND_SPADE);
-		
-	}
-	
-	/**
-	 * Called when the module is disabled.
-	 */
-    @Override
-	public void onDisable() {
-		
-	}
 
-	/**
-	 * Called when the module is loaded.
-	 */
+    /**
+     *
+     */
     @Override
-	public void onEnable() {
-				
-	}
-	
-	/**
-	 * Get the name of this skills ability
-	 * @return 
-	 */
-	@Override
-	public String getAbilityName() {
-		return "Charlie Dimmock";
-	}
-    
-	/**
-	 * @return The data class for this skill
-	 */
-	@Override
-	public Class<? extends PlayerData> getPlayerDataClass() {
-		return SkillLandscapingData.class;
-	}
+    public void onLoad() {
+
+        RegisterBlock(Material.GRASS, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
+        RegisterBlock(Material.DIRT, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
+        RegisterBlock(Material.SAND, new BlockData(1L, 5, SurvivalPlus.timeToTicks(0, 30)));
+        RegisterBlock(Material.GRAVEL, new BlockData(1L, 10, SurvivalPlus.timeToTicks(0, 30)));
+        RegisterBlock(Material.SOUL_SAND, new BlockData(2L, 15, SurvivalPlus.timeToTicks(0, 30)));
+        RegisterBlock(Material.CLAY, new BlockData(2L, 20, SurvivalPlus.timeToTicks(1, 0)));
+
+        RegisterTool(Material.WOOD_SPADE);
+        RegisterTool(Material.STONE_SPADE);
+        RegisterTool(Material.IRON_SPADE);
+        RegisterTool(Material.GOLD_SPADE);
+        RegisterTool(Material.DIAMOND_SPADE);
+
+    }
+
+    /**
+     * Called when the module is disabled.
+     */
+    @Override
+    public void onDisable() {
+
+    }
+
+    /**
+     * Called when the module is loaded.
+     */
+    @Override
+    public void onEnable() {
+
+    }
+
+    /**
+     * Get the name of this skills ability
+     *
+     * @return
+     */
+    @Override
+    public String getAbilityName() {
+        return "Charlie Dimmock";
+    }
+
+    /**
+     * @return The data class for this skill
+     */
+    @Override
+    public Class<? extends PlayerData> getPlayerDataClass() {
+        return SkillLandscapingData.class;
+    }
 }

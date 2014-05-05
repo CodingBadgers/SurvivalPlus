@@ -30,44 +30,43 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 public enum HoverEventType {
-	SHOW_TOOLTIP("show_text"),
-	SHOW_ITEM("show_item"),
-	SHOW_ACHIEVEMENT("show_achievement"),
-	;
+    SHOW_TOOLTIP("show_text"),
+    SHOW_ITEM("show_item"),
+    SHOW_ACHIEVEMENT("show_achievement"),;
 
-	private static final Map<String, HoverEventType> BY_ID = new HashMap<String, HoverEventType>();
-	
-	static {
-		for (HoverEventType type : values()) {
-			BY_ID.put(type.id, type);
-		}
-	}
-	
-	private String id;
+    private static final Map<String, HoverEventType> BY_ID = new HashMap<String, HoverEventType>();
 
-	private HoverEventType(String id) {
-		this.id = id;
-	}
-	
-	public String getId() {
-		return id;
-	}
+    static {
+        for (HoverEventType type : values()) {
+            BY_ID.put(type.id, type);
+        }
+    }
 
-	public static class HoverEventSerializer implements JsonSerializer<HoverEventType>, JsonDeserializer<HoverEventType> {
+    private String id;
 
-		@Override
-		public HoverEventType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (!json.isJsonPrimitive()) {
-				return null;
-			}
-			
-			return BY_ID.get(json.getAsString());
-		}
+    private HoverEventType(String id) {
+        this.id = id;
+    }
 
-		@Override
-		public JsonElement serialize(HoverEventType src, Type typeOfSrc, JsonSerializationContext context) {
-			return new JsonPrimitive(src.id.toLowerCase());
-		}
-		
-	}
+    public String getId() {
+        return id;
+    }
+
+    public static class HoverEventSerializer implements JsonSerializer<HoverEventType>, JsonDeserializer<HoverEventType> {
+
+        @Override
+        public HoverEventType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (!json.isJsonPrimitive()) {
+                return null;
+            }
+
+            return BY_ID.get(json.getAsString());
+        }
+
+        @Override
+        public JsonElement serialize(HoverEventType src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(src.id.toLowerCase());
+        }
+
+    }
 }

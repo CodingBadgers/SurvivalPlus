@@ -18,5 +18,5 @@
 package uk.codingbadgers.SurvivalPlus.player;
 
 public interface PlayerData {
-	
+
 }

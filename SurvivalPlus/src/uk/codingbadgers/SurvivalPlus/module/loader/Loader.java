@@ -33,6 +33,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.bukkit.plugin.Plugin;
 import uk.codingbadgers.SurvivalPlus.error.ExceptionHandler;
 import uk.codingbadgers.SurvivalPlus.module.Module;
@@ -56,293 +57,284 @@ import uk.codingbadgers.SurvivalPlus.module.ModuleLoadEvent;
 
 /**
  * Loader - Loader base for loading Loadables.
- * 
+ *
  * @author NodinChan
  */
 public class Loader {
 
-	private final Plugin plugin;
-	private final List<File> files;
-	private final List<Module> loadables;
-	private ClassLoader loader;
+    private final Plugin plugin;
+    private final List<File> files;
+    private final List<Module> loadables;
+    private ClassLoader loader;
 
-	public enum LoadResult {
-		Success,
-		Fail,
-		WaitingForDepends,
-		AlreadyLoaded,
-		LoadLast
-	}
-	
-	/**
-	 * 
-	 * @return 
-	 */
-	public List<Module> getLoadables() {
-		return this.loadables;
-	}
-	
-	/**
-	 * Instantiates a new loader.
-	 * 
-	 * @param plugin
-	 *            the plugin
-	 * @param dir
-	 *            the directory to load modules from
-	 */
-	public Loader(Plugin plugin, File[] dirs) {
-		this.plugin = plugin;
-		this.files = new ArrayList<File>();
-		
-		FileExtensionFilter filter = new FileExtensionFilter(".jar");
-		for (File dir : dirs)
-		{
-			this.files.addAll(Arrays.asList(dir.listFiles(filter)));
-		}
-		this.loadables = new ArrayList<Module>();
+    public enum LoadResult {
+        Success,
+        Fail,
+        WaitingForDepends,
+        AlreadyLoaded,
+        LoadLast
+    }
 
-		generateClassLoader();
-	}
+    /**
+     * @return
+     */
+    public List<Module> getLoadables() {
+        return this.loadables;
+    }
 
-	private void generateClassLoader() {
-		this.loadables.clear();
+    /**
+     * Instantiates a new loader.
+     *
+     * @param plugin the plugin
+     * @param dir    the directory to load modules from
+     */
+    public Loader(Plugin plugin, File[] dirs) {
+        this.plugin = plugin;
+        this.files = new ArrayList<File>();
 
-		List<URL> urls = new ArrayList<URL>();
+        FileExtensionFilter filter = new FileExtensionFilter(".jar");
+        for (File dir : dirs) {
+            this.files.addAll(Arrays.asList(dir.listFiles(filter)));
+        }
+        this.loadables = new ArrayList<Module>();
 
-		for (File file : files) {
-			try {
-				urls.add(file.toURI().toURL());
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			}
-		}
-	
-		this.loader = URLClassLoader.newInstance(urls.toArray(new URL[0]), plugin.getClass().getClassLoader());
-	}
+        generateClassLoader();
+    }
 
-	/**
-	 * Gets the Logger.
-	 * 
-	 * @return The Logger
-	 */
-	public Logger getLogger() {
-		return plugin.getLogger();
-	}
+    private void generateClassLoader() {
+        this.loadables.clear();
 
-	/**
-	 * Loads the all loadables in the directory specified.
-	 * 
-	 * @return List of loaded loadables
-	 */
-	public final List<Module> load() {
-		return this.load(this.files, false);
-	}
-	
-	public final List<Module> load(List<File> filesToLoad, boolean force) {
-		
-		int noofToLoad = filesToLoad.size();
-		int noofToLoaded = 0;
-		
-		List<File> waitingForDepends = new ArrayList<File>();
-		List<File> waitingForLast = new ArrayList<File>();
-		
-		for (File file : filesToLoad) {
-			LoadResult result = load(file, force);
-			if (result == LoadResult.WaitingForDepends) {
-				getLogger().log(Level.INFO, "The loadable " + file.getName() + " is waiting for dependancies!");
-				waitingForDepends.add(file);
-			}
-			else if (result == LoadResult.LoadLast) {
-				getLogger().log(Level.INFO, "The loadable " + file.getName() + " is waiting to be loaded last!");
-				waitingForLast.add(file);
-			}
-			else if (result == LoadResult.Success) {
-				noofToLoaded++;
-			}
-		}
-				
-		if (!waitingForDepends.isEmpty()) {
-			if (waitingForDepends.size() != noofToLoad) {
-				load(waitingForDepends, false);
-			}	
-		}
-		
-		if (!waitingForLast.isEmpty()) {
-			if (waitingForLast.size() == (noofToLoad - noofToLoaded)) {
-				getLogger().log(Level.INFO, "THE LOADING OF THE LASTS HAST BEGINETH!");
-				load(waitingForLast, true);
-			}
-		}
-				
-		return loadables;
-	}
+        List<URL> urls = new ArrayList<URL>();
 
-	/**
-	 * Load file into the loader.
-	 * 
-	 * @param file
-	 *            the file
-	 * @return the list
-	 * @TODO support module dependencies
-	 */
-	public LoadResult load(File file, boolean force) {
-		try {
-			JarFile jarFile = new JarFile(file);
-			String mainClass = null;
-			LoadableDescriptionFile ldf = null;
-			Collection<String> depends = null;
-			boolean loadLast = false;
-			
-			if (jarFile.getEntry("path.yml") != null) {
-				JarEntry element = jarFile.getJarEntry("path.yml");
-				ldf = new LoadableDescriptionFile(jarFile.getInputStream(element));
-				mainClass = ldf.getMainClass();
-				depends = ldf.getDependencies();
-				loadLast = ldf.getLoadLast();
-			}
-			
-			if (loadLast && !force) {				
-				return LoadResult.LoadLast;
-			}
+        for (File file : files) {
+            try {
+                urls.add(file.toURI().toURL());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
 
-			if (depends != null && !depends.isEmpty()) {
-				for (String depend : depends) {
-					boolean dependLoaded = false;
-					for (Module loadable : loadables) {
-						if (loadable.getName().equalsIgnoreCase(depend)) {
-							dependLoaded = true;
-							getLogger().log(Level.INFO, "The loadable " + file.getName() + " found dependancy '" + depend + "'");
-							break;
-						}
-					}			
-					if (dependLoaded == false) {
-						return LoadResult.WaitingForDepends;
-					}
-				}			
-			}
-			
-			if (mainClass != null) {				
-				Class<?> clazz = Class.forName(mainClass, true, loader);
+        this.loader = URLClassLoader.newInstance(urls.toArray(new URL[0]), plugin.getClass().getClassLoader());
+    }
 
-				if (clazz != null) {
-					Class<? extends Module> loadableClass = clazz.asSubclass(Module.class);
-					Constructor<? extends Module> constructor = loadableClass.getConstructor();
-					Module loadable = constructor.newInstance();
+    /**
+     * Gets the Logger.
+     *
+     * @return The Logger
+     */
+    public Logger getLogger() {
+        return plugin.getLogger();
+    }
 
-					if (loadables.contains(loadable)) {
-						getLogger().log(Level.WARNING, "The loadable " + file.getName() + " is already loaded, make sure to disable the module first");
-						getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
-						jarFile.close();
-						return LoadResult.AlreadyLoaded;
-					}
+    /**
+     * Loads the all loadables in the directory specified.
+     *
+     * @return List of loaded loadables
+     */
+    public final List<Module> load() {
+        return this.load(this.files, false);
+    }
 
-					loadable.setFile(file);
-					loadable.setDesciption(ldf);
-					loadable.setJarFile(jarFile);
-					loadable.setDatafolder(new File(file.getParentFile(), loadable.getName()));
-					loadable.init();
+    public final List<Module> load(List<File> filesToLoad, boolean force) {
 
-					loadables.add(loadable);
+        int noofToLoad = filesToLoad.size();
+        int noofToLoaded = 0;
 
-					ModuleLoadEvent event = new ModuleLoadEvent(plugin, loadable, jarFile);
-					plugin.getServer().getPluginManager().callEvent(event);
-					
-					return LoadResult.Success;
+        List<File> waitingForDepends = new ArrayList<File>();
+        List<File> waitingForLast = new ArrayList<File>();
 
-				} else {
-					jarFile.close();
-					throw new ClassNotFoundException("Class " + mainClass + " could not be found.");
-				}
+        for (File file : filesToLoad) {
+            LoadResult result = load(file, force);
+            if (result == LoadResult.WaitingForDepends) {
+                getLogger().log(Level.INFO, "The loadable " + file.getName() + " is waiting for dependancies!");
+                waitingForDepends.add(file);
+            } else if (result == LoadResult.LoadLast) {
+                getLogger().log(Level.INFO, "The loadable " + file.getName() + " is waiting to be loaded last!");
+                waitingForLast.add(file);
+            } else if (result == LoadResult.Success) {
+                noofToLoaded++;
+            }
+        }
 
-			} else {
-				jarFile.close();
-				throw new ClassNotFoundException("Could not find main class in the path.yml.");
-			}
+        if (!waitingForDepends.isEmpty()) {
+            if (waitingForDepends.size() != noofToLoad) {
+                load(waitingForDepends, false);
+            }
+        }
 
-		} catch (ClassCastException e) {
-			e.printStackTrace();
-			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " is in the wrong directory.");
-			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
-		} catch (ClassNotFoundException e) {
+        if (!waitingForLast.isEmpty()) {
+            if (waitingForLast.size() == (noofToLoad - noofToLoaded)) {
+                getLogger().log(Level.INFO, "THE LOADING OF THE LASTS HAST BEGINETH!");
+                load(waitingForLast, true);
+            }
+        }
+
+        return loadables;
+    }
+
+    /**
+     * Load file into the loader.
+     *
+     * @param file the file
+     * @return the list
+     * @TODO support module dependencies
+     */
+    public LoadResult load(File file, boolean force) {
+        try {
+            JarFile jarFile = new JarFile(file);
+            String mainClass = null;
+            LoadableDescriptionFile ldf = null;
+            Collection<String> depends = null;
+            boolean loadLast = false;
+
+            if (jarFile.getEntry("path.yml") != null) {
+                JarEntry element = jarFile.getJarEntry("path.yml");
+                ldf = new LoadableDescriptionFile(jarFile.getInputStream(element));
+                mainClass = ldf.getMainClass();
+                depends = ldf.getDependencies();
+                loadLast = ldf.getLoadLast();
+            }
+
+            if (loadLast && !force) {
+                return LoadResult.LoadLast;
+            }
+
+            if (depends != null && !depends.isEmpty()) {
+                for (String depend : depends) {
+                    boolean dependLoaded = false;
+                    for (Module loadable : loadables) {
+                        if (loadable.getName().equalsIgnoreCase(depend)) {
+                            dependLoaded = true;
+                            getLogger().log(Level.INFO, "The loadable " + file.getName() + " found dependancy '" + depend + "'");
+                            break;
+                        }
+                    }
+                    if (dependLoaded == false) {
+                        return LoadResult.WaitingForDepends;
+                    }
+                }
+            }
+
+            if (mainClass != null) {
+                Class<?> clazz = Class.forName(mainClass, true, loader);
+
+                if (clazz != null) {
+                    Class<? extends Module> loadableClass = clazz.asSubclass(Module.class);
+                    Constructor<? extends Module> constructor = loadableClass.getConstructor();
+                    Module loadable = constructor.newInstance();
+
+                    if (loadables.contains(loadable)) {
+                        getLogger().log(Level.WARNING, "The loadable " + file.getName() + " is already loaded, make sure to disable the module first");
+                        getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
+                        jarFile.close();
+                        return LoadResult.AlreadyLoaded;
+                    }
+
+                    loadable.setFile(file);
+                    loadable.setDesciption(ldf);
+                    loadable.setJarFile(jarFile);
+                    loadable.setDatafolder(new File(file.getParentFile(), loadable.getName()));
+                    loadable.init();
+
+                    loadables.add(loadable);
+
+                    ModuleLoadEvent event = new ModuleLoadEvent(plugin, loadable, jarFile);
+                    plugin.getServer().getPluginManager().callEvent(event);
+
+                    return LoadResult.Success;
+
+                } else {
+                    jarFile.close();
+                    throw new ClassNotFoundException("Class " + mainClass + " could not be found.");
+                }
+
+            } else {
+                jarFile.close();
+                throw new ClassNotFoundException("Could not find main class in the path.yml.");
+            }
+
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+            getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " is in the wrong directory.");
             getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
-			getLogger().log(Level.WARNING, "Invalid path.yml.");
-			getLogger().log(Level.WARNING, e.getMessage());
-		} catch (NoClassDefFoundError e) {
+        } catch (ClassNotFoundException e) {
+            getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
+            getLogger().log(Level.WARNING, "Invalid path.yml.");
+            getLogger().log(Level.WARNING, e.getMessage());
+        } catch (NoClassDefFoundError e) {
             getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
             getLogger().log(Level.WARNING, "The class " + e.getMessage() + " cannot be found.");
             getLogger().log(Level.WARNING, "Is this module missing a required dependency?");
-		} catch (Throwable e) {
-			ExceptionHandler.handleException(e);
-			getLogger().log(Level.WARNING, "Unknown cause.");
-			getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
-		}
-		
-		return LoadResult.Fail;
-	}
+        } catch (Throwable e) {
+            ExceptionHandler.handleException(e);
+            getLogger().log(Level.WARNING, "Unknown cause.");
+            getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
+        }
 
-	/**
-	 * Reloads the Loader.
-	 * 
-	 * @return the list of modules loaded
-	 */
-	public List<Module> reload() {
-		unload();
-		generateClassLoader();
-		return load();
-	}
+        return LoadResult.Fail;
+    }
 
-	/**
-	 * Sorts a list of Loadables by name in alphabetical order.
-	 * 
-	 * @param loadables
-	 *            The list of Loadables to sort
-	 * @return The sorted list of Loadables
-	 */
-	public List<Module> sort(List<Module> loadables) {
-		List<Module> sortedLoadables = new ArrayList<Module>();
-		List<String> names = new ArrayList<String>();
+    /**
+     * Reloads the Loader.
+     *
+     * @return the list of modules loaded
+     */
+    public List<Module> reload() {
+        unload();
+        generateClassLoader();
+        return load();
+    }
 
-		for (Loadable t : loadables) {
-			names.add(t.getName());
-		}
-		
-		Collections.sort(names);
+    /**
+     * Sorts a list of Loadables by name in alphabetical order.
+     *
+     * @param loadables The list of Loadables to sort
+     * @return The sorted list of Loadables
+     */
+    public List<Module> sort(List<Module> loadables) {
+        List<Module> sortedLoadables = new ArrayList<Module>();
+        List<String> names = new ArrayList<String>();
 
-		for (String name : names) {
-			for (Module t : loadables) {
-				if (t.getName().equals(name)) {
-					sortedLoadables.add(t);
-				}
-			}
-		}
+        for (Loadable t : loadables) {
+            names.add(t.getName());
+        }
 
-		return sortedLoadables;
-	}
+        Collections.sort(names);
 
-	/**
-	 * Sorts a map of Loadables by name in alphabetical order.
-	 * 
-	 * @param loadables
-	 *            The map of Loadables to sort
-	 * @return The sorted map of Loadables
-	 */
-	public Map<String, Module> sort(Map<String, Module> loadables) {
-		Map<String, Module> sortedLoadables = new HashMap<String, Module>();
-		List<String> names = new ArrayList<String>(loadables.keySet());
+        for (String name : names) {
+            for (Module t : loadables) {
+                if (t.getName().equals(name)) {
+                    sortedLoadables.add(t);
+                }
+            }
+        }
 
-		Collections.sort(names);
+        return sortedLoadables;
+    }
 
-		for (String name : names) {
-			sortedLoadables.put(name, loadables.get(name));
-		}
+    /**
+     * Sorts a map of Loadables by name in alphabetical order.
+     *
+     * @param loadables The map of Loadables to sort
+     * @return The sorted map of Loadables
+     */
+    public Map<String, Module> sort(Map<String, Module> loadables) {
+        Map<String, Module> sortedLoadables = new HashMap<String, Module>();
+        List<String> names = new ArrayList<String>(loadables.keySet());
 
-		return sortedLoadables;
-	}
+        Collections.sort(names);
 
-	/**
-	 * Unloads the Loader.
-	 */
-	public void unload() {
-		loadables.clear();
-	}
+        for (String name : names) {
+            sortedLoadables.put(name, loadables.get(name));
+        }
+
+        return sortedLoadables;
+    }
+
+    /**
+     * Unloads the Loader.
+     */
+    public void unload() {
+        loadables.clear();
+    }
 }

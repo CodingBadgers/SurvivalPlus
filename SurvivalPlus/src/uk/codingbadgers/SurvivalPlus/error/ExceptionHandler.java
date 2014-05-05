@@ -21,21 +21,21 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 public class ExceptionHandler implements UncaughtExceptionHandler {
 
-	private static final ExceptionHandler instance;
-	
-	static {
-		instance = new ExceptionHandler();
-		Thread.setDefaultUncaughtExceptionHandler(instance);
-	}
+    private static final ExceptionHandler instance;
 
-	public static boolean handleException(Throwable e) {
-		e.printStackTrace();
-		ReportExceptionRunnable run = new ReportExceptionRunnable(e);
-		return run.run();
-	}
-	
-	@Override
-	public void uncaughtException(Thread t, Throwable e) {
-		handleException(e);
-	}
+    static {
+        instance = new ExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(instance);
+    }
+
+    public static boolean handleException(Throwable e) {
+        e.printStackTrace();
+        ReportExceptionRunnable run = new ReportExceptionRunnable(e);
+        return run.run();
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        handleException(e);
+    }
 }

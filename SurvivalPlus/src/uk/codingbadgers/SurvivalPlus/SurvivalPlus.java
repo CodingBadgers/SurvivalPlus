@@ -19,6 +19,7 @@ package uk.codingbadgers.SurvivalPlus;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -65,116 +67,116 @@ import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager;
 import uk.thecodingbadgers.bDatabaseManager.bDatabaseManager.DatabaseType;
 
 public class SurvivalPlus extends JavaPlugin implements Listener {
-	
-	protected static Gson m_gson = null;
-	protected static Logger m_log = null;
-	protected static SurvivalPlus m_instance = null;
-	
-	protected static Permission m_permissions = null;
-	protected static Chat m_chat = null;
-	protected static Economy m_economy = null;
 
-	protected static BukkitDatabase m_database = null;
-	protected static ModuleLoader m_moduleLoader = null;
-	protected static ConfigManager m_configuration = null;
-	protected static BungeeMessenger m_messenger = null;
-	
-	public static FundamentalPlayerArray Players = new FundamentalPlayerArray(); 
-	
-	/**
-	 * Called on loading. This is called before onEnable.
-	 * Store the instance here, to do it as early as possible.
-	 */
-	@Override
-	public void onLoad() {
-		setInstance(this);
-		setupGson();
-		m_log = getLogger();
-		log(Level.INFO, "SurvivalPlus Loading");
-	}
-	
-	/**
-	 * Called when the plugin is being enabled
-	 * Load the configuration and all modules
-	 * Register the command listener
-	 */
-	@Override
-	public void onEnable() {
-		
-		// load the configuration into the configuration manager
-		try {
-			setConfigManager(new BukkitConfigurationManager());
-			m_configuration.loadConfiguration(new File(getDataFolder(), "config.yml"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    protected static Gson m_gson = null;
+    protected static Logger m_log = null;
+    protected static SurvivalPlus m_instance = null;
+
+    protected static Permission m_permissions = null;
+    protected static Chat m_chat = null;
+    protected static Economy m_economy = null;
+
+    protected static BukkitDatabase m_database = null;
+    protected static ModuleLoader m_moduleLoader = null;
+    protected static ConfigManager m_configuration = null;
+    protected static BungeeMessenger m_messenger = null;
+
+    public static FundamentalPlayerArray Players = new FundamentalPlayerArray();
+
+    /**
+     * Called on loading. This is called before onEnable.
+     * Store the instance here, to do it as early as possible.
+     */
+    @Override
+    public void onLoad() {
+        setInstance(this);
+        setupGson();
+        m_log = getLogger();
+        log(Level.INFO, "SurvivalPlus Loading");
+    }
+
+    /**
+     * Called when the plugin is being enabled
+     * Load the configuration and all modules
+     * Register the command listener
+     */
+    @Override
+    public void onEnable() {
+
+        // load the configuration into the configuration manager
+        try {
+            setConfigManager(new BukkitConfigurationManager());
+            m_configuration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(SurvivalPlus.getInstance(), "BungeeCord");
-		setBungeeMessenger(new SimpleBungeeMessenger());
-		
-		// load the modules in
-		m_moduleLoader = new ModuleLoader();
-		m_moduleLoader.load();
-		m_moduleLoader.enable();
-		
-		// check if any of the modules need updating
-		if (m_configuration.isAutoUpdateEnabled()) {
-			m_moduleLoader.update();
-		}
-		
-		// Register this as a listener
-		this.getServer().getPluginManager().registerEvents(this, this);
-		
-		getCommand("SurvivalPlus").setExecutor(new CommandHandler());
-		
-		SurvivalPlus.log(Level.INFO, "SurvivalPlus Loaded.");
-	}
+        setBungeeMessenger(new SimpleBungeeMessenger());
 
-	/**
-	 * Called when the plugin is being disabled
-	 * Here we disable the module and thus all modules
-	 */
-	@Override
-	public void onDisable() {
-		SurvivalPlus.log(Level.INFO, "SurvivalPlus Disabled.");
-		m_moduleLoader.disable();
-		m_database.freeDatabase();
+        // load the modules in
+        m_moduleLoader = new ModuleLoader();
+        m_moduleLoader.load();
+        m_moduleLoader.enable();
 
-		// Clear instances
-		m_instance = null;
-		m_configuration = null;
-		m_messenger = null;
-		m_gson = null;
-	}
-	
-	public static void setupGson() {
+        // check if any of the modules need updating
+        if (m_configuration.isAutoUpdateEnabled()) {
+            m_moduleLoader.update();
+        }
 
-		if (m_gson != null) {
-			throw new RuntimeException("Gson already setup, cannot resetup instance");
-		}
-		
-		m_gson = new GsonBuilder()
-					.registerTypeAdapter(Message.class, new Message.MessageSerializer())
-					.registerTypeAdapter(ClickEventType.class, new ClickEventType.ClickEventSerializer())
-					.registerTypeAdapter(HoverEventType.class, new HoverEventType.HoverEventSerializer())
-					.registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
-					.registerTypeAdapter(Achievement.class, new AchievementSerializer())
-					.create();
-	}
-	
-	public static void setInstance(SurvivalPlus plugin) {
-		if (m_instance != null) {
-			throw new RuntimeException("Plugin instance already set, cannot redeclare");
-		}
-		m_instance = plugin;
-	}
-	
-	public static void setConfigManager(ConfigManager manager) {
-		if (m_configuration != null) {
-			throw new RuntimeException("Configuration manager already set, cannot redeclare");
-		}
-		m_configuration = manager;
-	}
+        // Register this as a listener
+        this.getServer().getPluginManager().registerEvents(this, this);
+
+        getCommand("SurvivalPlus").setExecutor(new CommandHandler());
+
+        SurvivalPlus.log(Level.INFO, "SurvivalPlus Loaded.");
+    }
+
+    /**
+     * Called when the plugin is being disabled
+     * Here we disable the module and thus all modules
+     */
+    @Override
+    public void onDisable() {
+        SurvivalPlus.log(Level.INFO, "SurvivalPlus Disabled.");
+        m_moduleLoader.disable();
+        m_database.freeDatabase();
+
+        // Clear instances
+        m_instance = null;
+        m_configuration = null;
+        m_messenger = null;
+        m_gson = null;
+    }
+
+    public static void setupGson() {
+
+        if (m_gson != null) {
+            throw new RuntimeException("Gson already setup, cannot resetup instance");
+        }
+
+        m_gson = new GsonBuilder()
+                .registerTypeAdapter(Message.class, new Message.MessageSerializer())
+                .registerTypeAdapter(ClickEventType.class, new ClickEventType.ClickEventSerializer())
+                .registerTypeAdapter(HoverEventType.class, new HoverEventType.HoverEventSerializer())
+                .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
+                .registerTypeAdapter(Achievement.class, new AchievementSerializer())
+                .create();
+    }
+
+    public static void setInstance(SurvivalPlus plugin) {
+        if (m_instance != null) {
+            throw new RuntimeException("Plugin instance already set, cannot redeclare");
+        }
+        m_instance = plugin;
+    }
+
+    public static void setConfigManager(ConfigManager manager) {
+        if (m_configuration != null) {
+            throw new RuntimeException("Configuration manager already set, cannot redeclare");
+        }
+        m_configuration = manager;
+    }
 
     public static void setBungeeMessenger(BungeeMessenger manager) {
         if (m_messenger != null) {
@@ -183,17 +185,18 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
         m_messenger = manager;
     }
 
-	/**
-	 * Get the bFundamentals plugin instance.
-	 * @return the plugin instance
-	 */
-	public static SurvivalPlus getInstance() {
-		return m_instance;
-	}
+    /**
+     * Get the bFundamentals plugin instance.
+     *
+     * @return the plugin instance
+     */
+    public static SurvivalPlus getInstance() {
+        return m_instance;
+    }
 
     /**
      * Get the configuration manager
-     * 
+     *
      * @return the configuration manager for bFundamentals
      */
     public static ConfigManager getConfigurationManager() {
@@ -202,344 +205,345 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
 
     /**
      * Get the Bungee messenger
-     * 
+     *
      * @return the bungee messeneger instance
      */
     public static BungeeMessenger getBungeeMessenger() {
         return m_messenger;
     }
-    
+
     /**
      * Get the bFundamentals gson instance, has custom serializers for bukkit
      * and minecraft classes
-     * 
+     *
      * @return the gson instance
      */
     public static Gson getGsonInstance() {
-    	return m_gson;
+        return m_gson;
     }
 
-	/**
-	 * Access to the bukkit database
-	 * 
-	 * @return the bukkit database for bFundamentals
-	 */
-	public static BukkitDatabase getBukkitDatabase() {
-		if (m_database == null) {
-			DatabaseSettings settings = m_configuration.getDatabaseSettings();
-			m_database = bDatabaseManager.createDatabase(settings.name, m_instance, settings.type);
-			if (settings.type == DatabaseType.SQL) {
-				m_database.login(settings.host, settings.user, settings.password, settings.port);
-			}
-		}
-		return m_database;
-	}
-	
-	/**
-	 * Static access to vaults permission manager
-	 * 
-	 * @return the vault permission manager
-	 * @see Permission
-	 */
-	public static Permission getPermissions() {
-		if (m_permissions == null) {
-			RegisteredServiceProvider<Permission> permissionProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-		    if (permissionProvider != null) {
-		    	m_permissions = permissionProvider.getProvider();
-		    }
-		}
-	    return m_permissions;
-	}
-	
-	/**
-	 * Static access to vaults chat manager
-	 * 
-	 * @return the vault chat manager
-	 * @see Chat
-	 */
-	public static Chat getChat() {
-		if (m_chat == null) {
-			RegisteredServiceProvider<Chat> chatProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-		    if (chatProvider != null) {
-		    	m_chat = chatProvider.getProvider();
-		    }
-		}
-	    return m_chat;
-	}
-	
-	/**
-	 * Static access to vaults economy manager
-	 * 
-	 * @return the vault economy manager
-	 * @see Economy
-	 */
-	public static Economy getEconomy() {
-		if (m_economy == null) {
-			RegisteredServiceProvider<Economy> economyProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-		    if (economyProvider != null) {
-		    	m_economy = economyProvider.getProvider();
-		    }
-		}
-	    return m_economy;
-	}
-	
-	/**
-	 * Gets the module loader
-	 * 
-	 * @return the module loader for all bFundamentals modules
-	 */
-	public static ModuleLoader getModuleLoader(){	
-		return m_moduleLoader;
-	}
+    /**
+     * Access to the bukkit database
+     *
+     * @return the bukkit database for bFundamentals
+     */
+    public static BukkitDatabase getBukkitDatabase() {
+        if (m_database == null) {
+            DatabaseSettings settings = m_configuration.getDatabaseSettings();
+            m_database = bDatabaseManager.createDatabase(settings.name, m_instance, settings.type);
+            if (settings.type == DatabaseType.SQL) {
+                m_database.login(settings.host, settings.user, settings.password, settings.port);
+            }
+        }
+        return m_database;
+    }
 
-	/**
-	 * Handle commands in the modules or plugin.
-	 * @return True if the command was handled, False otherwise
-	 */
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		
-		if (label.equalsIgnoreCase("modules")) {
-			handleModulesCommand(sender);
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Disable a specific module
-	 * 
-	 * @param module the module to disable
-	 */
-	public void disableModule(Module module) {
-		Validate.notNull(module, "Moudule cannot be null");
-		
-		m_moduleLoader.unload(module);
-	}
+    /**
+     * Static access to vaults permission manager
+     *
+     * @return the vault permission manager
+     * @see Permission
+     */
+    public static Permission getPermissions() {
+        if (m_permissions == null) {
+            RegisteredServiceProvider<Permission> permissionProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+            if (permissionProvider != null) {
+                m_permissions = permissionProvider.getProvider();
+            }
+        }
+        return m_permissions;
+    }
 
-	/**
-	 * Reloads a specific module
-	 * 
-	 * @param module the module to reload
-	 */
-	public void reloadModule(Module module) {
-		Validate.notNull(module, "Moudule cannot be null");
-		
-		m_moduleLoader.unload(module);
-		m_moduleLoader.load(module.getFile());
-		m_moduleLoader.getModule(module.getName()).onEnable();
-	}
+    /**
+     * Static access to vaults chat manager
+     *
+     * @return the vault chat manager
+     * @see Chat
+     */
+    public static Chat getChat() {
+        if (m_chat == null) {
+            RegisteredServiceProvider<Chat> chatProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+            if (chatProvider != null) {
+                m_chat = chatProvider.getProvider();
+            }
+        }
+        return m_chat;
+    }
 
-	/**
-	 * Static access to log as bFundamentals
-	 * 
-	 * @param level the log level
-	 * @param msg the message to log
-	 */
-	public static void log(Level level, String msg) {
-		Validate.notNull(level, "Log level cannot be null");
-		Validate.notNull(msg, "Message cannot be null");
-		
-		m_log.log(level, msg);
-	}
+    /**
+     * Static access to vaults economy manager
+     *
+     * @return the vault economy manager
+     * @see Economy
+     */
+    public static Economy getEconomy() {
+        if (m_economy == null) {
+            RegisteredServiceProvider<Economy> economyProvider = m_instance.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+            if (economyProvider != null) {
+                m_economy = economyProvider.getProvider();
+            }
+        }
+        return m_economy;
+    }
 
-	/**
-	 * Static access to log as bFundamentals
-	 * 
-	 * @param level the log level
-	 * @param msg the message to log
-	 * @param e the exception to log
-	 */
-	public static void log(Level level, String msg, Throwable e) {
-		Validate.notNull(level, "Log level cannot be null");
-		Validate.notNull(msg, "Message cannot be null");
-		Validate.notNull(e, "The exception to log cannot be null");
-		
-		m_log.log(level, msg, e);
-	}
-	
-	private void handleModulesCommand(CommandSender sender) {
-		List<Module> modules = m_moduleLoader.getModules();
-		String moduleString = ChatColor.GREEN + "Modules(" + modules.size() + "): ";
-		boolean first = true;
-		
-		for (Module module : modules) {
-			moduleString += (first ? "" : ", ") + module.getName();
-			first = false;
-		}
-		
-		sender.sendMessage(moduleString);
-	}
+    /**
+     * Gets the module loader
+     *
+     * @return the module loader for all bFundamentals modules
+     */
+    public static ModuleLoader getModuleLoader() {
+        return m_moduleLoader;
+    }
 
-	/**
-	 * Handle a player join event
-	 *
-	 * @param event The player join event
-	 */
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		FundamentalPlayer newPlayer = new FundamentalPlayer(event.getPlayer());
-		SurvivalPlus.Players.add(newPlayer);
-		
-		List<Module> modules = m_moduleLoader.getModules();
-		for (Module module : modules) {
-			Class<? extends PlayerData> playerDataClass = module.getPlayerDataClass();
-			if (playerDataClass != null) {
-				try {
-					newPlayer.addPlayerData((PlayerData)playerDataClass.newInstance());
-				}
-				catch (Exception ex) {
-					SurvivalPlus.log(Level.WARNING, "Failed to create new player data for '" + event.getPlayer().getName() + "' for module '" + module.getName() + "'", ex);
-				}
-			}			
-		} 
-	}
-	
-	/**
-	 * Handle a player join event
-	 *
-	 * @param event The player join event
-	 */
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		SurvivalPlus.Players.removePlayer(event.getPlayer());
-	}
-		
-	/**
-	 * Get a list of online players for a given rank or group
-	 * 
-	 * @param rank	The rank to get the list of online players from
-	 * @return An array list of online players within a given rank or group
-	 */
-	public ArrayList<Player> getPlayersOfRank(String rank) {
-		
-		PermissionManager pexmanager = null;
-		
-		try {
-			pexmanager = PermissionsEx.getPermissionManager();
-		} catch (Exception ex) {
-			// If pex does not exist on the server, just return now, we don't want errors
-			return null;
-		}
-		
-		PermissionGroup group = pexmanager.getGroup(rank);
-		
-		// If the group doesn't exist just leave.
-		if (group == null) {
-			return null;
-		}
-				
-		// 
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (PermissionUser user : group.getUsers()) {
-			Player player = Bukkit.getPlayer(user.getName());
-			if (player != null) {
-				players.add(player);
-			}
-		}
-		
-		return players;		
-	}
+    /**
+     * Handle commands in the modules or plugin.
+     *
+     * @return True if the command was handled, False otherwise
+     */
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-	/**
-	 * 
-	 * @param time
-	 * @return 
-	 */
-	public static String formatTime(Long time) {
-		
-		Long days = TimeUnit.MILLISECONDS.toDays(time);
-		time = time - TimeUnit.DAYS.toMillis(days);
-		
-		Long hours = TimeUnit.MILLISECONDS.toHours(time);
-		time = time - TimeUnit.HOURS.toMillis(hours);
-		
-		Long minutes = TimeUnit.MILLISECONDS.toMinutes(time);
-		time = time - TimeUnit.MINUTES.toMillis(minutes);
-		
-		Long seconds = TimeUnit.MILLISECONDS.toSeconds(time);
-		
-		String formattedTime = "";
-		if (days != 0) {
-			formattedTime += (days == 1 ? "1 Day" : days + " Days");
-		}
-		
-		if (hours != 0) {
-			if (days != 0) {
-				formattedTime += ", ";
-			}
-			formattedTime += (hours == 1 ? "1 Hour" : hours + " Hours");
-		}
-		
-		if (minutes != 0) {
-			if (days != 0 || hours != 0) {
-				formattedTime += ", ";
-			}
-			formattedTime += (minutes == 1 ? "1 Minute" : minutes + " Minutes");
-		}
-		
-		if (seconds != 0) {
-			if (days != 0 || hours != 0 || minutes != 0) {
-				formattedTime += ", ";
-			}
-			formattedTime += (seconds == 1 ? "1 Second" : seconds + " Seconds");
-		}
-		
-		return formattedTime;
-	}
-	
-	/**
-	 * 
-	 * @param minutes
-	 * @param seconds
-	 * @return 
-	 */
-	public static Long timeToTicks(int minutes, int seconds) {
-		return seconds * 20L + (minutes * (20L * 60L));		
-	}
-	
-	/**
-	 * Find the player a specific instance of player data belongs to
-	 * @param data THe data to test
-	 * @return The player the data belongs to or null
-	 */
-	public static FundamentalPlayer getDataOwner(PlayerData data) {
-		
-		for (FundamentalPlayer player : SurvivalPlus.Players) {
-			if (player.isDataOwner(data)) {
-				return player;
-			}
-		}		
-		return null;		
-	}
+        if (label.equalsIgnoreCase("modules")) {
+            handleModulesCommand(sender);
+            return true;
+        }
 
-	/**
-	 * Get a module of a given class type
-	 * @param moduleClass The class of the module to find
-	 * @return The module if found, or null
-	 */
-	public Module getModuleInstance(Class moduleClass) {
-		for (Module module : m_moduleLoader.getModules()) {
-			if (moduleClass.isInstance(module)) {
-				return module;
-			}
-		}		
-		return null;
-	}
-	
-	/**
-	 * Get all modules of a given class type
-	 * @param moduleClass The class of the module to find
-	 * @return The modules if found, or null
-	 */
-	public <T extends PlayerData> List<T> getModuleInstances(Class<? extends T> moduleClass) {
-		List<T> modules = new ArrayList<T>();		
-		for (Module module : m_moduleLoader.getModules()) {
-			if (moduleClass.isInstance(module)) {
-				modules.add((T)module);
-			}
-		}		
-		return modules;
-	}
-	
+        return false;
+    }
+
+    /**
+     * Disable a specific module
+     *
+     * @param module the module to disable
+     */
+    public void disableModule(Module module) {
+        Validate.notNull(module, "Moudule cannot be null");
+
+        m_moduleLoader.unload(module);
+    }
+
+    /**
+     * Reloads a specific module
+     *
+     * @param module the module to reload
+     */
+    public void reloadModule(Module module) {
+        Validate.notNull(module, "Moudule cannot be null");
+
+        m_moduleLoader.unload(module);
+        m_moduleLoader.load(module.getFile());
+        m_moduleLoader.getModule(module.getName()).onEnable();
+    }
+
+    /**
+     * Static access to log as bFundamentals
+     *
+     * @param level the log level
+     * @param msg   the message to log
+     */
+    public static void log(Level level, String msg) {
+        Validate.notNull(level, "Log level cannot be null");
+        Validate.notNull(msg, "Message cannot be null");
+
+        m_log.log(level, msg);
+    }
+
+    /**
+     * Static access to log as bFundamentals
+     *
+     * @param level the log level
+     * @param msg   the message to log
+     * @param e     the exception to log
+     */
+    public static void log(Level level, String msg, Throwable e) {
+        Validate.notNull(level, "Log level cannot be null");
+        Validate.notNull(msg, "Message cannot be null");
+        Validate.notNull(e, "The exception to log cannot be null");
+
+        m_log.log(level, msg, e);
+    }
+
+    private void handleModulesCommand(CommandSender sender) {
+        List<Module> modules = m_moduleLoader.getModules();
+        String moduleString = ChatColor.GREEN + "Modules(" + modules.size() + "): ";
+        boolean first = true;
+
+        for (Module module : modules) {
+            moduleString += (first ? "" : ", ") + module.getName();
+            first = false;
+        }
+
+        sender.sendMessage(moduleString);
+    }
+
+    /**
+     * Handle a player join event
+     *
+     * @param event The player join event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        FundamentalPlayer newPlayer = new FundamentalPlayer(event.getPlayer());
+        SurvivalPlus.Players.add(newPlayer);
+
+        List<Module> modules = m_moduleLoader.getModules();
+        for (Module module : modules) {
+            Class<? extends PlayerData> playerDataClass = module.getPlayerDataClass();
+            if (playerDataClass != null) {
+                try {
+                    newPlayer.addPlayerData((PlayerData) playerDataClass.newInstance());
+                } catch (Exception ex) {
+                    SurvivalPlus.log(Level.WARNING, "Failed to create new player data for '" + event.getPlayer().getName() + "' for module '" + module.getName() + "'", ex);
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle a player join event
+     *
+     * @param event The player join event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        SurvivalPlus.Players.removePlayer(event.getPlayer());
+    }
+
+    /**
+     * Get a list of online players for a given rank or group
+     *
+     * @param rank The rank to get the list of online players from
+     * @return An array list of online players within a given rank or group
+     */
+    public ArrayList<Player> getPlayersOfRank(String rank) {
+
+        PermissionManager pexmanager = null;
+
+        try {
+            pexmanager = PermissionsEx.getPermissionManager();
+        } catch (Exception ex) {
+            // If pex does not exist on the server, just return now, we don't want errors
+            return null;
+        }
+
+        PermissionGroup group = pexmanager.getGroup(rank);
+
+        // If the group doesn't exist just leave.
+        if (group == null) {
+            return null;
+        }
+
+        //
+        ArrayList<Player> players = new ArrayList<Player>();
+        for (PermissionUser user : group.getUsers()) {
+            Player player = Bukkit.getPlayer(user.getName());
+            if (player != null) {
+                players.add(player);
+            }
+        }
+
+        return players;
+    }
+
+    /**
+     * @param time
+     * @return
+     */
+    public static String formatTime(Long time) {
+
+        Long days = TimeUnit.MILLISECONDS.toDays(time);
+        time = time - TimeUnit.DAYS.toMillis(days);
+
+        Long hours = TimeUnit.MILLISECONDS.toHours(time);
+        time = time - TimeUnit.HOURS.toMillis(hours);
+
+        Long minutes = TimeUnit.MILLISECONDS.toMinutes(time);
+        time = time - TimeUnit.MINUTES.toMillis(minutes);
+
+        Long seconds = TimeUnit.MILLISECONDS.toSeconds(time);
+
+        String formattedTime = "";
+        if (days != 0) {
+            formattedTime += (days == 1 ? "1 Day" : days + " Days");
+        }
+
+        if (hours != 0) {
+            if (days != 0) {
+                formattedTime += ", ";
+            }
+            formattedTime += (hours == 1 ? "1 Hour" : hours + " Hours");
+        }
+
+        if (minutes != 0) {
+            if (days != 0 || hours != 0) {
+                formattedTime += ", ";
+            }
+            formattedTime += (minutes == 1 ? "1 Minute" : minutes + " Minutes");
+        }
+
+        if (seconds != 0) {
+            if (days != 0 || hours != 0 || minutes != 0) {
+                formattedTime += ", ";
+            }
+            formattedTime += (seconds == 1 ? "1 Second" : seconds + " Seconds");
+        }
+
+        return formattedTime;
+    }
+
+    /**
+     * @param minutes
+     * @param seconds
+     * @return
+     */
+    public static Long timeToTicks(int minutes, int seconds) {
+        return seconds * 20L + (minutes * (20L * 60L));
+    }
+
+    /**
+     * Find the player a specific instance of player data belongs to
+     *
+     * @param data THe data to test
+     * @return The player the data belongs to or null
+     */
+    public static FundamentalPlayer getDataOwner(PlayerData data) {
+
+        for (FundamentalPlayer player : SurvivalPlus.Players) {
+            if (player.isDataOwner(data)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get a module of a given class type
+     *
+     * @param moduleClass The class of the module to find
+     * @return The module if found, or null
+     */
+    public Module getModuleInstance(Class moduleClass) {
+        for (Module module : m_moduleLoader.getModules()) {
+            if (moduleClass.isInstance(module)) {
+                return module;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get all modules of a given class type
+     *
+     * @param moduleClass The class of the module to find
+     * @return The modules if found, or null
+     */
+    public <T extends PlayerData> List<T> getModuleInstances(Class<? extends T> moduleClass) {
+        List<T> modules = new ArrayList<T>();
+        for (Module module : m_moduleLoader.getModules()) {
+            if (moduleClass.isInstance(module)) {
+                modules.add((T) module);
+            }
+        }
+        return modules;
+    }
+
 }

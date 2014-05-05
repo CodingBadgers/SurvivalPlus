@@ -20,16 +20,15 @@ package uk.codingbadgers.SurvivalPlus.gui;
 public abstract class GuiSubInventory extends GuiInventory {
 
     final private GuiInventory ownerMenu;
-    
-	public GuiSubInventory(GuiInventory ownerMenu, String title, int rowCount) {
-		super(ownerMenu.getPlugin());
+
+    public GuiSubInventory(GuiInventory ownerMenu, String title, int rowCount) {
+        super(ownerMenu.getPlugin());
         this.createInventory(title, rowCount);
         this.ownerMenu = ownerMenu;
-	}
-    
-     /**
-     * 
-     * @return 
+    }
+
+    /**
+     * @return
      */
     public String getOwnerTitle() {
         return this.ownerMenu.getOwnerTitle();

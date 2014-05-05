@@ -30,49 +30,51 @@ import uk.codingbadgers.SurvivalPlus.module.Module;
  */
 public class ModuleCommandHelpTopic extends HelpTopic {
 
-	/** The command instance for this help topic. */
-	private ModuleCommand m_command;
-	
-	/**
-	 * Instantiates a new module command help topic.
-	 *
-	 * @param command the command
-	 */
-	public ModuleCommandHelpTopic(ModuleCommand command) {
-		m_command = command;
-		this.name = "/" + command.getLabel();
-		this.shortText = command.getUsage();
-		this.fullText = command.getUsage();		
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.bukkit.help.HelpTopic#canSee(org.bukkit.command.CommandSender)
-	 */
-	@Override
-	public boolean canSee(CommandSender sender) {
-		if (!(sender instanceof Player)) {
-			return true;
-		}
-		
-		if (m_command == null) {
-		    return false;
-		}
-		
-		Player player = (Player) sender;
-		
-		return Module.hasPermission(player, m_command.getPermission()) || Module.hasPermission(player, "bfundamentals.admin");
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.bukkit.help.HelpTopic#getFullText(org.bukkit.command.CommandSender)
-	 */
-	@Override 
-	public String getFullText(CommandSender sender) {
-	    if (m_command == null) {
-	        return "";
-	    }
-	    
-		// Build full text
+    /**
+     * The command instance for this help topic.
+     */
+    private ModuleCommand m_command;
+
+    /**
+     * Instantiates a new module command help topic.
+     *
+     * @param command the command
+     */
+    public ModuleCommandHelpTopic(ModuleCommand command) {
+        m_command = command;
+        this.name = "/" + command.getLabel();
+        this.shortText = command.getUsage();
+        this.fullText = command.getUsage();
+    }
+
+    /* (non-Javadoc)
+     * @see org.bukkit.help.HelpTopic#canSee(org.bukkit.command.CommandSender)
+     */
+    @Override
+    public boolean canSee(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            return true;
+        }
+
+        if (m_command == null) {
+            return false;
+        }
+
+        Player player = (Player) sender;
+
+        return Module.hasPermission(player, m_command.getPermission()) || Module.hasPermission(player, "bfundamentals.admin");
+    }
+
+    /* (non-Javadoc)
+     * @see org.bukkit.help.HelpTopic#getFullText(org.bukkit.command.CommandSender)
+     */
+    @Override
+    public String getFullText(CommandSender sender) {
+        if (m_command == null) {
+            return "";
+        }
+
+        // Build full text
         StringBuilder sb = new StringBuilder();
 
         sb.append(ChatColor.GOLD);
@@ -95,6 +97,6 @@ public class ModuleCommandHelpTopic extends HelpTopic {
             sb.append(ChatColor.WHITE + StringUtils.join(m_command.getAliases(), ", "));
         }
         return sb.toString();
-	}
+    }
 
 }

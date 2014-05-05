@@ -25,43 +25,43 @@ import org.bukkit.entity.Player;
 
 /**
  * A factory for creating Player Backup objects.
- * 
+ *
  * @see PlayerBackup
  */
 public class BackupFactory {
-		
-	/**
-	 * Creates a new Player backup.
-	 *
-	 * @param player the player to backup
-	 * @return the player backup
-	 */
-	public static PlayerBackup createBackup(File backupFile, Player player) {
-		Validate.notNull(player, "player cannot be null");
-		Validate.notNull(backupFile, "backupFile cannot be null");
-		
-		try {
-			return new PlayerBackup(backupFile, player);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
-	
-	/**
-	 * Read backup from file.
-	 *
-	 * @param playerName the player name to retrieve the backup for
-	 * @return the player backup or null if there is no backup on disk
-	 */
-	public static PlayerBackup readBackup(File backupFile) {
-		Validate.isTrue(backupFile.exists(), "The given backup file does not exist");
-		
-		try {
-			return new PlayerBackup(backupFile);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
+
+    /**
+     * Creates a new Player backup.
+     *
+     * @param player the player to backup
+     * @return the player backup
+     */
+    public static PlayerBackup createBackup(File backupFile, Player player) {
+        Validate.notNull(player, "player cannot be null");
+        Validate.notNull(backupFile, "backupFile cannot be null");
+
+        try {
+            return new PlayerBackup(backupFile, player);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Read backup from file.
+     *
+     * @param playerName the player name to retrieve the backup for
+     * @return the player backup or null if there is no backup on disk
+     */
+    public static PlayerBackup readBackup(File backupFile) {
+        Validate.isTrue(backupFile.exists(), "The given backup file does not exist");
+
+        try {
+            return new PlayerBackup(backupFile);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 }

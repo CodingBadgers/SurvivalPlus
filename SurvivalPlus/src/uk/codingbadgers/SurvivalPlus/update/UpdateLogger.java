@@ -28,27 +28,29 @@ import org.bukkit.Bukkit;
  */
 public class UpdateLogger extends Logger {
 
-	/** The module name. */
-	String moduleName;
-	
-	/**
-	 * Instantiates a new module logger.
-	 * 
-	 * @param update the {@link Updater} for this logger
-	 */
-	public UpdateLogger(Updater update) {
-		super(update.getModule().getName(), null);
-		 moduleName = new StringBuilder().append("[Update] ").append("[").append(update.getModule().getName()).append("] ").toString();
-	     setParent(Bukkit.getServer().getLogger());
-	     setLevel(Level.ALL);
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.util.logging.Logger#log(java.util.logging.LogRecord)
-	 */
-	public void log(LogRecord logRecord) {
+    /**
+     * The module name.
+     */
+    String moduleName;
+
+    /**
+     * Instantiates a new module logger.
+     *
+     * @param update the {@link Updater} for this logger
+     */
+    public UpdateLogger(Updater update) {
+        super(update.getModule().getName(), null);
+        moduleName = new StringBuilder().append("[Update] ").append("[").append(update.getModule().getName()).append("] ").toString();
+        setParent(Bukkit.getServer().getLogger());
+        setLevel(Level.ALL);
+    }
+
+    /* (non-Javadoc)
+     * @see java.util.logging.Logger#log(java.util.logging.LogRecord)
+     */
+    public void log(LogRecord logRecord) {
         logRecord.setMessage(moduleName + logRecord.getMessage());
         super.log(logRecord);
-	}
+    }
 
 }

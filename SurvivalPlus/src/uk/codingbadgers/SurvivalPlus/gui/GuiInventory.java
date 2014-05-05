@@ -52,7 +52,7 @@ public class GuiInventory implements Listener {
     private final Map<String, ItemStack> m_items;
     private final Map<Integer, GuiCallback> m_callbacks;
     private Inventory m_inventory;
-    
+
     /**
      * Class constructor
      *
@@ -67,21 +67,22 @@ public class GuiInventory implements Listener {
         m_items = new HashMap<String, ItemStack>();
         m_callbacks = new HashMap<Integer, GuiCallback>();
     }
-    
+
     public void createInventory(String title, int rowCount) {
         m_title = title;
         m_rowCount = rowCount;
-        
+
         m_inventory = Bukkit.createInventory(null, m_rowCount * 9, m_title);
     }
-    
+
     public void createInventory(String title, InventoryType type) {
-        m_title = title;        
+        m_title = title;
         m_inventory = Bukkit.createInventory(null, type);
     }
-    
+
     /**
      * Open the inventory for a specific player
+     *
      * @param player The player to open the inventory to
      */
     public void open(Player player) {
@@ -90,8 +91,9 @@ public class GuiInventory implements Listener {
 
     /**
      * Close a players inventory
+     *
      * @param player The player to close on
-     * @param force Force close the inventory
+     * @param force  Force close the inventory
      */
     public void close(Player player, boolean force) {
         if (player.getInventory() == m_inventory || force) {
@@ -99,9 +101,10 @@ public class GuiInventory implements Listener {
             player.updateInventory();
         }
     }
-    
+
     /**
      * Closes a players inventory
+     *
      * @param player The player to close the inventory on
      */
     public void close(Player player) {
@@ -116,19 +119,18 @@ public class GuiInventory implements Listener {
     public Plugin getPlugin() {
         return m_plugin;
     }
-    
+
     /**
      * Get the title of the inventory
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getTitle() {
         return m_title;
     }
-    
+
     /**
-     * 
-     * @return 
+     * @return
      */
     public String getOwnerTitle() {
         return m_title;
@@ -138,8 +140,8 @@ public class GuiInventory implements Listener {
      * Add a sub menu item to the inventory. On click the sub menu inventory
      * will be opened
      *
-     * @param name The name of the sub menu
-     * @param icon The icon to use
+     * @param name         The name of the sub menu
+     * @param icon         The icon to use
      * @param subInventory The sub menu inventory
      */
     public void addSubMenuItem(String name, Material icon, List<String> details, GuiSubInventory subInventory) {
@@ -164,9 +166,9 @@ public class GuiInventory implements Listener {
      * Add a menu item to the inventory. When the item is click an GuiCallback
      * onClick method will be called
      *
-     * @param name The name of the item
-     * @param icon The icon to use for the item
-     * @param details Some details about the item
+     * @param name     The name of the item
+     * @param icon     The icon to use for the item
+     * @param details  Some details about the item
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
@@ -185,10 +187,10 @@ public class GuiInventory implements Listener {
      * Add a menu item to the inventory. When the item is click an GuiCallback
      * onClick method will be called
      *
-     * @param name The name of the item
-     * @param icon The icon to use for the item
-     * @param details Some details about the item
-     * @param slot The slot in the inventory to position the item
+     * @param name     The name of the item
+     * @param icon     The icon to use for the item
+     * @param details  Some details about the item
+     * @param slot     The slot in the inventory to position the item
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
@@ -196,16 +198,16 @@ public class GuiInventory implements Listener {
 
         return addMenuItem(name, icon, details, slot, 1, callback);
     }
-    
+
     /**
      * Add a menu item to the inventory. When the item is click an GuiCallback
      * onClick method will be called
      *
-     * @param name The name of the item
-     * @param icon The icon to use for the item
-     * @param details Some details about the item
-     * @param slot The slot in the inventory to position the item
-     * @param amount The amount of items in the itemstack
+     * @param name     The name of the item
+     * @param icon     The icon to use for the item
+     * @param details  Some details about the item
+     * @param slot     The slot in the inventory to position the item
+     * @param amount   The amount of items in the itemstack
      * @param callback A callback that is called when the item is clicked
      * @throws Exception
      */
@@ -213,7 +215,7 @@ public class GuiInventory implements Listener {
 
         ItemStack item = icon.clone();
         item.setAmount(amount);
-        
+
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(details));
@@ -223,9 +225,9 @@ public class GuiInventory implements Listener {
         if (callback != null) {
             m_callbacks.put(slot, callback);
         }
-        
+
         m_items.put(name, item);
-        
+
         return item;
     }
 
@@ -236,13 +238,13 @@ public class GuiInventory implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        
+
         // Do we care about this inventory?
         Inventory inventory = event.getInventory();
         if (!inventory.getName().equalsIgnoreCase(m_inventory.getName())) {
             return;
         }
-        
+
         // Do we care about this player?
         Player player = (Player) event.getWhoClicked();
 
@@ -253,31 +255,31 @@ public class GuiInventory implements Listener {
                 break;
             }
         }
-        
+
         if (!isViewer) {
             return;
         }
-        
+
         if (event.getSlotType() != SlotType.CONTAINER) {
             return;
         }
-        
+
         InventoryView iv = event.getView();
         if (event.getRawSlot() >= iv.getTopInventory().getSize()) {
             return;
         }
-        
+
         // If they havn't clicked an item, quit
         final ItemStack clickedItem = event.getCurrentItem();
         if (clickedItem == null || clickedItem.getItemMeta() == null || clickedItem.getItemMeta().getDisplayName() == null) {
             return;
         }
-                
+
         // Always cancel the event
         event.setCancelled(true);
         event.setResult(Event.Result.DENY);
         player.updateInventory();
-        
+
         // Get the name of the item
         final String itemName = clickedItem.getItemMeta().getDisplayName();
 
@@ -297,20 +299,18 @@ public class GuiInventory implements Listener {
             return;
         }
     }
-    
+
     /**
-     * 
      * @param name
-     * @return 
+     * @return
      */
     public GuiInventory getSubMenu(String name) {
         return this.m_subMenus.get(name);
     }
-    
+
     /**
-     * 
      * @param name
-     * @return 
+     * @return
      */
     public ItemStack getItem(String name) {
         return this.m_items.get(name);

@@ -22,16 +22,18 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.logging.Logger;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemFactory;
 
 public class DummyServer implements InvocationHandler {
-	private static interface MethodHandler {
+    private static interface MethodHandler {
         Object handle(DummyServer server, Object[] args);
     }
-	
+
     private static final HashMap<Method, MethodHandler> methods = new HashMap<Method, MethodHandler>();
+
     static {
         try {
             methods.put(
@@ -41,7 +43,7 @@ public class DummyServer implements InvocationHandler {
                             return CraftItemFactory.instance();
                         }
                     }
-                );
+            );
             methods.put(
                     Server.class.getMethod("getName"),
                     new MethodHandler() {
@@ -49,7 +51,7 @@ public class DummyServer implements InvocationHandler {
                             return DummyServer.class.getName();
                         }
                     }
-                );
+            );
             methods.put(
                     Server.class.getMethod("getVersion"),
                     new MethodHandler() {
@@ -57,7 +59,7 @@ public class DummyServer implements InvocationHandler {
                             return "1.7.2";
                         }
                     }
-                );
+            );
             methods.put(
                     Server.class.getMethod("getBukkitVersion"),
                     new MethodHandler() {
@@ -65,25 +67,30 @@ public class DummyServer implements InvocationHandler {
                             return "Bukkit 1.7.2 R0.3";
                         }
                     }
-                );
+            );
             methods.put(
                     Server.class.getMethod("getLogger"),
                     new MethodHandler() {
                         final Logger logger = Logger.getLogger(DummyServer.class.getCanonicalName());
+
                         public Object handle(DummyServer server, Object[] args) {
                             return logger;
                         }
                     }
-                );
+            );
             Bukkit.setServer(Proxy.getProxyClass(Server.class.getClassLoader(), Server.class).asSubclass(Server.class).getConstructor(InvocationHandler.class).newInstance(new DummyServer()));
         } catch (Throwable t) {
             throw new Error(t);
         }
     }
 
-    public static void setup() {}
+    public static void setup() {
+    }
 
-    private DummyServer() {};
+    private DummyServer() {
+    }
+
+    ;
 
     public Object invoke(Object proxy, Method method, Object[] args) {
         MethodHandler handler = methods.get(method);

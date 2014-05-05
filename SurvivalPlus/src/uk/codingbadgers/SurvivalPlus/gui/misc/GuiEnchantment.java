@@ -28,7 +28,6 @@ import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemStack;
 
 /**
- *
  * @author N3wton
  */
 public class GuiEnchantment extends Enchantment {
@@ -39,7 +38,7 @@ public class GuiEnchantment extends Enchantment {
         super(112);
         id = 112;
     }
-    
+
     @Override
     public String getName() {
         return "GuiEnchantment";
@@ -69,5 +68,5 @@ public class GuiEnchantment extends Enchantment {
     public boolean canEnchantItem(ItemStack is) {
         return true;
     }
-    
+
 }

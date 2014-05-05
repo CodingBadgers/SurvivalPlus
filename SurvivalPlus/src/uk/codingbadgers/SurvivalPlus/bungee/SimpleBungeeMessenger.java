@@ -31,12 +31,12 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 public class SimpleBungeeMessenger implements BungeeMessenger {
 
     private List<byte[]> queue = null;
-    
+
     public SimpleBungeeMessenger() {
         queue = new ArrayList<byte[]>();
         Bukkit.getPluginManager().registerEvents(new BungeePlayerListener(this), SurvivalPlus.getInstance());
     }
-    
+
     @Override
     public boolean sendRawMessage(byte[] message) {
         return sendRawMessage(message, true);
@@ -48,13 +48,13 @@ public class SimpleBungeeMessenger implements BungeeMessenger {
             Player p = Bukkit.getOnlinePlayers()[0];
             p.sendPluginMessage(SurvivalPlus.getInstance(), "BungeeCord", message);
             return true;
-        } else if (shouldQueue){
+        } else if (shouldQueue) {
             queue.add(message);
         }
-        
+
         return false;
     }
-    
+
     @Override
     public void sendRawPlayerMessage(Player player, byte[] message) {
         if (player.isOnline()) {
@@ -65,102 +65,102 @@ public class SimpleBungeeMessenger implements BungeeMessenger {
     @Override
     public void sendPlayerCommand(String command, Player player, String... args) {
         byte[] message = new byte[0];
-        
+
         try {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
-            
+
             out.writeUTF(command);
             for (String arg : args) {
                 out.writeUTF(arg);
             }
-            
+
             message = b.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-        
+
         sendRawPlayerMessage(player, message);
     }
-    
+
     @Override
     public void sendBungeeCommand(String command, String... args) {
         byte[] message = new byte[0];
-        
+
         try {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
-            
+
             out.writeUTF(command);
             for (String arg : args) {
                 out.writeUTF(arg);
             }
-            
+
             message = b.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-        
+
         sendRawMessage(message);
     }
-    
+
     @Override
     public void sendQueuedCommands() {
         List<byte[]> cache = new ArrayList<byte[]>(queue);
-        
+
         for (byte[] message : cache) {
             if (sendRawMessage(message, false)) {
                 queue.remove(message);
             }
-            
+
         }
     }
-    
+
     @Override
     public void forwardMessage(String servers, String subchannel, ByteArrayOutputStream data) {
         byte[] message = new byte[0];
-        
+
         try {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
             out.writeUTF("FORWARD");
             out.writeUTF(servers);
             out.writeUTF(subchannel);
-            
+
             out.writeShort(data.toByteArray().length);
             out.write(data.toByteArray());
-            
+
             message = b.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
-        
+
         sendRawMessage(message);
     }
-    
+
     @Override
     public void sendMessage(String player, String message) {
         sendBungeeCommand("Message", player, message);
     }
-    
+
     @Override
     public void connect(String player, String server) {
         sendBungeeCommand("ConnectOther", player, server);
     }
-    
+
     @Override
     public void getPlayerCount(String server) {
         sendBungeeCommand("PlayerCount", server);
     }
-    
+
     @Override
     public void getPlayerList(String server) {
         sendBungeeCommand("PlayerList", server);
     }
-    
+
     @Override
     public void getIP(Player player) {
         sendPlayerCommand("IP", player);
