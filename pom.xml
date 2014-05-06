@@ -23,7 +23,6 @@
 
         <!-- Modules -->
         <module>Modules/Skillz</module>
-        <module>Modules/ResourceRegen</module>
 
         <!-- Skills -->
         <module>Skills/SkillLandscaping</module>

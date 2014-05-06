@@ -18,7 +18,10 @@
 package uk.codingbadgers.skill;
 
 import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.LeavesDecayEvent;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.skill.BlockData;
@@ -27,6 +30,13 @@ import uk.codingbadgers.skillz.skill.ToolData;
 
 public class SkillWoodCutting extends SkillBlockBase implements Listener {
 
+    /**
+     * 
+     */
+    public SkillWoodCutting() {
+        super(Material.FENCE);
+    }
+    
     /**
      *
      */
@@ -75,5 +85,13 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
     @Override
     public Class<? extends PlayerData> getPlayerDataClass() {
         return SkillWoodCuttingData.class;
+    }
+    
+    /**
+     * @param event
+    */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onLeafDecay(LeavesDecayEvent event) {
+        event.setCancelled(true);
     }
 }

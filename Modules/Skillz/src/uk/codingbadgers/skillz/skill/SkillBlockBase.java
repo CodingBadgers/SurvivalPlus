@@ -17,15 +17,24 @@
  */
 package uk.codingbadgers.skillz.skill;
 
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 
 /**
@@ -43,6 +52,24 @@ public abstract class SkillBlockBase extends SkillBase {
      */
     private final Map<Material, ToolData> m_tools = new EnumMap<Material, ToolData>(Material.class);
 
+    /**
+     *
+     */
+    private final Map<Block, Material> m_blocksToRegen = new HashMap<Block, Material>();
+    
+    /**
+     * 
+     */
+    private final Material m_regenBlockType;
+        
+    /**
+     * 
+     * @param regenBlockType 
+     */
+    public SkillBlockBase(Material regenBlockType) {
+        m_regenBlockType = regenBlockType;
+    }
+    
     /**
      * Register a block with this skill and the amount of xp gained for breaking said block
      *
@@ -105,21 +132,8 @@ public abstract class SkillBlockBase extends SkillBase {
      * @param player         The player who broke a block
      * @param data           The players skill data for this skill
      * @param event          The Bukkit block break event
-     * @param placedByPlayer Was the block in this event placed by a player
      */
-    @Override
-    protected void onPlayerBreakBlock(FundamentalPlayer player, PlayerSkillData data, BlockBreakEvent event, boolean placedByPlayer) {
-        
-        final Block block = event.getBlock();
-        if (!m_blocks.containsKey(block.getType())) {
-            return;
-        }  
-        
-        if (!placedByPlayer) {
-            data.addXP(m_blocks.get(block.getType()).getXp());
-        }
-
-    }
+    protected void onPlayerBreakBlock(FundamentalPlayer player, PlayerSkillData data, BlockBreakEvent event) {}
 
     /**
      * Handle block based skill ability
@@ -127,66 +141,189 @@ public abstract class SkillBlockBase extends SkillBase {
      * @param player         The player who damaged the block
      * @param data           The data for the player for this skill
      * @param event          The Bukkit block damage event
-     * @param placedByPlayer Was the block in this event placed by a player
      */
-    @Override
-    protected void onPlayerDamageBlock(FundamentalPlayer player, PlayerSkillData data, BlockDamageEvent event, boolean placedByPlayer) {
-        
-        final Block block = event.getBlock();
-        if (!m_blocks.containsKey(block.getType())) {
-            return;
-        }
-        
-        ItemStack tool = player.getPlayer().getItemInHand();
-        if (tool == null || !m_tools.containsKey(tool.getType())) {
-            event.setCancelled(true);
-            return;
-        }
-        
-        ToolData toolData = m_tools.get(tool.getType());
-        if (data.getLevel() < toolData.getMinimumLevel()) {
-            player.sendMessage("You arent a high enough level to use that tool.");
-            event.setCancelled(true);
-            return;
-        }
-
-        if (!data.isAbilityActive()) {
-            return;
-        }
-        
-        if (!placedByPlayer) {
-            // Give them then xp
-            data.addXP(m_blocks.get(block.getType()).getXp());
-        }
-
-        // Cancel the event and we will break the block ourselves
-        event.setCancelled(true);
-
-        // destroy the block
-        block.breakNaturally();
-
-    }
+    protected void onPlayerDamageBlock(FundamentalPlayer player, PlayerSkillData data, BlockDamageEvent event) {}
 
     /**
      * @param player
      * @param block
      * @return
      */
-    public boolean canBreakBlock(FundamentalPlayer player, Block block) {
-
-        if (!m_blocks.containsKey(block.getType())) {
-            return false;
-        }
+    public boolean canBreakBlock(FundamentalPlayer player, Block block, PlayerSkillData data, ItemStack tool) {
 
         final BlockData blockData = m_blocks.get(block.getType());
         final PlayerSkillData playerData = (PlayerSkillData) player.getPlayerData(this.getPlayerDataClass());
 
         if (playerData.getLevel() < blockData.getMinimumLevel()) {
-            if (block.getType() != Material.BEDROCK) {
+            if (block.getType() != m_regenBlockType) {
                 player.sendMessage("You are not a high enough level to break this...");
             }
         }
-
+                
+        ToolData toolData = m_tools.get(tool.getType());
+        if (data.getLevel() < toolData.getMinimumLevel()) {
+            player.sendMessage("You arent a high enough level to use that tool.");
+            return false;
+        }
+        
         return true;
+    }
+    
+    /**
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onBlockDamage(BlockDamageEvent event) {
+        
+        // If the player is in creative, let them do what they want
+        final Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+        
+        // Already canceled, don't do anything
+        if (event.isCancelled()) {
+            return;
+        }
+               
+        FundamentalPlayer fundamentalPlayer = SurvivalPlus.Players.getPlayer(event.getPlayer());
+        if (fundamentalPlayer == null) {
+            return;
+        }
+
+        PlayerSkillData data = (PlayerSkillData) fundamentalPlayer.getPlayerData(this.getPlayerDataClass());
+        if (data == null) {
+            return;
+        }
+
+        final Block block = event.getBlock();        
+        if (!m_blocks.containsKey(block.getType())) {
+            return;
+        }
+        
+        ItemStack tool = player.getPlayer().getItemInHand();
+        if (tool == null || !m_tools.containsKey(tool.getType())) {
+            return;
+        }        
+
+        if (!canBreakBlock(fundamentalPlayer, block, data, tool)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        this.onPlayerDamageBlock(fundamentalPlayer, data, event);
+
+    }
+
+    /**
+     * 
+     * @param event 
+     * @return True if this skill handled the block regen
+     */
+    protected void handleBlockBreakResourceRegen(BlockBreakEvent event) {
+        
+        final Player player = event.getPlayer();
+        final Block block = event.getBlock();
+        final Material type = block.getType();
+        
+        // Give the player the drops directly
+        final Inventory playerInvent = player.getInventory();
+        Collection<ItemStack> drops = block.getDrops();
+        for (ItemStack drop : drops) {
+            playerInvent.addItem(drop);
+        }
+        
+        // Set the block to bedrock
+        block.setType(m_regenBlockType);
+        m_blocksToRegen.put(block, type);
+
+        // Start a timer for when the block should regen
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+            m_plugin,
+            new Runnable() {
+                @Override
+                public void run() {
+                    block.setType(type);
+                    m_blocksToRegen.remove(block);
+                }
+            },
+            m_blocks.get(type).getRegenTime()
+        );
+        
+    }
+    
+    /**
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onBlockBreak(BlockBreakEvent event) {
+        
+        // If the player is in creative, let them do what they want
+        final Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+
+        // Cancel block breaks
+        event.setCancelled(true);
+        
+        final Block block = event.getBlock();
+        final Material material = block.getType();
+        
+        // If this block isn't registered just cancel the event
+        if (!m_blocks.containsKey(material)) {
+            return;
+        }
+            
+        // Always cancel an event if not in creative
+        event.setCancelled(true);
+        
+        FundamentalPlayer fundamentalPlayer = SurvivalPlus.Players.getPlayer(player);
+        if (fundamentalPlayer == null) {
+            return;
+        }
+
+        PlayerSkillData data = (PlayerSkillData) fundamentalPlayer.getPlayerData(this.getPlayerDataClass());
+        if (data == null) {
+            return;
+        }
+            
+        if (!m_blocks.containsKey(block.getType())) {
+            return;
+        }
+        
+        ItemStack tool = player.getPlayer().getItemInHand();
+        if (tool == null || !m_tools.containsKey(tool.getType())) {
+            return;
+        }        
+
+        if (!canBreakBlock(fundamentalPlayer, block, data, tool)) {
+            return;
+        }
+                
+        // Call the notify for skills
+        this.onPlayerBreakBlock(fundamentalPlayer, data, event);
+        
+        // Give the xp
+        data.addXP(m_blocks.get(material).getXp());
+        
+        // Handle resource regening
+        handleBlockBreakResourceRegen(event);
+    }
+
+    /**
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onBlockPlace(BlockPlaceEvent event) {
+
+        // If the player is in creative, let them do what they want
+        final Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+        
+        event.setCancelled(true);
+
     }
 }

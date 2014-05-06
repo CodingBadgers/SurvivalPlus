@@ -28,6 +28,13 @@ import uk.codingbadgers.skillz.skill.ToolData;
 public class SkillMining extends SkillBlockBase implements Listener {
 
     /**
+     * 
+     */
+    public SkillMining() {
+        super(Material.BEDROCK);
+    }
+    
+    /**
      *
      */
     @Override

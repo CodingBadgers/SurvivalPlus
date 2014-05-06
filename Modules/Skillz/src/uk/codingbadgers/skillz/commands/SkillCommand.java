@@ -17,8 +17,9 @@
  */
 package uk.codingbadgers.skillz.commands;
 
+import java.util.Collections;
 import java.util.List;
-
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,8 +27,8 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.commands.ModuleCommand;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
-import uk.codingbadgers.skillz.skill.PlayerSkillData;
 import uk.codingbadgers.skillz.Skillz;
+import uk.codingbadgers.skillz.skill.PlayerSkillData;
 
 /**
  * @author n3wton
@@ -106,8 +107,16 @@ public class SkillCommand extends ModuleCommand {
         }
 
         List<PlayerSkillData> skillData = player.getAllPlayerData(PlayerSkillData.class);
+        Collections.sort(skillData);        
         for (PlayerSkillData data : skillData) {
-            Module.sendMessage("Skill", sender, data.getSkillName() + ", Level " + data.getLevel() + ", Exp " + data.getXP());
+              
+            String skillMessage = ChatColor.GOLD + "[" + data.getSkillName() + "] " + ChatColor.WHITE;
+            if (data.getLevel() < 10) {
+                skillMessage += "0";
+            }            
+            skillMessage += data.getLevel() + "/99    " + data.getXP() + "xp";
+            
+            Module.sendMessage("Skill", sender, skillMessage);
         }
 
     }

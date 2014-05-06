@@ -19,23 +19,15 @@ package uk.codingbadgers.skillz.skill;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.plugin.Plugin;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
-import uk.codingbadgers.skillz.metakey.BlockMeta;
 
 /**
  * @author n3wton
@@ -59,22 +51,6 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
      * @return
      */
     public abstract boolean canActivateAbility(PlayerInteractEvent event);
-
-    /**
-     * @param player
-     * @param data
-     * @param event
-     */
-    protected void onPlayerDamageBlock(FundamentalPlayer player, PlayerSkillData data, BlockDamageEvent event, boolean placedByPlayer) {
-    }
-
-    /**
-     * @param player
-     * @param data
-     * @param event
-     */
-    protected void onPlayerBreakBlock(FundamentalPlayer player, PlayerSkillData data, BlockBreakEvent event, boolean placedByPlayer) {
-    }
 
     /**
      * @param event
@@ -119,67 +95,6 @@ public abstract class SkillBase extends Module implements PlayerData, Listener {
                 );
             }
         }
-
-    }
-
-    /**
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onBlockDamage(BlockDamageEvent event) {
-
-        FundamentalPlayer player = SurvivalPlus.Players.getPlayer(event.getPlayer());
-        if (player == null) {
-            return;
-        }
-
-        PlayerSkillData data = (PlayerSkillData) player.getPlayerData(this.getPlayerDataClass());
-        if (data == null) {
-            return;
-        }
-
-        final Block block = event.getBlock();
-        final boolean placedByPlayer = block.hasMetadata(BlockMeta.PlacedBy);
-
-        this.onPlayerDamageBlock(player, data, event, placedByPlayer);
-
-    }
-
-    /**
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onBlockBreak(BlockBreakEvent event) {
-
-        FundamentalPlayer player = SurvivalPlus.Players.getPlayer(event.getPlayer());
-        if (player == null) {
-            return;
-        }
-
-        PlayerSkillData data = (PlayerSkillData) player.getPlayerData(this.getPlayerDataClass());
-        if (data == null) {
-            return;
-        }
-
-        final Block block = event.getBlock();
-        final boolean placedByPlayer = block.hasMetadata(BlockMeta.PlacedBy);
-
-        this.onPlayerBreakBlock(player, data, event, placedByPlayer);
-
-    }
-
-    /**
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onBlockPlace(BlockPlaceEvent event) {
-
-        final Block block = event.getBlock();
-        final Player player = event.getPlayer();
-        final Plugin plugin = SurvivalPlus.getInstance();
-
-        // Set who the block was place by
-        block.setMetadata(BlockMeta.PlacedBy, new FixedMetadataValue(plugin, player.getName()));
 
     }
 }

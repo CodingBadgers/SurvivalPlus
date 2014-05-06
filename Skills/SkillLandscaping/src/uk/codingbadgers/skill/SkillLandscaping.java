@@ -28,6 +28,13 @@ import uk.codingbadgers.skillz.skill.ToolData;
 public class SkillLandscaping extends SkillBlockBase implements Listener {
 
     /**
+     * 
+     */
+    public SkillLandscaping() {
+        super(Material.BEDROCK);
+    }
+    
+    /**
      *
      */
     @Override
