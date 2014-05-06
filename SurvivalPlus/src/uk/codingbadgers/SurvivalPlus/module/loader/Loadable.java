@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import uk.codingbadgers.SurvivalPlus.module.ModuleInfo;
 
 /*     Copyright (C) 2012  Nodin Chan <nodinchan@live.com>
  * 
@@ -49,23 +50,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class Loadable implements Cloneable {
 
-    private String name;
     private File configFile;
     private FileConfiguration config;
     private LoadableDescriptionFile description;
     private JarFile jar;
     private File dataFolder;
     private File file;
-
-    /**
-     * Instantiates a new loadable.
-     *
-     * @param name the name
-     * @deprecated use a {@link LoadableDescriptionFile} instead
-     */
-    public Loadable(String name) {
-        this.name = name;
-    }
 
     /**
      * Instantiates a new loadable.
@@ -78,57 +68,23 @@ public class Loadable implements Cloneable {
      */
     @Override
     public Loadable clone() {
-        Loadable loadable = new Loadable(name);
+        Loadable loadable = new Loadable();
+        loadable.description = description;
         loadable.config = YamlConfiguration.loadConfiguration(configFile);
         loadable.configFile = configFile;
         loadable.dataFolder = dataFolder;
         loadable.file = file;
         loadable.jar = jar;
-        loadable.description = description;
         return loadable;
     }
 
-    /**
-     * Set the datafolder.
-     *
-     * @param dataFolder the data folder
-     * @return the file
-     */
-    public File setDatafolder(File dataFolder) {
-        dataFolder.mkdirs();
-        return this.dataFolder = dataFolder;
-    }
+    public void setInfo(ModuleInfo info) {
+        this.description = info.getDescription();
+        this.jar = info.getJar();
+        this.file = info.getFile();
+        this.dataFolder = new File(info.getFile().getParentFile(), info.getName());
 
-    /**
-     * Set the file for this loadable.
-     *
-     * @param file the file
-     * @return the file
-     */
-    public File setFile(File file) {
-        return this.file = file;
-    }
-
-    /**
-     * Set the jar file.
-     *
-     * @param jar the jar
-     * @return the jar file
-     */
-    public JarFile setJarFile(JarFile jar) {
-        return this.jar = jar;
-    }
-
-    /**
-     * Set the {@link LoadableDescriptionFile} for this module.
-     *
-     * @param ldf the loadable description file
-     * @return the loadable description file
-     */
-    public LoadableDescriptionFile setDesciption(LoadableDescriptionFile ldf) {
-        this.description = ldf;
-        this.name = description.getName();
-        return description;
+        this.dataFolder.mkdirs();
     }
 
     /**
@@ -173,7 +129,7 @@ public class Loadable implements Cloneable {
      * @return The name
      */
     public final String getName() {
-        return getDesciption().getName();
+        return getDescription().getName();
     }
 
     /**
@@ -235,8 +191,18 @@ public class Loadable implements Cloneable {
      * Gets the desciption.
      *
      * @return the desciption
+     * @deprecated #getDescription()
      */
     public LoadableDescriptionFile getDesciption() {
+        return this.description;
+    }
+
+    /**
+     * Gets the modules description file.
+     *
+     * @return the description file
+     */
+    public LoadableDescriptionFile getDescription() {
         return this.description;
     }
 
@@ -304,7 +270,6 @@ public class Loadable implements Cloneable {
          * The Result for loading.
          */
         public enum Result {
-
             /**
              * If the loadable didn't load successfully.
              */

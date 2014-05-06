@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
@@ -42,12 +43,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.commands.ModuleCommand;
 import uk.codingbadgers.SurvivalPlus.commands.ModuleCommandHandler;
 import uk.codingbadgers.SurvivalPlus.config.ConfigFactory;
 import uk.codingbadgers.SurvivalPlus.config.ConfigFile;
 import uk.codingbadgers.SurvivalPlus.module.loader.Loadable;
+import uk.codingbadgers.SurvivalPlus.module.loader.LoadState;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.SurvivalPlus.update.UpdateThread;
 import uk.codingbadgers.SurvivalPlus.update.Updater;
@@ -60,13 +63,16 @@ import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
 public abstract class Module extends Loadable implements Listener {
 
     protected static BukkitDatabase m_database = null;
+    private static Permission m_permissions = null;
+
     protected final SurvivalPlus m_plugin;
     protected File m_configFile = null;
     protected FileConfiguration m_config;
-    private static Permission m_permissions = null;
+
     private boolean m_debug = false;
     private boolean loadedLanguageFile;
     private boolean m_enabled;
+
     private List<Class<? extends ConfigFile>> m_configFiles;
     private List<Listener> m_listeners = new ArrayList<Listener>();
     private ModuleLogger m_log;
@@ -249,22 +255,33 @@ public abstract class Module extends Loadable implements Listener {
 
     /**
      * The enable method for this module, called on enabling the module via
-     * {@link #setEnabled(boolean)} this is used to register commands, events
-     * and any other things that should be registered on enabling the module.
+     * {@link #setEnabled(boolean)} in the {@link LoadState.ENABLE} phase
+     * this is used to register commands, events and any other things that
+     * should be registered on enabling the module.
      */
     public abstract void onEnable();
 
     /**
      * The disable method for this module, called on disabling the module via
-     * {@link #setEnabled(boolean)} this is used to clean up after the module
+     * {@link #setEnabled(boolean)}this is used to clean up after the module
      * when it is disabled.
      */
     public abstract void onDisable();
 
+
+    /**
+     * The post enable method for this module, called after all modules have
+     * been enabled via the @link ModuleLoader}, this can be used to hook into
+     * other modules that have to be loaded before your own and add custom
+     * behaviour that does not warrant a dependency.
+     */
+    public void onPostEnable() {
+    }
+
     /**
      * The load method for this module, called on loading the module via the
-     * {@link ModuleLoader} this is called before any module in that load
-     * batch is loaded.
+     * {@link ModuleLoader} in the {@link LoadState.LOAD} phase this is called
+     * before any module in that load batch is enabled.
      */
     public void onLoad() {
     }
@@ -319,15 +336,6 @@ public abstract class Module extends Loadable implements Listener {
      */
     public boolean onCommand(CommandSender sender, String label, String[] args) {
         return false;
-    }
-
-    /**
-     * Gets the version of this module loaded from the path.yml file.
-     *
-     * @return the module version
-     */
-    public String getVersion() {
-        return getDesciption().getVersion();
     }
 
     /**
@@ -525,4 +533,5 @@ public abstract class Module extends Loadable implements Listener {
 
         return matches;
     }
+
 }

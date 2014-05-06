@@ -1,0 +1,259 @@
+package uk.codingbadgers.SurvivalPlus.module.loader;
+
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import org.bukkit.Bukkit;
+
+import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
+import uk.codingbadgers.SurvivalPlus.module.Module;
+import uk.codingbadgers.SurvivalPlus.module.ModuleHelpTopic;
+import uk.codingbadgers.SurvivalPlus.module.ModuleInfo;
+import uk.codingbadgers.SurvivalPlus.module.loader.exception.LoadException;
+
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class BukkitModuleLoader implements ModuleLoader {
+
+    private LoadState state = LoadState.PRE_SETUP;
+    private Logger logger = SurvivalPlus.getInstance().getLogger();
+
+    private ModuleClassLoader classLoader;
+
+    private DirectoryList directories = new DirectoryList();
+    private Map<String, Module> modules = Maps.newLinkedHashMap();
+
+    public BukkitModuleLoader() {}
+
+    @Override
+    public void addModuleDirectory(File file) { // TODO try and make it so modules can add directories at loadtime
+        Preconditions.checkNotNull(file);
+        Preconditions.checkState(state == LoadState.PRE_SETUP, "Cannot add module directory after modules have started to be loaded.");
+
+        this.directories.add(file);
+
+        if (file.exists() && !file.isDirectory()) {
+            file.delete();
+        }
+
+        if (!file.exists()) {
+            file.mkdir();
+        }
+    }
+
+    @Override
+    public List<File> getModuleDirs() {
+        return ImmutableList.copyOf(directories);
+    }
+
+    @Override
+    public LoadState getLoadState() {
+        return state;
+    }
+
+    @Override
+    public void load() throws LoadException {
+        Preconditions.checkState(state == LoadState.PRE_SETUP, "Cannot load modules without unloading first.");
+        updateState(LoadState.SETUP);
+
+        List<File> potentialFiles = Lists.newArrayList();
+        this.directories.setReadonly(true);
+
+        for (File dir : this.directories) { // Collect all module files together
+            Collections.addAll(potentialFiles, dir.listFiles(new FileExtensionFilter(".jar")));
+        }
+
+        classLoader = new ModuleClassLoader(getClass().getClassLoader());
+        List<ModuleInfo> moduleDescs = Lists.newArrayList();
+        JarFile jar = null;
+
+        for (File file : potentialFiles) {
+            try {
+                classLoader.addURL(file.toURI().toURL()); // Add to current classpath
+                jar = new JarFile(file);
+
+                JarEntry yml = jar.getJarEntry("path.yml"); // Get the description file for the module
+
+                if (yml == null) {
+                    getLogger().log(Level.WARNING, "Description file is missing for file {0}", file.getName());
+                    continue;
+                }
+
+                LoadableDescriptionFile desc = new LoadableDescriptionFile(jar.getInputStream(yml));
+                getLogger().log(Level.INFO, "Found module {0}.", desc.getName());
+                moduleDescs.add(new ModuleInfo(file, jar, desc)); // Create the module info file
+            } catch (IOException e) {
+                throw new LoadException(e);
+            } finally {
+                if (jar != null) {
+                    try {
+                        jar.close();
+                    } catch (IOException e) {
+                        throw new LoadException(e);
+                    }
+                }
+            }
+        }
+
+        Collections.sort(moduleDescs); // Sort the modules into dependency order
+        getLogger().log(Level.INFO, "Found {0} modules.", moduleDescs.size());
+
+        updateState(LoadState.LOAD);
+
+        ModuleInfo info = null;
+
+        for (Iterator<ModuleInfo> itr = moduleDescs.iterator(); itr.hasNext();) {
+            try {
+                info = itr.next();
+                boolean dependencies = true;
+
+                for (String depend : info.getDescription().getDependencies()) {
+                    if (!this.modules.containsKey(depend)) {
+                        getLogger().log(Level.SEVERE, "{0} is missing dependency {1}", new Object[] { info.getName(), depend });
+                        dependencies = false;
+                    }
+                }
+
+                if (!dependencies) {
+                    getLogger().log(Level.SEVERE, "{0} is missing dependencies and therefor cannot be loaded", new Object[] { info.getName() });
+                    continue;
+                }
+
+                getLogger().log(Level.INFO, "Loading module {0} (main: {1}).", new Object[] { info.getDescription().getName(), info.getDescription().getMainClass() });
+                Class<?> clazz = classLoader.loadClass(info.getDescription().getMainClass()); // Load the main class of the module
+
+                Class<? extends Module> mainclass = clazz.asSubclass(Module.class);
+                Constructor<? extends Module> ctor = mainclass.getConstructor();
+
+                // Create a new instance of the module and load it
+                Module module = ctor.newInstance();
+                module.setInfo(info);
+                module.onLoad();
+                this.modules.put(module.getName(), module);
+
+                Bukkit.getHelpMap().addTopic(new ModuleHelpTopic(module)); // create a help entry for this module
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (ReflectiveOperationException e) {
+                e.printStackTrace();
+            }
+        }
+
+        getLogger().log(Level.INFO, "Loaded {0} modules.", this.modules.size());
+
+        updateState(LoadState.ENABLE);
+        call(enable());
+        updateState(LoadState.POST_ENABLE);
+        call(postEnable());
+        updateState(LoadState.LOADED);
+    }
+
+    @Override
+    public void load(File module) { // TODO do
+    }
+
+    @Override
+    public void unload() {
+        Preconditions.checkState(state == LoadState.LOADED, "Cannot unload modules before they are loaded");
+
+        call(disable());
+
+        this.modules.clear();
+        this.directories.setReadonly(false);
+        updateState(LoadState.PRE_SETUP);
+    }
+
+    @Override
+    public void unload(Module module) {
+        Preconditions.checkNotNull(module);
+        Preconditions.checkState(this.modules.containsValue(module), "Module is not loaded and therefor cannot be unloaded");
+        Preconditions.checkState(state == LoadState.LOADED, "Cannot unload modules before they are loaded.");
+
+        disable().apply(module);
+        this.modules.remove(module.getName());
+    }
+
+    @Override
+    public Module getModule(String name) {
+        Preconditions.checkState(state.after(LoadState.LOAD), "Cannot lookup module before they are loaded.");
+        return modules.get(name);
+    }
+
+    @Override
+    public List<Module> getModules() {
+        Preconditions.checkState(state.after(LoadState.LOAD), "Cannot lookup module before they are loaded.");
+        return ImmutableList.copyOf(this.modules.values());
+    }
+
+    private void updateState(LoadState state) {
+        Preconditions.checkNotNull(state);
+
+        this.state = state;
+    }
+
+    private Logger getLogger() {
+        return logger;
+    }
+
+    /** Load Calls */
+
+    private void call(Function<Module, Void> function) {
+        Preconditions.checkNotNull(function);
+
+        for (Module module : modules.values()) {
+            function.apply(module);
+        }
+    }
+
+    private Function<Module, Void> postEnable() {
+        return new Function<Module, Void>() {
+            @Override
+            public Void apply(@Nullable Module module) {
+                if (module != null) {
+                    module.onPostEnable();
+                }
+                return null;
+            }
+        };
+    }
+
+    private Function<Module, Void> enable() {
+        return new Function<Module, Void>() {
+            @Override
+            public Void apply(@Nullable Module module) {
+                if (module != null) {
+                    module.setEnabled(true);
+                    getLogger().log(Level.INFO, "{0} version {1} is enabled.", new Object[]{module.getDescription().getName(), module.getDescription().getVersion()});
+                }
+                return null;
+            }
+        };
+    }
+
+    private Function<Module, Void> disable() {
+        return new Function<Module, Void>() {
+            @Override
+            public Void apply(@Nullable Module module) {
+                if (module != null) {
+                    module.setEnabled(false);
+                }
+                return null;
+            }
+        };
+    }
+
+}

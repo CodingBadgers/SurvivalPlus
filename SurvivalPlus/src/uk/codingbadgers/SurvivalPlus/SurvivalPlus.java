@@ -56,7 +56,9 @@ import uk.codingbadgers.SurvivalPlus.message.ClickEventType;
 import uk.codingbadgers.SurvivalPlus.message.HoverEventType;
 import uk.codingbadgers.SurvivalPlus.message.Message;
 import uk.codingbadgers.SurvivalPlus.module.Module;
-import uk.codingbadgers.SurvivalPlus.module.ModuleLoader;
+import uk.codingbadgers.SurvivalPlus.module.loader.ModuleLoader;
+import uk.codingbadgers.SurvivalPlus.module.loader.BukkitModuleLoader;
+import uk.codingbadgers.SurvivalPlus.module.loader.exception.LoadException;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayerArray;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
@@ -91,6 +93,7 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
     public void onLoad() {
         setInstance(this);
         setupGson();
+
         m_log = getLogger();
         log(Level.INFO, "SurvivalPlus Loading");
     }
@@ -115,14 +118,19 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
         setBungeeMessenger(new SimpleBungeeMessenger());
 
         // load the modules in
-        m_moduleLoader = new ModuleLoader();
-        m_moduleLoader.load();
-        m_moduleLoader.enable();
+        try {
+            m_moduleLoader = new BukkitModuleLoader();
+            m_moduleLoader.addModuleDirectory(new File(getDataFolder().getParent(), "SurvivalPlus-Skills"));
+            m_moduleLoader.addModuleDirectory(new File(getDataFolder().getParent(), "SurvivalPlus-Modules"));
+            m_moduleLoader.load();
+        } catch (LoadException ex) {
+            m_log.log(Level.WARNING, "Unhandled exception whilst loading modules", ex);
+        }
 
-        // check if any of the modules need updating
+        /*// check if any of the modules need updating
         if (m_configuration.isAutoUpdateEnabled()) {
             m_moduleLoader.update();
-        }
+        }*/
 
         // Register this as a listener
         this.getServer().getPluginManager().registerEvents(this, this);
@@ -139,7 +147,7 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         SurvivalPlus.log(Level.INFO, "SurvivalPlus Disabled.");
-        m_moduleLoader.disable();
+        m_moduleLoader.unload();
         m_database.freeDatabase();
 
         // Clear instances

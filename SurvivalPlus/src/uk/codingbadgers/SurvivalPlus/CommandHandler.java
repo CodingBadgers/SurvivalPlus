@@ -17,8 +17,10 @@
  */
 package uk.codingbadgers.SurvivalPlus;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -29,6 +31,8 @@ import uk.codingbadgers.SurvivalPlus.module.Module;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import uk.codingbadgers.SurvivalPlus.module.loader.BukkitModuleLoader;
+import uk.codingbadgers.SurvivalPlus.module.loader.exception.LoadException;
 
 public class CommandHandler implements TabExecutor {
 
@@ -83,10 +87,10 @@ public class CommandHandler implements TabExecutor {
                 return true;
             }
 
-            if (args[1].equalsIgnoreCase("load")) {
+            /*if (args[1].equalsIgnoreCase("load")) { TODO replace
 
                 if (args.length == 3) {
-                    SurvivalPlus.getModuleLoader().load(args[2]);
+                    SurvivalPlus.getModuleLoader().load();
                     Module module = SurvivalPlus.getModuleLoader().getModule(args[2]);
 
                     if (module == null) {
@@ -99,11 +103,16 @@ public class CommandHandler implements TabExecutor {
                     return true;
                 }
 
-                SurvivalPlus.getModuleLoader().load();
-                SurvivalPlus.getModuleLoader().enable();
-                sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded all modules");
+                try {
+                    SurvivalPlus.getModuleLoader().load();
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Loaded all modules");
+                } catch (LoadException ex) {
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Unhandled exception whilst loading modules");
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + ex.getMessage());
+                }
+
                 return true;
-            }
+            }*/
 
             if (args[1].equalsIgnoreCase("reload")) {
 
@@ -115,7 +124,7 @@ public class CommandHandler implements TabExecutor {
                         return true;
                     }
                     SurvivalPlus.getModuleLoader().unload(module);
-                    SurvivalPlus.getModuleLoader().load(args[2]);
+                    SurvivalPlus.getModuleLoader().load(module.getFile());
                     module = SurvivalPlus.getModuleLoader().getModule(args[2]);
 
                     if (module == null) {
@@ -128,10 +137,15 @@ public class CommandHandler implements TabExecutor {
                     return true;
                 }
 
-                SurvivalPlus.getModuleLoader().unload();
-                SurvivalPlus.getModuleLoader().load();
-                SurvivalPlus.getModuleLoader().enable();
-                sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloaded all modules");
+                try {
+                    SurvivalPlus.getModuleLoader().unload();
+                    SurvivalPlus.getModuleLoader().load();
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloaded all modules");
+                } catch (LoadException ex) {
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Unhandled exception whilst loading modules");
+                    sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + ex.getMessage());
+                }
+
                 return true;
             }
 
