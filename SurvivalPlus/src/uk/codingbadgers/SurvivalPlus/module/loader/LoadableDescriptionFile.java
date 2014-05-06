@@ -38,16 +38,17 @@ public class LoadableDescriptionFile {
     private final String version;
     private final String description;
     private final String mainClass;
+
     private final List<String> authors;
     private final Collection<String> dependencies;
-    private final boolean loadLast;
+
+    private LoadPriority loadPriority = LoadPriority.NORMAL;
 
     /**
      * Instantiates a new loadable description file.
      *
      * @param istream the input stream that this file is loaded from
      */
-    @SuppressWarnings("deprecation")
     public LoadableDescriptionFile(InputStream istream) {
         YamlConfiguration ldf = YamlConfiguration.loadConfiguration(istream);
 
@@ -55,9 +56,17 @@ public class LoadableDescriptionFile {
         version = ldf.getString("version", "0.0");
         description = ldf.getString("description", "");
         mainClass = ldf.getString("main-class");
-        authors = ImmutableList.of(ldf.getStringList("authors").toArray(new String[0]));
+
+        authors = ImmutableList.copyOf(ldf.getStringList("authors").toArray(new String[0]));
         dependencies = Collections.unmodifiableCollection(ldf.getStringList("dependencies"));
-        loadLast = ldf.getBoolean("load-last");
+
+        if (ldf.contains("load-last")) {
+            loadPriority = LoadPriority.LOWEST;
+        } else if (ldf.contains("load-priority")) {
+            loadPriority = LoadPriority.valueOf(ldf.getString("load-priority").toUpperCase());
+        } else {
+            loadPriority = LoadPriority.NORMAL;
+        }
     }
 
     /**
@@ -116,9 +125,12 @@ public class LoadableDescriptionFile {
     }
 
     /**
-     * @return
+     * Gets the priority with which to load this module with, {@code HIGHEST}
+     * will load first and {@code LOWEST} will load last.
+     *
+     * @return the load priority of the module.
      */
-    public boolean getLoadLast() {
-        return loadLast;
+    public LoadPriority getLoadPriority() {
+        return loadPriority;
     }
 }

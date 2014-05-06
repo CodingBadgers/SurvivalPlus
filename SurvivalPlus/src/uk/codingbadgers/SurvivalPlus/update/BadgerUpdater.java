@@ -65,7 +65,7 @@ public class BadgerUpdater extends Updater {
         boolean upToDate = true;
         boolean localSnapshot = false;
         boolean remoteSnapshot = false;
-        String current = m_module.getVersion();
+        String current = m_module.getDesciption().getVersion();
         String website = "";
 
         try {
@@ -193,7 +193,7 @@ public class BadgerUpdater extends Updater {
         }
 
         // TODO:SO Use correct module folder not just the first one.
-        File dest = new File(SurvivalPlus.getModuleLoader().getModuleDirs()[0] + File.separator + m_module.getFile().getName() + ".jar");
+        File dest = new File(SurvivalPlus.getModuleLoader().getModuleDirs().get(0) + File.separator + m_module.getFile().getName() + ".jar");
         File backup = new File(m_backupFolder + File.separator + m_module + ".jar");
 
         if (dest.exists()) {

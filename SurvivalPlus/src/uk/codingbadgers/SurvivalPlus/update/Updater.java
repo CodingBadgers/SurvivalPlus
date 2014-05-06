@@ -89,10 +89,10 @@ public abstract class Updater {
         m_log = new UpdateLogger(this);
 
         //TODO:SO Dont use first module dir
-        m_downloadFolder = new File(SurvivalPlus.getModuleLoader().getModuleDirs()[0] + File.separator + ".update" + File.separator);
+        m_downloadFolder = new File(SurvivalPlus.getModuleLoader().getModuleDirs().get(0) + File.separator + ".update" + File.separator);
         m_downloadFolder.mkdirs();
 
-        m_backupFolder = new File(SurvivalPlus.getModuleLoader().getModuleDirs()[0] + File.separator + ".backup" + File.separator);
+        m_backupFolder = new File(SurvivalPlus.getModuleLoader().getModuleDirs().get(0) + File.separator + ".backup" + File.separator);
         m_backupFolder.mkdirs();
     }
 
