@@ -15,21 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.codingbadgers.skillz.skill;
+package uk.codingbadgers.skill;
 
-import org.bukkit.event.Listener;
-import uk.codingbadgers.SurvivalPlus.module.Module;
-import uk.codingbadgers.SurvivalPlus.player.PlayerData;
+import uk.codingbadgers.skillz.skill.PlayerSkillData;
 
 /**
  * @author n3wton
  */
-public abstract class SkillBase extends Module implements PlayerData, Listener {
+public class SkillFishingData extends PlayerSkillData {
 
-    /**
-     *
-     */
-    public SkillBase() {
-        register(this);
+    public SkillFishingData() {
+        super("Fishing");
     }
+
 }

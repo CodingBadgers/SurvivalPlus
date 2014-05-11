@@ -31,9 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.milkbowl.vault.permission.Permission;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
@@ -43,14 +41,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.commands.ModuleCommand;
 import uk.codingbadgers.SurvivalPlus.commands.ModuleCommandHandler;
 import uk.codingbadgers.SurvivalPlus.config.ConfigFactory;
 import uk.codingbadgers.SurvivalPlus.config.ConfigFile;
-import uk.codingbadgers.SurvivalPlus.module.loader.Loadable;
 import uk.codingbadgers.SurvivalPlus.module.loader.LoadState;
+import uk.codingbadgers.SurvivalPlus.module.loader.Loadable;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.SurvivalPlus.update.UpdateThread;
 import uk.codingbadgers.SurvivalPlus.update.Updater;

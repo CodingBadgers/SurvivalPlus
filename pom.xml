@@ -28,6 +28,7 @@
         <module>Skills/SkillLandscaping</module>
         <module>Skills/SkillMining</module>
         <module>Skills/SkillWoodCutting</module>
+		<module>Skills/SkillFishing</module>
     </modules>
 
     <licenses>
@@ -111,6 +112,18 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>5.8.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -77,16 +77,6 @@ public class SkillMining extends SkillBlockBase implements Listener {
     }
 
     /**
-     * Get the name of this skills ability
-     *
-     * @return
-     */
-    @Override
-    public String getAbilityName() {
-        return "Dwarven Strength";
-    }
-
-    /**
      * @return The data class for this skill
      */
     @Override

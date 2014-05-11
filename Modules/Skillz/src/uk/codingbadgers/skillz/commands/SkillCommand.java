@@ -86,7 +86,7 @@ public class SkillCommand extends ModuleCommand {
      */
     private void handleCommandHelp(CommandSender sender) {
 
-        Module.sendMessage("Skill", sender, "TODO: Show help now :D");
+        Module.sendMessage("Skill", sender, " - /skill levels");
 
     }
 
@@ -114,7 +114,7 @@ public class SkillCommand extends ModuleCommand {
             if (data.getLevel() < 10) {
                 skillMessage += "0";
             }            
-            skillMessage += data.getLevel() + "/99    " + data.getXP() + "xp";
+            skillMessage += data.getLevel() + "/99,    " + data.getXP() + "xp,    " + data.getXpToNextLevel() + "xp to next level";
             
             Module.sendMessage("Skill", sender, skillMessage);
         }

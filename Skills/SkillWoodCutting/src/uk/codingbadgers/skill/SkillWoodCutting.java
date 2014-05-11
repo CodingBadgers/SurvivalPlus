@@ -17,6 +17,8 @@
  */
 package uk.codingbadgers.skill;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,7 +45,17 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
     @Override
     public void onLoad() {
 
-        RegisterBlock(Material.LOG, new BlockData(5L, 1, SurvivalPlus.timeToTicks(0, 15)));
+        Map<Byte, BlockData> logData = new HashMap<Byte, BlockData>();
+        logData.put((byte)0, new BlockData(5L, 1, SurvivalPlus.timeToTicks(0, 15))); // Oak
+        logData.put((byte)1, new BlockData(15L, 10, SurvivalPlus.timeToTicks(0, 25))); // Spruce
+        logData.put((byte)2, new BlockData(35L, 25, SurvivalPlus.timeToTicks(0, 45))); // Birch
+        logData.put((byte)3, new BlockData(80L, 55, SurvivalPlus.timeToTicks(0, 90))); // Jungle        
+        RegisterBlock(Material.LOG, logData);
+        
+        Map<Byte, BlockData> log2Data = new HashMap<Byte, BlockData>();
+        log2Data.put((byte)0, new BlockData(25L, 15, SurvivalPlus.timeToTicks(0, 35))); // Acaicia
+        log2Data.put((byte)1, new BlockData(100L, 70, SurvivalPlus.timeToTicks(0, 120))); // Dark Oak    
+        RegisterBlock(Material.LOG_2, log2Data);
 
         RegisterTool(Material.WOOD_AXE, new ToolData(1));
         RegisterTool(Material.STONE_AXE, new ToolData(5));
@@ -67,16 +79,6 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
     @Override
     public void onEnable() {
 
-    }
-
-    /**
-     * Get the name of this skills ability
-     *
-     * @return
-     */
-    @Override
-    public String getAbilityName() {
-        return "Tree Fucker";
     }
 
     /**

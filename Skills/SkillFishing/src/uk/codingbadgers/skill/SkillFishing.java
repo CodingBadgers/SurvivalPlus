@@ -18,20 +18,23 @@
 package uk.codingbadgers.skill;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
-import uk.codingbadgers.skillz.skill.BlockData;
-import uk.codingbadgers.skillz.skill.SkillBlockBase;
-import uk.codingbadgers.skillz.skill.ToolData;
+import uk.codingbadgers.skillz.skill.SkillBase;
 
-public class SkillLandscaping extends SkillBlockBase implements Listener {
+public class SkillFishing extends SkillBase implements Listener {
 
     /**
      * 
      */
-    public SkillLandscaping() {
-        super(Material.BEDROCK);
+    public SkillFishing() {
     }
     
     /**
@@ -39,19 +42,6 @@ public class SkillLandscaping extends SkillBlockBase implements Listener {
      */
     @Override
     public void onLoad() {
-
-        RegisterBlock(Material.GRASS, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
-        RegisterBlock(Material.DIRT, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 10)));
-        RegisterBlock(Material.SAND, new BlockData(1L, 5, SurvivalPlus.timeToTicks(0, 30)));
-        RegisterBlock(Material.GRAVEL, new BlockData(1L, 10, SurvivalPlus.timeToTicks(0, 30)));
-        RegisterBlock(Material.SOUL_SAND, new BlockData(2L, 15, SurvivalPlus.timeToTicks(0, 30)));
-        RegisterBlock(Material.CLAY, new BlockData(2L, 20, SurvivalPlus.timeToTicks(1, 0)));
-
-        RegisterTool(Material.WOOD_SPADE, new ToolData(1));
-        RegisterTool(Material.STONE_SPADE, new ToolData(5));
-        RegisterTool(Material.IRON_SPADE, new ToolData(15));
-        RegisterTool(Material.GOLD_SPADE, new ToolData(20));
-        RegisterTool(Material.DIAMOND_SPADE, new ToolData(30));
 
     }
 
@@ -76,6 +66,28 @@ public class SkillLandscaping extends SkillBlockBase implements Listener {
      */
     @Override
     public Class<? extends PlayerData> getPlayerDataClass() {
-        return SkillLandscapingData.class;
+        return SkillFishingData.class;
+    }
+    
+    /**
+     * 
+     * @param event 
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void OnPlayerFish(PlayerFishEvent event) {
+     
+        final Player player = event.getPlayer();
+        final PlayerFishEvent.State state = event.getState();
+        final Entity caught = event.getCaught();
+        caught.remove();
+                
+        if (state == PlayerFishEvent.State.CAUGHT_FISH) {
+                        
+            final PlayerInventory invent = player.getInventory();
+            invent.addItem(new ItemStack(Material.DEAD_BUSH));
+            player.updateInventory();
+              
+        }
+        
     }
 }

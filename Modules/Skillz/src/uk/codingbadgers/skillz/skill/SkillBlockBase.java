@@ -31,7 +31,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
@@ -45,7 +44,7 @@ public abstract class SkillBlockBase extends SkillBase {
     /**
      * The blocks that are used by this skill
      */
-    private final Map<Material, BlockData> m_blocks = new EnumMap<Material, BlockData>(Material.class);
+    private final Map<Material, Map<Byte, BlockData>> m_blocks = new EnumMap<Material, Map<Byte, BlockData>>(Material.class);
 
     /**
      * The tools that have the mining ability
@@ -77,6 +76,18 @@ public abstract class SkillBlockBase extends SkillBase {
      * @param blockData    The block data associated with this block
      */
     protected void RegisterBlock(Material block, BlockData blockData) {
+        Map<Byte, BlockData> mapBlockData = new HashMap<Byte, BlockData>();
+        mapBlockData.put((byte)0, blockData);
+        m_blocks.put(block, mapBlockData);
+    }
+    
+    /**
+     * Register a block with this skill and the amount of xp gained for breaking said block
+     *
+     * @param block The material of the block to register
+     * @param blockData    The block data associated with this block
+     */
+    protected void RegisterBlock(Material block, Map<Byte, BlockData> blockData) {
         m_blocks.put(block, blockData);
     }
 
@@ -93,37 +104,8 @@ public abstract class SkillBlockBase extends SkillBase {
     /**
      * @return
      */
-    public Map<Material, BlockData> getBlocks() {
+    public Map<Material, Map<Byte, BlockData>> getBlocks() {
         return m_blocks;
-    }
-
-    /**
-     * See if the skill will allow the ability to activate
-     *
-     * @param event The player interact event
-     * @return True if it can be used, false otherwise
-     */
-    @Override
-    public boolean canActivateAbility(PlayerInteractEvent event) {
-
-        // todo, abilities
-        if (true == true) {
-            return false;
-        }
-        
-        final Player player = event.getPlayer();
-        final ItemStack item = player.getItemInHand();
-
-        if (!m_tools.containsKey(item.getType())) {
-            return false;
-        }
-
-        final Block block = event.getClickedBlock();
-        if (block == null) {
-            return false;
-        }
-
-        return m_blocks.containsKey(block.getType());
     }
 
     /**
@@ -151,18 +133,24 @@ public abstract class SkillBlockBase extends SkillBase {
      */
     public boolean canBreakBlock(FundamentalPlayer player, Block block, PlayerSkillData data, ItemStack tool) {
 
-        final BlockData blockData = m_blocks.get(block.getType());
+        final Map<Byte, BlockData> allBlockData = m_blocks.get(block.getType());
+        if (!allBlockData.containsKey(block.getData())) {
+            return false;
+        }
+        
+        final BlockData blockData = allBlockData.get(block.getData());        
         final PlayerSkillData playerData = (PlayerSkillData) player.getPlayerData(this.getPlayerDataClass());
 
         if (playerData.getLevel() < blockData.getMinimumLevel()) {
             if (block.getType() != m_regenBlockType) {
-                player.sendMessage("You are not a high enough level to break this...");
+                player.sendMessage("You need to be level '" + blockData.getMinimumLevel() + "' to break that block...");
+                return false;
             }
         }
                 
         ToolData toolData = m_tools.get(tool.getType());
         if (data.getLevel() < toolData.getMinimumLevel()) {
-            player.sendMessage("You arent a high enough level to use that tool.");
+            player.sendMessage("You need to be level '" + toolData.getMinimumLevel() + "' " + this.getName() + " to use that tool...");
             return false;
         }
         
@@ -201,6 +189,11 @@ public abstract class SkillBlockBase extends SkillBase {
             return;
         }
         
+        Map<Byte, BlockData> blockData = m_blocks.get(block.getType());
+        if (!blockData.containsKey(block.getData())) {
+            return;
+        }
+        
         ItemStack tool = player.getPlayer().getItemInHand();
         if (tool == null || !m_tools.containsKey(tool.getType())) {
             return;
@@ -225,6 +218,7 @@ public abstract class SkillBlockBase extends SkillBase {
         final Player player = event.getPlayer();
         final Block block = event.getBlock();
         final Material type = block.getType();
+        final Byte dataId = block.getData();
         
         // Give the player the drops directly
         final Inventory playerInvent = player.getInventory();
@@ -247,7 +241,7 @@ public abstract class SkillBlockBase extends SkillBase {
                     m_blocksToRegen.remove(block);
                 }
             },
-            m_blocks.get(type).getRegenTime()
+            m_blocks.get(type).get(dataId).getRegenTime()
         );
         
     }
@@ -269,12 +263,18 @@ public abstract class SkillBlockBase extends SkillBase {
         
         final Block block = event.getBlock();
         final Material material = block.getType();
+        final Byte dataId = block.getData();
         
-        // If this block isn't registered just cancel the event
+        // If this block isn't registered with this skill
         if (!m_blocks.containsKey(material)) {
             return;
+        }        
+        
+        Map<Byte, BlockData> blockData = m_blocks.get(block.getType());
+        if (!blockData.containsKey(dataId)) {
+            return;
         }
-            
+        
         // Always cancel an event if not in creative
         event.setCancelled(true);
         
@@ -285,10 +285,6 @@ public abstract class SkillBlockBase extends SkillBase {
 
         PlayerSkillData data = (PlayerSkillData) fundamentalPlayer.getPlayerData(this.getPlayerDataClass());
         if (data == null) {
-            return;
-        }
-            
-        if (!m_blocks.containsKey(block.getType())) {
             return;
         }
         
@@ -305,7 +301,7 @@ public abstract class SkillBlockBase extends SkillBase {
         this.onPlayerBreakBlock(fundamentalPlayer, data, event);
         
         // Give the xp
-        data.addXP(m_blocks.get(material).getXp());
+        data.addXP(m_blocks.get(material).get(dataId).getXp());
         
         // Handle resource regening
         handleBlockBreakResourceRegen(event);

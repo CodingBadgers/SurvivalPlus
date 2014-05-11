@@ -26,7 +26,7 @@ import uk.codingbadgers.SurvivalPlus.player.PlayerData;
  * @author n3wton
  */
 public class PlayerSkillData implements PlayerData, Comparable {
-
+    
     /**
      * The name of the skill data
      */
@@ -67,6 +67,14 @@ public class PlayerSkillData implements PlayerData, Comparable {
         return m_xp;
     }
 
+    /**
+     * 
+     * @return 
+     */
+    public Long getXpToNextLevel() {
+        return getXpForLevel(this.getLevel() + 1) - m_xp;
+    }
+    
     /**
      * Set the xp level
      *
@@ -154,6 +162,14 @@ public class PlayerSkillData implements PlayerData, Comparable {
         return (int) ((Math.pow(m_xp, 0.5) * 0.3) + 1);
     }
 
+    /**
+     * 
+     * @return
+     */
+    public Long getXpForLevel(int level) {
+        return (long) Math.pow((level - 1) / 0.3f, 2.0f);
+    }
+    
     /**
      * Implement alphabetic sorting
      * @param other The data to compare against

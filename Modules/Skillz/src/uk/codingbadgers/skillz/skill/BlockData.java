@@ -42,8 +42,27 @@ public class BlockData {
      *
      */
     private final Long m_regenTime;
-
+    
+    /**
+     * 
+     * @param xp
+     * @param minLevel
+     * @param regenTime 
+     */
     public BlockData(Long xp, int minLevel, Long regenTime) {
+        m_xp = xp;
+        m_minLevel = minLevel;
+        m_regenTime = regenTime;
+    }
+    
+    /**
+     * 
+     * @param xp
+     * @param minLevel
+     * @param regenTime
+     * @param dataId 
+     */
+    public BlockData(Long xp, int minLevel, Long regenTime, int dataId) {
         m_xp = xp;
         m_minLevel = minLevel;
         m_regenTime = regenTime;
