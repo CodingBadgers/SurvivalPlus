@@ -24,6 +24,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
+import org.bukkit.event.HandlerList;
 
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.module.Module;
@@ -267,6 +269,10 @@ public class BukkitModuleLoader implements ModuleLoader {
             public Void apply(@Nullable Module module) {
                 if (module != null) {
                     module.setEnabled(false);
+                }
+
+                for (Listener listener : module.getListeners()) {
+                    HandlerList.unregisterAll(listener);
                 }
                 return null;
             }

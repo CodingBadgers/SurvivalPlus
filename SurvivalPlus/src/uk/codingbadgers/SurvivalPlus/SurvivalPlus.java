@@ -118,8 +118,10 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
         // load the modules in
         try {
             m_moduleLoader = new BukkitModuleLoader();
+
             m_moduleLoader.addModuleDirectory(new File(getDataFolder().getParent(), "SurvivalPlus-Skills"));
             m_moduleLoader.addModuleDirectory(new File(getDataFolder().getParent(), "SurvivalPlus-Modules"));
+
             m_moduleLoader.load();
         } catch (LoadException ex) {
             m_log.log(Level.WARNING, "Unhandled exception whilst loading modules", ex);

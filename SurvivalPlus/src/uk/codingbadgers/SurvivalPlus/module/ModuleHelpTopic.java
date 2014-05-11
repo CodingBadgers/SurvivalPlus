@@ -50,14 +50,16 @@ public class ModuleHelpTopic extends HelpTopic {
     public String getFullText(CommandSender forWho) {
         StringBuilder sb = new StringBuilder();
         for (ModuleCommand command : m_module.getCommands()) {
-            String lineStr = buildLine(command).replace("\n", ". ");
-            if (lineStr.length() > ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH) {
-                sb.append(lineStr.substring(0, ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 3));
-                sb.append("...");
-            } else {
-                sb.append(lineStr);
+            if (forWho.hasPermission(command.getPermission())) {
+                String lineStr = buildLine(command).replace("\n", ". ");
+                if (lineStr.length() > ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH) {
+                    sb.append(lineStr.substring(0, ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 3));
+                    sb.append("...");
+                } else {
+                    sb.append(lineStr);
+                }
+                sb.append("\n");
             }
-            sb.append("\n");
         }
         return sb.toString();
     }
