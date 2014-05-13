@@ -22,21 +22,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
-import org.bukkit.event.HandlerList;
-
-import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
-import uk.codingbadgers.SurvivalPlus.module.Module;
-import uk.codingbadgers.SurvivalPlus.module.ModuleHelpTopic;
-import uk.codingbadgers.SurvivalPlus.module.ModuleInfo;
-import uk.codingbadgers.SurvivalPlus.module.loader.exception.LoadException;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +34,15 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nullable;
+import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
+import uk.codingbadgers.SurvivalPlus.module.Module;
+import uk.codingbadgers.SurvivalPlus.module.ModuleHelpTopic;
+import uk.codingbadgers.SurvivalPlus.module.ModuleInfo;
+import uk.codingbadgers.SurvivalPlus.module.loader.exception.LoadException;
 
 public class BukkitModuleLoader implements ModuleLoader {
 
@@ -128,14 +126,45 @@ public class BukkitModuleLoader implements ModuleLoader {
             }
         }
 
-        Collections.sort(moduleDescs); // Sort the modules into dependency order
+        //Collections.sort(moduleDescs); // Sort the modules into dependency order
         getLogger().log(Level.INFO, "Found {0} modules.", moduleDescs.size());
+        
+        List<ModuleInfo> sortedModuleDescs = Lists.newArrayList();               
+        for (Iterator<ModuleInfo> itr = moduleDescs.iterator(); itr.hasNext();) {
 
+            ModuleInfo info = itr.next();
+            Collection<String> depends = info.getDescription().getDependencies();
+            if (depends.isEmpty()) {
+                sortedModuleDescs.add(0, info);
+                continue;
+            }
+            
+            for (String depend : depends) {
+                
+                int dependIndex = 1;
+                boolean addedDepend = false;
+                
+                for (ModuleInfo sortedInfo : sortedModuleDescs) {
+                    if (sortedInfo.getName().equalsIgnoreCase(depend)) {
+                        sortedModuleDescs.add(dependIndex, info);
+                        addedDepend = true;
+                        break;
+                    }
+                    dependIndex++;
+                }
+                
+                if (!addedDepend) {
+                    sortedModuleDescs.add(sortedModuleDescs.size(), info);
+                }
+                
+            }
+        }
+        
         updateState(LoadState.LOAD);
 
         ModuleInfo info = null;
 
-        for (Iterator<ModuleInfo> itr = moduleDescs.iterator(); itr.hasNext();) {
+        for (Iterator<ModuleInfo> itr = sortedModuleDescs.iterator(); itr.hasNext();) {
             try {
                 info = itr.next();
                 boolean dependencies = true;
@@ -161,6 +190,7 @@ public class BukkitModuleLoader implements ModuleLoader {
                 // Create a new instance of the module and load it
                 Module module = ctor.newInstance();
                 module.setInfo(info);
+                module.init();
                 module.onLoad();
                 this.modules.put(module.getName(), module);
 

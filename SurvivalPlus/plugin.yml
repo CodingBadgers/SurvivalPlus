@@ -3,7 +3,7 @@ main: uk.codingbadgers.SurvivalPlus.SurvivalPlus
 version: 1.0
 authors: [thefish97, n3wton]
 depends: [BukkitDatabaseManager, Vault]
-softdepend: []
+softdepend: [WorldGuard, WorldEdit]
 description: Fundamental plugins root plugin
 
 commands:
