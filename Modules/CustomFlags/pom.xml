@@ -9,17 +9,11 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>Skillz</artifactId>
+    <artifactId>CustomFlags</artifactId>
 
     <dependencies>
         <dependency>
             <artifactId>SurvivalPlus</artifactId>
-            <groupId>uk.codingbadgers</groupId>
-            <version>1.0</version>
-        </dependency>
-		
-		<dependency>
-            <artifactId>CustomFlags</artifactId>
             <groupId>uk.codingbadgers</groupId>
             <version>1.0</version>
         </dependency>
@@ -45,5 +39,5 @@
             </plugin>
         </plugins>
     </build>
-
+    <name>CustomFlags</name>
 </project>

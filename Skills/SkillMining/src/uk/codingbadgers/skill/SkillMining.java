@@ -17,16 +17,21 @@
  */
 package uk.codingbadgers.skill;
 
+import com.sk89q.worldguard.protection.flags.BooleanFlag;
+import com.sk89q.worldguard.protection.flags.RegionGroup;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
+import uk.codingbadgers.customflags.CustomFlags;
 import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
 import uk.codingbadgers.skillz.skill.ToolData;
 
 public class SkillMining extends SkillBlockBase implements Listener {
 
+    public static BooleanFlag FLAG_ORE_REGEN = new BooleanFlag("ore-regen", RegionGroup.ALL);
+    
     /**
      * 
      */
@@ -74,6 +79,9 @@ public class SkillMining extends SkillBlockBase implements Listener {
     @Override
     public void onEnable() {
 
+        CustomFlags customFlags = (CustomFlags) SurvivalPlus.getModuleLoader().getModule("CustomFlags");
+        customFlags.addCustomFlag(FLAG_ORE_REGEN);
+        
     }
 
     /**

@@ -17,6 +17,8 @@
  */
 package uk.codingbadgers.skill;
 
+import com.sk89q.worldguard.protection.flags.RegionGroup;
+import com.sk89q.worldguard.protection.flags.StringFlag;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -26,11 +28,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
+import uk.codingbadgers.customflags.CustomFlags;
 import uk.codingbadgers.skillz.skill.SkillBase;
 
 public class SkillFishing extends SkillBase implements Listener {
 
+    public static StringFlag FLAG_FISHING_SPOT_TYPE = new StringFlag("fishing-spot-type", RegionGroup.ALL);
+    
     /**
      * 
      */
@@ -59,6 +65,9 @@ public class SkillFishing extends SkillBase implements Listener {
     @Override
     public void onEnable() {
 
+        CustomFlags customFlags = (CustomFlags) SurvivalPlus.getModuleLoader().getModule("CustomFlags");
+        customFlags.addCustomFlag(FLAG_FISHING_SPOT_TYPE);
+ 
     }
 
     /**
