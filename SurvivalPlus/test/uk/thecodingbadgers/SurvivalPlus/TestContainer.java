@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.thecodingbadgers.bFundamentals;
+package uk.thecodingbadgers.SurvivalPlus;
 
 import net.minecraft.server.v1_7_R3.DispenserRegistry;
 import org.junit.BeforeClass;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
-import uk.thecodingbadgers.bFundamentals.support.DummyEnchantments;
-import uk.thecodingbadgers.bFundamentals.support.DummyPotions;
-import uk.thecodingbadgers.bFundamentals.support.DummyServer;
-import uk.thecodingbadgers.bFundamentals.support.TestConfigManager;
+import uk.thecodingbadgers.SurvivalPlus.support.DummyEnchantments;
+import uk.thecodingbadgers.SurvivalPlus.support.DummyPotions;
+import uk.thecodingbadgers.SurvivalPlus.support.DummyServer;
+import uk.thecodingbadgers.SurvivalPlus.support.TestConfigManager;
 
 public class TestContainer {
 

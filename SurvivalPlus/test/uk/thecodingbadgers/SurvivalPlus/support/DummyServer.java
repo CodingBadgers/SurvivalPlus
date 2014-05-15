@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.thecodingbadgers.bFundamentals.support;
+package uk.thecodingbadgers.SurvivalPlus.support;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

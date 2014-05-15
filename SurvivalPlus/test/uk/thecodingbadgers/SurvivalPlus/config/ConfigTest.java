@@ -15,18 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.thecodingbadgers.bFundamentals.support;
+package uk.thecodingbadgers.SurvivalPlus.config;
 
-import net.minecraft.server.v1_7_R3.Enchantment;
+import java.io.File;
 
-public class DummyEnchantments {
+import org.junit.Test;
 
-    static {
-        Enchantment.byId.getClass();
-        org.bukkit.enchantments.Enchantment.stopAcceptingRegistrations();
+import static org.junit.Assert.*;
+
+import uk.codingbadgers.SurvivalPlus.config.ConfigFactory;
+
+public class ConfigTest {
+
+    @Test
+    public void test() {
+
+        File configFile = new File("test/config.yml");
+
+        try {
+            if (!configFile.exists()) {
+                ConfigFactory.createDefaultConfig(Config.class, configFile);
+            }
+
+            ConfigFactory.loadConfig(Config.class, configFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
-
-    public static void setup() {
-    }
-
 }

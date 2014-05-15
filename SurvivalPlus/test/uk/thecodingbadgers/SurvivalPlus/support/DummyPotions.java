@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.thecodingbadgers.bFundamentals.support;
+package uk.thecodingbadgers.SurvivalPlus.support;
 
 import net.minecraft.server.v1_7_R3.MobEffectList;
 import org.bukkit.craftbukkit.v1_7_R3.potion.CraftPotionBrewer;

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.thecodingbadgers.bFundamentals.messaging;
+package uk.thecodingbadgers.SurvivalPlus.messaging;
 
 import java.util.Arrays;
 
@@ -34,7 +34,7 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.message.ClickEventType;
 import uk.codingbadgers.SurvivalPlus.message.HoverEventType;
 import uk.codingbadgers.SurvivalPlus.message.Message;
-import uk.thecodingbadgers.bFundamentals.TestContainer;
+import uk.thecodingbadgers.SurvivalPlus.TestContainer;
 
 import static org.junit.Assert.*;
 
