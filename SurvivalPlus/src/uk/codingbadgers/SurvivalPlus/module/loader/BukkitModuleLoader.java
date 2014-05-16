@@ -191,14 +191,14 @@ public class BukkitModuleLoader implements ModuleLoader {
                 Module module = ctor.newInstance();
                 module.setInfo(info);
                 module.init();
-                module.onLoad();
                 this.modules.put(module.getName(), module);
 
                 Bukkit.getHelpMap().addTopic(new ModuleHelpTopic(module)); // create a help entry for this module
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
+                getLogger().log(Level.SEVERE, "Cannot find class {} for module {}, is the path.yml valid?", new Object[] { e.getMessage(), info.getName() });
+            } catch (Throwable  e) {
+                getLogger().log(Level.SEVERE, "A error has occurred whilst trying to load module {}.", info.getName());
+                getLogger().log(Level.SEVERE, "Exception: ", e);
             }
         }
 

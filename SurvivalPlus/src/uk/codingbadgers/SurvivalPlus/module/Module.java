@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.common.base.Preconditions;
 import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
@@ -92,8 +94,11 @@ public abstract class Module extends Loadable implements Listener {
         return m_plugin; 
     }
     
-    public void init() {
+    public final void init() {
+        Preconditions.checkState(m_log == null, "Modules already initialized, cannot reinitialize.");
         m_log = new ModuleLogger(this);
+
+        this.onLoad();
     }
 
     protected void setUpdater(Updater updater) {
