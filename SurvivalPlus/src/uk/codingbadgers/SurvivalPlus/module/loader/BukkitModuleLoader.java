@@ -195,7 +195,7 @@ public class BukkitModuleLoader implements ModuleLoader {
 
                 Bukkit.getHelpMap().addTopic(new ModuleHelpTopic(module)); // create a help entry for this module
             } catch (ClassNotFoundException e) {
-                getLogger().log(Level.SEVERE, "Cannot find class {} for module {}, is the path.yml valid?", new Object[] { e.getMessage(), info.getName() });
+                getLogger().log(Level.SEVERE, "Cannot find class {} for module {}, is the path.yml valid?", new Object[]{e.getMessage(), info.getName()});
             } catch (Throwable  e) {
                 getLogger().log(Level.SEVERE, "A error has occurred whilst trying to load module {}.", info.getName());
                 getLogger().log(Level.SEVERE, "Exception: ", e);
@@ -272,8 +272,13 @@ public class BukkitModuleLoader implements ModuleLoader {
         return new Function<Module, Void>() {
             @Override
             public Void apply(@Nullable Module module) {
-                if (module != null) {
-                    module.onPostEnable();
+                try {
+                    if (module != null) {
+                        module.onPostEnable();
+                    }
+                } catch (Exception ex) {
+                    getLogger().log(Level.SEVERE, "A unexpected error has occurred whilst trying to enable module {}", module.getName());
+                    getLogger().log(Level.SEVERE, "Exception:", ex);
                 }
                 return null;
             }
@@ -284,9 +289,14 @@ public class BukkitModuleLoader implements ModuleLoader {
         return new Function<Module, Void>() {
             @Override
             public Void apply(@Nullable Module module) {
-                if (module != null) {
-                    module.setEnabled(true);
-                    getLogger().log(Level.INFO, "{0} version {1} is enabled.", new Object[]{module.getDescription().getName(), module.getDescription().getVersion()});
+                try {
+                    if (module != null) {
+                        module.setEnabled(true);
+                        getLogger().log(Level.INFO, "{0} version {1} is enabled.", new Object[]{module.getDescription().getName(), module.getDescription().getVersion()});
+                    }
+                } catch (Exception ex) {
+                    getLogger().log(Level.SEVERE, "A unexpected error has occurred whilst trying to enable module {}", module.getName());
+                    getLogger().log(Level.SEVERE, "Exception:", ex);
                 }
                 return null;
             }
@@ -297,12 +307,17 @@ public class BukkitModuleLoader implements ModuleLoader {
         return new Function<Module, Void>() {
             @Override
             public Void apply(@Nullable Module module) {
-                if (module != null) {
-                    module.setEnabled(false);
-                }
+                try {
+                    if (module != null) {
+                        module.setEnabled(false);
+                    }
 
-                for (Listener listener : module.getListeners()) {
-                    HandlerList.unregisterAll(listener);
+                    for (Listener listener : module.getListeners()) {
+                        HandlerList.unregisterAll(listener);
+                    }
+                } catch (Exception ex) {
+                    getLogger().log(Level.SEVERE, "A unexpected error has occurred whilst trying to enable module {}", module.getName());
+                    getLogger().log(Level.SEVERE, "Exception:", ex);
                 }
                 return null;
             }
