@@ -79,8 +79,8 @@ public class SkillMining extends SkillBlockBase implements Listener {
     @Override
     public void onEnable() {
 
-        CustomFlags customFlags = (CustomFlags) SurvivalPlus.getModuleLoader().getModule("CustomFlags");
-        customFlags.addCustomFlag(FLAG_ORE_REGEN);
+        m_customFlags = (CustomFlags) SurvivalPlus.getModuleLoader().getModule("CustomFlags");
+        m_customFlags.addCustomFlag(FLAG_ORE_REGEN);
         
     }
 

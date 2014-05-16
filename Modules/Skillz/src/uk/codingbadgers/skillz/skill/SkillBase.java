@@ -20,12 +20,18 @@ package uk.codingbadgers.skillz.skill;
 import org.bukkit.event.Listener;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
+import uk.codingbadgers.customflags.CustomFlags;
 
 /**
  * @author n3wton
  */
 public abstract class SkillBase extends Module implements PlayerData, Listener {
 
+    /**
+     * 
+     */
+    protected CustomFlags m_customFlags = null;
+    
     /**
      *
      */

@@ -20,13 +20,20 @@ import com.sk89q.util.yaml.YAMLFormat;
 import com.sk89q.util.yaml.YAMLProcessor;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Level;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.customflags.data.FlagSaveHandler;
@@ -276,5 +283,65 @@ public class CustomFlags extends Module {
         {
             return new YAMLSaveHandler(this, wgPlugin);
         }
+    }
+    
+    public Object getFlag(Player player, Flag flag)
+    {
+        RegionManager regionManager = wgPlugin.getRegionManager(player.getWorld());
+        if (regionManager == null) {
+            return null;
+        }
+        
+        final Location location = player.getLocation();
+        final int px = location.getBlockX();       
+        final int py = location.getBlockY();
+        final int pz = location.getBlockZ();
+
+        List<ProtectedRegion> playerRegions = new ArrayList<ProtectedRegion>();
+        
+        for (Entry<String, ProtectedRegion> regionEntry : regionManager.getRegions().entrySet()) {
+            ProtectedRegion region = regionEntry.getValue();
+            if (region.contains(px, py, pz)) {
+                playerRegions.add(region);                
+            }            
+        }
+        
+        if (playerRegions.isEmpty()) {
+            return null;
+        }
+                
+        ProtectedRegion mainRegion = null;
+        if (playerRegions.size() == 1) {
+            mainRegion = playerRegions.get(0);
+        }
+        else {
+            // work out the lowest child of the regions
+            int childLevel = 0;
+            for (ProtectedRegion region : playerRegions)
+            {
+                if (region.getParent() != null)
+                {
+                    ProtectedRegion tempRegion = region;
+                    int tempChildLevel = 0;
+                    while(tempRegion.getParent() != null)
+                    {
+                        tempRegion = tempRegion.getParent();
+                        tempChildLevel++;
+                    }
+
+                    if (tempChildLevel > childLevel)
+                    {
+                        childLevel = tempChildLevel;
+                        mainRegion = region;
+                    }
+                }
+            }
+        }
+        
+        if (mainRegion == null) {
+            return null;
+        }
+
+        return mainRegion.getFlag(flag);
     }
 }
