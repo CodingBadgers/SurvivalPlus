@@ -1,0 +1,92 @@
+{
+  "blocks": [
+    {
+      "material": "STONE",
+      "dataid": 0,
+      "xp": 1,
+      "requiredlevel": 0,
+      "regentime_minutes": 0,
+      "regentime_seconds": 15
+    },
+    {
+      "material": "SANDSTONE",
+      "dataid": 0,
+      "xp": 1,
+      "requiredlevel": 0,
+      "regentime_minutes": 0,
+      "regentime_seconds": 15
+    },
+    {
+      "material": "NETHERRACK",
+      "dataid": 0,
+      "xp": 1,
+      "requiredlevel": 0,
+      "regentime_minutes": 0,
+      "regentime_seconds": 15
+    },
+    {
+      "material": "COAL_ORE",
+      "dataid": 0,
+      "xp": 2,
+      "requiredlevel": 5,
+      "regentime_minutes": 0,
+      "regentime_seconds": 30
+    },
+    {
+      "material": "IRON_ORE",
+      "dataid": 0,
+      "xp": 5,
+      "requiredlevel": 10,
+      "regentime_minutes": 1,
+      "regentime_seconds": 0
+    },
+    {
+      "material": "QUARTZ_ORE",
+      "dataid": 0,
+      "xp": 5,
+      "requiredlevel": 15,
+      "regentime_minutes": 1,
+      "regentime_seconds": 0
+    },
+    {
+      "material": "GOLD_ORE",
+      "dataid": 0,
+      "xp": 10,
+      "requiredlevel": 20,
+      "regentime_minutes": 2,
+      "regentime_seconds": 0
+    },
+    {
+      "material": "REDSTONE_ORE",
+      "dataid": 0,
+      "xp": 10,
+      "requiredlevel": 20,
+      "regentime_minutes": 4,
+      "regentime_seconds": 0
+    },
+    {
+      "material": "LAPIS_ORE",
+      "dataid": 0,
+      "xp": 10,
+      "requiredlevel": 25,
+      "regentime_minutes": 5,
+      "regentime_seconds": 0
+    },
+    {
+      "material": "EMERALD_ORE",
+      "dataid": 0,
+      "xp": 15,
+      "requiredlevel": 40,
+      "regentime_minutes": 15,
+      "regentime_seconds": 0
+    },
+    {
+      "material": "DIAMOND_ORE",
+      "dataid": 0,
+      "xp": 50,
+      "requiredlevel": 55,
+      "regentime_minutes": 30,
+      "regentime_seconds": 0
+    }
+  ]
+}

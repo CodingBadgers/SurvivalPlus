@@ -17,8 +17,14 @@
  */
 package uk.codingbadgers.skill;
 
+import com.google.gson.Gson;
 import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.RegionGroup;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.logging.Level;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
@@ -27,6 +33,7 @@ import uk.codingbadgers.customflags.CustomFlags;
 import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
 import uk.codingbadgers.skillz.skill.ToolData;
+import uk.codingbadgers.skillz.skill.config.BlockConfig;
 
 public class SkillMining extends SkillBlockBase implements Listener {
 
@@ -45,17 +52,35 @@ public class SkillMining extends SkillBlockBase implements Listener {
     @Override
     public void onLoad() {
 
-        RegisterBlock(Material.STONE, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 15)));
-        RegisterBlock(Material.SANDSTONE, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 15)));
-        RegisterBlock(Material.NETHERRACK, new BlockData(1L, 1, SurvivalPlus.timeToTicks(0, 15)));
-        RegisterBlock(Material.COAL_ORE, new BlockData(2L, 5, SurvivalPlus.timeToTicks(0, 30)));
-        RegisterBlock(Material.IRON_ORE, new BlockData(5L, 10, SurvivalPlus.timeToTicks(1, 0)));
-        RegisterBlock(Material.QUARTZ_ORE, new BlockData(5L, 15, SurvivalPlus.timeToTicks(1, 0)));
-        RegisterBlock(Material.GOLD_ORE, new BlockData(10L, 20, SurvivalPlus.timeToTicks(2, 30)));
-        RegisterBlock(Material.REDSTONE_ORE, new BlockData(10L, 20, SurvivalPlus.timeToTicks(4, 0)));
-        RegisterBlock(Material.LAPIS_ORE, new BlockData(10L, 25, SurvivalPlus.timeToTicks(5, 0)));
-        RegisterBlock(Material.EMERALD_ORE, new BlockData(15L, 40, SurvivalPlus.timeToTicks(15, 0)));
-        RegisterBlock(Material.DIAMOND_ORE, new BlockData(50L, 55, SurvivalPlus.timeToTicks(30, 0)));
+        final String configPath = this.getDataFolder() + File.separator + "block-config.json";
+                
+        try {
+            final File file = new File(configPath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            
+            Gson gson = SurvivalPlus.getGsonInstance();
+            Reader reader = new FileReader(configPath);
+            BlockConfig blockConfig = gson.fromJson(reader, BlockConfig.class);
+            
+            for (BlockConfig.Block block : blockConfig.blocks) {
+                
+                Material material = Material.matchMaterial(block.material);
+                if (material != null) {
+                    BlockData blockdata = new BlockData(
+                            block.xp, 
+                            block.requiredlevel, 
+                            SurvivalPlus.timeToTicks(block.regentime_minutes, block.regentime_seconds),
+                            block.dataid);
+                    RegisterBlock(material, blockdata, block.dataid);
+                }                
+            }
+        }
+        catch (Exception ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to load '" + configPath + "'", ex);
+        } 
 
         RegisterTool(Material.WOOD_PICKAXE, new ToolData(1));
         RegisterTool(Material.STONE_PICKAXE, new ToolData(5));

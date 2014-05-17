@@ -1,0 +1,52 @@
+{
+  "blocks": [
+    {
+      "material": "LOG",
+      "dataid": 0,
+      "xp": 5,
+      "requiredlevel": 0,
+      "regentime_minutes": 0,
+      "regentime_seconds": 15
+    },
+    {
+      "material": "LOG",
+      "dataid": 1,
+      "xp": 15,
+      "requiredlevel": 10,
+      "regentime_minutes": 0,
+      "regentime_seconds": 25
+    },
+    {
+      "material": "LOG",
+      "dataid": 2,
+      "xp": 35,
+      "requiredlevel": 25,
+      "regentime_minutes": 0,
+      "regentime_seconds": 45
+    },
+    {
+      "material": "LOG",
+      "dataid": 3,
+      "xp": 80,
+      "requiredlevel": 55,
+      "regentime_minutes": 1,
+      "regentime_seconds": 30
+    },
+    {
+      "material": "LOG_2",
+      "dataid": 0,
+      "xp": 25,
+      "requiredlevel": 15,
+      "regentime_minutes": 0,
+      "regentime_seconds": 35
+    },
+    {
+      "material": "LOG_2",
+      "dataid": 1,
+      "xp": 100,
+      "requiredlevel": 70,
+      "regentime_minutes": 2,
+      "regentime_seconds": 0
+    },
+  ]
+}

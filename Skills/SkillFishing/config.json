@@ -1,0 +1,24 @@
+{
+  "fish-types": [
+    {
+      "name": "trout",
+      "displayname": "Raw Trout",
+      "material": {
+        "name": "RAW_FISH",
+        "dataid": 0
+      },
+      "xp": 3,
+      "required-level": 0
+    },
+    {
+      "name": "mackerel",
+      "displayname": "Raw Mackerel",
+      "material": {
+        "name": "RAW_FISH",
+        "dataid": 0
+      },
+      "xp": 5,
+      "required-level": 5
+    }
+  ]
+}

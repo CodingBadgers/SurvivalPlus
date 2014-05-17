@@ -17,8 +17,12 @@
  */
 package uk.codingbadgers.skill;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.logging.Level;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,6 +33,7 @@ import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.skill.BlockData;
 import uk.codingbadgers.skillz.skill.SkillBlockBase;
 import uk.codingbadgers.skillz.skill.ToolData;
+import uk.codingbadgers.skillz.skill.config.BlockConfig;
 
 public class SkillWoodCutting extends SkillBlockBase implements Listener {
 
@@ -45,18 +50,36 @@ public class SkillWoodCutting extends SkillBlockBase implements Listener {
     @Override
     public void onLoad() {
 
-        Map<Byte, BlockData> logData = new HashMap<Byte, BlockData>();
-        logData.put((byte)0, new BlockData(5L, 1, SurvivalPlus.timeToTicks(0, 15))); // Oak
-        logData.put((byte)1, new BlockData(15L, 10, SurvivalPlus.timeToTicks(0, 25))); // Spruce
-        logData.put((byte)2, new BlockData(35L, 25, SurvivalPlus.timeToTicks(0, 45))); // Birch
-        logData.put((byte)3, new BlockData(80L, 55, SurvivalPlus.timeToTicks(0, 90))); // Jungle        
-        RegisterBlock(Material.LOG, logData);
+        final String configPath = this.getDataFolder() + File.separator + "block-config.json";
+                
+        try {
+            final File file = new File(configPath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            
+            Gson gson = SurvivalPlus.getGsonInstance();
+            Reader reader = new FileReader(configPath);
+            BlockConfig blockConfig = gson.fromJson(reader, BlockConfig.class);
+            
+            for (BlockConfig.Block block : blockConfig.blocks) {
+                
+                Material material = Material.matchMaterial(block.material);
+                if (material != null) {
+                    BlockData blockdata = new BlockData(
+                            block.xp, 
+                            block.requiredlevel, 
+                            SurvivalPlus.timeToTicks(block.regentime_minutes, block.regentime_seconds),
+                            block.dataid);
+                    RegisterBlock(material, blockdata, block.dataid);
+                }                
+            }
+        }
+        catch (Exception ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to load '" + configPath + "'", ex);
+        } 
         
-        Map<Byte, BlockData> log2Data = new HashMap<Byte, BlockData>();
-        log2Data.put((byte)0, new BlockData(25L, 15, SurvivalPlus.timeToTicks(0, 35))); // Acaicia
-        log2Data.put((byte)1, new BlockData(100L, 70, SurvivalPlus.timeToTicks(0, 120))); // Dark Oak    
-        RegisterBlock(Material.LOG_2, log2Data);
-
         RegisterTool(Material.WOOD_AXE, new ToolData(1));
         RegisterTool(Material.STONE_AXE, new ToolData(5));
         RegisterTool(Material.IRON_AXE, new ToolData(15));

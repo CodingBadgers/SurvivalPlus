@@ -17,13 +17,20 @@
  */
 package uk.codingbadgers.skill;
 
+import com.google.gson.Gson;
 import com.sk89q.worldguard.protection.flags.RegionGroup;
 import com.sk89q.worldguard.protection.flags.SetFlag;
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import org.bukkit.Material;
+import java.util.logging.Level;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,14 +38,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.customflags.CustomFlags;
+import uk.codingbadgers.skill.FishingConfig.FishType;
 import uk.codingbadgers.skillz.skill.PlayerSkillData;
 import uk.codingbadgers.skillz.skill.SkillBase;
 
@@ -46,7 +52,7 @@ public class SkillFishing extends SkillBase implements Listener {
 
     public static SetFlag<String> FLAG_FISHING_SPOT_TYPE = new SetFlag<String>("fishing-spot-type", RegionGroup.ALL, new FishFlag(null));
     
-    private Map<String, ItemStack> m_registeredFish = new HashMap<String, ItemStack>();
+    private Map<String, FishType> m_registeredFish = new HashMap<String, FishType>();
         
     /**
      * 
@@ -60,58 +66,35 @@ public class SkillFishing extends SkillBase implements Listener {
     @Override
     public void onLoad() {
 
-        ItemStack trout = new ItemStack(Material.RAW_FISH);
-        ItemMeta troutData = trout.getItemMeta();
-        troutData.setDisplayName("Raw Trout");
-        trout.setItemMeta(troutData);
-        m_registeredFish.put("trout", trout);
-        
-        ItemStack mackerel = new ItemStack(Material.RAW_FISH);
-        ItemMeta mackerelData = mackerel.getItemMeta();
-        mackerelData.setDisplayName("Raw Mackerel");
-        mackerel.setItemMeta(mackerelData);
-        m_registeredFish.put("mackerel", mackerel);
-        
-        ItemStack cod = new ItemStack(Material.RAW_FISH);
-        ItemMeta codData = cod.getItemMeta();
-        codData.setDisplayName("Raw Cod");
-        cod.setItemMeta(codData);
-        m_registeredFish.put("cod", cod);
-        
-        ItemStack bass = new ItemStack(Material.RAW_FISH);
-        ItemMeta bassData = bass.getItemMeta();
-        bassData.setDisplayName("Raw Bass");
-        bass.setItemMeta(bassData);
-        m_registeredFish.put("bass", bass);
-        
-        ItemStack salmon = new ItemStack(Material.RAW_FISH, 1, (short)1, (byte)1);
-        m_registeredFish.put("salmon", salmon);
-        
-        ItemStack redcod = new ItemStack(Material.RAW_FISH, 1, (short)1, (byte)1);
-        ItemMeta redcodData = redcod.getItemMeta();
-        redcodData.setDisplayName("Raw Redcod");
-        redcod.setItemMeta(redcodData);
-        m_registeredFish.put("redcod", redcod);
-        
-        ItemStack clownfish = new ItemStack(Material.RAW_FISH, 1, (short)2, (byte)2);
-        m_registeredFish.put("clownfish", clownfish);
-        
-        ItemStack angelfish = new ItemStack(Material.RAW_FISH, 1, (short)2, (byte)2);
-        ItemMeta angelData = angelfish.getItemMeta();
-        angelData.setDisplayName("Raw Angelfish");
-        angelfish.setItemMeta(angelData);      
-        m_registeredFish.put("angelfish", angelfish);
-        
-        ItemStack pufferfish = new ItemStack(Material.RAW_FISH, 1, (short)3, (byte)3);
-        m_registeredFish.put("pufferfish", pufferfish);    
-        
-        ItemStack boxfish = new ItemStack(Material.RAW_FISH, 1, (short)3, (byte)3);
-        ItemMeta boxfishData = boxfish.getItemMeta();
-        boxfishData.setDisplayName("Raw Boxfish");
-        boxfish.setItemMeta(boxfishData);  
-        m_registeredFish.put("boxfish", boxfish);
+        final String configPath = this.getDataFolder() + File.separator + "config.json";
+                
+        try {
+            final File file = new File(configPath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            
+            Gson gson = SurvivalPlus.getGsonInstance();
+            Reader reader = new FileReader(configPath);
+            FishingConfig fishingConfig = gson.fromJson(reader, FishingConfig.class);
+            for (FishType fish : fishingConfig.fishtypes) {
+                registerFish(fish);
+            }
+        }
+        catch (Exception ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to load '" + configPath + "'", ex);
+        } 
     }
 
+    private void registerFish(FishType fish) {
+        
+        if (fish.setup()) {
+            m_registeredFish.put(fish.name, fish);
+        }
+               
+    }
+    
     /**
      * Called when the module is disabled.
      */
@@ -167,20 +150,6 @@ public class SkillFishing extends SkillBase implements Listener {
         
         if (state == PlayerFishEvent.State.CAUGHT_FISH) {
 
-            Random random = new Random();            
-            Object[] fishes = fishSet.toArray();
-            String fishType = ((String)fishes[random.nextInt(fishes.length)]).toLowerCase();     
- 
-            if (!m_registeredFish.containsKey(fishType)) {
-                return;
-            }
-            
-            Module.sendMessage("Fishing", player, "You caught a " + fishType + ".");
-            
-            final PlayerInventory invent = player.getInventory();
-            invent.addItem(m_registeredFish.get(fishType).clone());
-            player.updateInventory();
-                          
             FundamentalPlayer fundamentalPlayer = SurvivalPlus.Players.getPlayer(player);
             if (fundamentalPlayer == null) {
                 return;
@@ -190,8 +159,38 @@ public class SkillFishing extends SkillBase implements Listener {
             if (data == null) {
                 return;
             }
-  
-            data.addXP(10L);            
+
+            Random random = new Random();            
+            Object[] allfishes = fishSet.toArray();
+            
+            // Check minimum level
+            List<String> fishes = new ArrayList<String>();
+            for (Object fishObject : allfishes) {
+                String fishName = (String)fishObject;
+                if (m_registeredFish.containsKey(fishName)) {
+                    FishType fish = m_registeredFish.get(fishName);
+                    if (data.getLevel() >= fish.requiredlevel) {
+                        fishes.add(fishName);
+                    }                    
+                }
+            }
+
+            if (fishes.isEmpty()) {
+                Module.sendMessage("Fishing", player, "The fish got away, you need to be a higher level to catch the fish around here.");
+                return;
+            }            
+            
+            String fishType = fishes.get(random.nextInt(fishes.size())).toLowerCase();     
+ 
+            Module.sendMessage("Fishing", player, "You caught a " + fishType + ".");
+            
+            FishType fish = m_registeredFish.get(fishType);
+            
+            final PlayerInventory invent = player.getInventory();
+            invent.addItem(fish.getFish().clone());
+            player.updateInventory();
+                            
+            data.addXP(fish.xp);            
         }
         
     }

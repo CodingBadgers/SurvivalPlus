@@ -80,6 +80,27 @@ public abstract class SkillBlockBase extends SkillBase {
         mapBlockData.put((byte)0, blockData);
         m_blocks.put(block, mapBlockData);
     }
+
+    /**
+     * Register a block with this skill and the amount of xp gained for breaking said block
+     *
+     * @param block The material of the block to register
+     * @param blockData    The block data associated with this block
+     * @param dataId    The data id of the block
+     */
+    protected void RegisterBlock(Material block, BlockData blockData, byte dataId) {
+        Map<Byte, BlockData> mapBlockData = null;
+        
+        if (m_blocks.containsKey(block)) {
+            mapBlockData = m_blocks.get(block);
+        }
+        else {
+            mapBlockData = new HashMap<Byte, BlockData>();
+        }
+        
+        mapBlockData.put(dataId, blockData);
+        m_blocks.put(block, mapBlockData);
+    }
     
     /**
      * Register a block with this skill and the amount of xp gained for breaking said block
