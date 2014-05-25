@@ -28,4 +28,8 @@ public class SkillFishingData extends PlayerSkillData {
         super("Fishing");
     }
 
+    @Override
+    public String getName() {
+        return "SkillFishingData";
+    }
 }

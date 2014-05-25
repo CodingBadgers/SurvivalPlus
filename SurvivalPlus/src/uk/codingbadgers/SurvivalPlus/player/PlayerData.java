@@ -19,4 +19,25 @@ package uk.codingbadgers.SurvivalPlus.player;
 
 public interface PlayerData {
 
+    /**
+     * 
+     * @return 
+     */
+    public String getName();
+    
+    /**
+     * 
+     * @return 
+     */
+    public String getGroup();
+    
+    /**
+     * 
+     */
+    public void onEnable();
+    
+    /**
+     * 
+     */
+    public void onDisable();
 }

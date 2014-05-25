@@ -28,4 +28,8 @@ public class SkillMiningData extends PlayerSkillData {
         super("Mining");
     }
 
+    @Override
+    public String getName() {
+        return "SkillMiningData";
+    }
 }

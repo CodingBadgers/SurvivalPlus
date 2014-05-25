@@ -17,21 +17,33 @@
  */
 package uk.codingbadgers.skillz.skill;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
+import uk.codingbadgers.skillz.events.PlayerSkillLevelIncrease;
 
 /**
  * @author n3wton
  */
-public class PlayerSkillData implements PlayerData, Comparable {
+public abstract class PlayerSkillData implements PlayerData, Comparable {
     
     /**
      * The name of the skill data
      */
     private final String m_skillDataName;
 
+    @Override
+    public void onEnable() {
+        
+    }
+
+    @Override
+    public void onDisable() {
+
+    }
+    
     /**
      * @param skillName
      */
@@ -99,6 +111,8 @@ public class PlayerSkillData implements PlayerData, Comparable {
             if (player != null) {
                 player.sendMessage(ChatColor.YELLOW + "Your " + ChatColor.GOLD + this.getSkillName() + ChatColor.YELLOW
                         + " skill has increased to level " + ChatColor.GOLD + level + ChatColor.YELLOW + "!");
+                
+                Bukkit.getPluginManager().callEvent(new PlayerSkillLevelIncrease(player, this));
             }
         }
     }
@@ -179,5 +193,10 @@ public class PlayerSkillData implements PlayerData, Comparable {
     public int compareTo(Object other) {
         PlayerSkillData skillData = (PlayerSkillData) other;
         return getSkillName().compareTo(skillData.getSkillName());
+    }
+
+    @Override
+    public String getGroup() {
+        return "PlayerSkillData";
     }
 }

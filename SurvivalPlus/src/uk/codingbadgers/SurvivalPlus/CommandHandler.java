@@ -47,7 +47,7 @@ public class CommandHandler implements TabExecutor {
         }
 
         if (args[0].equalsIgnoreCase("reload")) {
-            try {
+            try {               
                 SurvivalPlus.getModuleLoader().unload();
                 SurvivalPlus.getModuleLoader().load();
                 sender.sendMessage(ChatColor.DARK_AQUA + "[bFundamentals] " + ChatColor.WHITE + "Reloaded all modules");

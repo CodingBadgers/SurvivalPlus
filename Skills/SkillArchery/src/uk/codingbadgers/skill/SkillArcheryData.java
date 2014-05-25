@@ -22,15 +22,14 @@ import uk.codingbadgers.skillz.skill.PlayerSkillData;
 /**
  * @author n3wton
  */
-public class SkillLandscapingData extends PlayerSkillData {
+public class SkillArcheryData extends PlayerSkillData {
 
-    public SkillLandscapingData() {
-        super("Landscaping");
+    public SkillArcheryData() {
+        super("Archery");
     }
-    
+
     @Override
     public String getName() {
-        return "SkillLandscapingData";
+        return "SkillArcheryData";
     }
-    
 }

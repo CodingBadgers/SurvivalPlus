@@ -54,8 +54,8 @@ import uk.codingbadgers.SurvivalPlus.message.ClickEventType;
 import uk.codingbadgers.SurvivalPlus.message.HoverEventType;
 import uk.codingbadgers.SurvivalPlus.message.Message;
 import uk.codingbadgers.SurvivalPlus.module.Module;
-import uk.codingbadgers.SurvivalPlus.module.loader.ModuleLoader;
 import uk.codingbadgers.SurvivalPlus.module.loader.BukkitModuleLoader;
+import uk.codingbadgers.SurvivalPlus.module.loader.ModuleLoader;
 import uk.codingbadgers.SurvivalPlus.module.loader.exception.LoadException;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayerArray;
@@ -398,7 +398,8 @@ public class SurvivalPlus extends JavaPlugin implements Listener {
             Class<? extends PlayerData> playerDataClass = module.getPlayerDataClass();
             if (playerDataClass != null) {
                 try {
-                    newPlayer.addPlayerData((PlayerData) playerDataClass.newInstance());
+                    PlayerData data = (PlayerData) playerDataClass.newInstance();
+                    newPlayer.addPlayerData(data.getGroup(), data.getName(), data);
                 } catch (Exception ex) {
                     SurvivalPlus.log(Level.WARNING, "Failed to create new player data for '" + event.getPlayer().getName() + "' for module '" + module.getName() + "'", ex);
                 }

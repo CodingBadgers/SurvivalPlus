@@ -26,6 +26,9 @@
         <module>Modules/Skillz</module>
 
         <!-- Skills -->
+		<module>Skills/SkillArchery</module>
+		<module>Skills/SkillAttack</module>
+		<module>Skills/SkillDefence</module>
         <module>Skills/SkillLandscaping</module>
         <module>Skills/SkillMining</module>
         <module>Skills/SkillWoodCutting</module>

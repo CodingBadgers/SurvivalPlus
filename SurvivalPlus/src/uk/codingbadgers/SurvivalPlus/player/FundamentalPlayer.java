@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,8 +47,10 @@ import uk.codingbadgers.SurvivalPlus.message.Message;
 public class FundamentalPlayer {
 
     protected Player m_player;
-    protected HashMap<Class<? extends PlayerData>, PlayerData> m_playerData = new HashMap<Class<? extends PlayerData>, PlayerData>();
+    // protected HashMap<Class<? extends PlayerData>, PlayerData> m_playerData = new HashMap<Class<? extends PlayerData>, PlayerData>();
 
+    protected Map<String, Map<String, PlayerData>> m_playerData = new HashMap<String, Map<String, PlayerData>>();
+                
     /**
      * Instantiates a new base player.
      *
@@ -66,6 +70,106 @@ public class FundamentalPlayer {
         return m_player;
     }
 
+    /**
+     * 
+     * @param group
+     * @param name
+     * @param data 
+     */
+    public void addPlayerData(String group, String name, PlayerData data) {
+        
+        Map<String, PlayerData> groups = null;
+        if (m_playerData.containsKey(group)) {
+            groups = m_playerData.get(group);
+        } else {
+            groups = new HashMap<String, PlayerData>();
+        }
+                
+        groups.put(name, data);
+        m_playerData.put(group, groups);
+    }
+    
+    /**
+     * 
+     * @param group
+     * @param name
+     * @return 
+     */
+    public PlayerData getPlayerData(String group, String name) {
+        
+        if (!m_playerData.containsKey(group)) {
+            return null;
+        }
+        
+        Map<String, PlayerData> dataGroup = m_playerData.get(group);
+        
+        if (!dataGroup.containsKey(name)) {
+            return null;
+        }
+        
+        return dataGroup.get(name);
+    }
+    
+    /**
+     * Gets any player data of the given data ID.
+     *
+     * @param <T>
+     * @param dataID the data type to lookup
+     * @return the player data if it exists, else null.
+     * @see PlayerData
+     */
+    public <T extends PlayerData> T getPlayerData(Class<? extends T> dataID) {
+        try {        
+            T tempInstance = dataID.newInstance();
+            return (T) getPlayerData(tempInstance.getGroup(), tempInstance.getName());
+        }
+        catch (IllegalAccessException ex) {
+            return null;
+        } catch (InstantiationException ex) {
+            return null;
+        }
+    }
+    
+    /**
+     * Gets any player data of the given data ID.
+     *
+     * @param <T>
+     * @param dataID the data type to lookup
+     * @return the player data if it exists, else null.
+     * @see PlayerData
+     */
+    public <T extends PlayerData> List<T> getAllPlayerData(String group) {
+        
+        List<T> datas = new ArrayList<T>();
+
+        if (m_playerData.containsKey(group)) {
+            Map<String, PlayerData> dataGroup = m_playerData.get(group);
+            for (PlayerData data : dataGroup.values()) {
+                datas.add((T)data);
+            }
+        }            
+        
+        return datas;
+    }
+    
+    /**
+     * 
+     * @param data
+     * @return 
+     */
+    public boolean isDataOwner(PlayerData data) {
+        
+        for (Map<String, PlayerData> group : m_playerData.values()) {
+            for (PlayerData playerData : group.values()) {
+                if (playerData.equals(data)) {
+                    return true;
+                }                
+            }            
+        }        
+        
+        return false;
+    }
+            
     /**
      * Send message, will split at new line characters '\n' and send each part as a seperate message.
      *
@@ -125,89 +229,22 @@ public class FundamentalPlayer {
     }
 
     /**
-     * Gets any player data of the given data ID.
-     *
-     * @param dataID the data type to lookup
-     * @return the player data if it exists, else null.
-     * @see PlayerData
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends PlayerData> T getPlayerData(Class<? extends T> dataID) {
-        return (T) m_playerData.get(dataID);
-    }
-
-    /**
-     * Return true if a specified instance of player data belongs to this player
-     *
-     * @param data The data to test
-     * @return True if the data belongs to this player
-     */
-    public boolean isDataOwner(PlayerData data) {
-        return m_playerData.values().contains(data);
-    }
-
-    /**
-     * Gets the player data for a given data id
-     *
-     * @param clazz the string representation of the datatype class
-     * @return the player data if it exists, else null.
-     * @throws ClassNotFoundException if the class cannot be located
-     * @see PlayerData
-     */
-    public PlayerData getPlayerdata(String clazz) throws ClassNotFoundException {
-        return m_playerData.get(Class.forName(clazz));
-    }
-
-    /**
-     * Get a list of all player data that is an instance of a given class
-     *
-     * @param <T>
-     * @param dataID
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends PlayerData> List<T> getAllPlayerData(Class<? extends T> dataID) {
-        List<T> allData = new ArrayList<T>();
-        for (PlayerData data : m_playerData.values()) {
-            if (dataID.isInstance(data)) {
-                allData.add((T) data);
-            }
-        }
-        return allData;
-    }
-
-    /**
-     * Adds some player data, removing any old instances of the player data
-     *
-     * @param data the data to add to this player
-     * @see PlayerData
-     */
-    public void addPlayerData(PlayerData data) {
-        final Class<? extends PlayerData> dataID = data.getClass();
-        removePlayerData(dataID);
-        m_playerData.put(dataID, data);
-    }
-
-    /**
-     * Removes any data with the given data id
-     *
-     * @param dataID the data type to remove
-     * @see PlayerData
-     */
-    public void removePlayerData(Class<?> dataID) {
-        if (m_playerData.containsKey(dataID)) {
-            m_playerData.remove(dataID);
-        }
-    }
-
-    /**
      * Release any stored data about the player, called on leave.
      */
     public void destroy() {
-        m_playerData.clear();
+        destroyPlayerData();
         m_player = null;
     }
 
+    public void destroyPlayerData() {
+        for (Entry<String, Map<String, PlayerData>> entry : m_playerData.entrySet()) {
+            for (PlayerData data : entry.getValue().values()) {
+                data.onDisable();
+            }            
+        }
+        m_playerData.clear();
+    }
+    
     /**
      * Backup a player to a file based on their name in a given folder.
      * Do not clear the players inventory though.

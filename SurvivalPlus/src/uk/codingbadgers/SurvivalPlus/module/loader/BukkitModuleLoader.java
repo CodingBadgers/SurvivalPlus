@@ -43,6 +43,8 @@ import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.module.ModuleHelpTopic;
 import uk.codingbadgers.SurvivalPlus.module.ModuleInfo;
 import uk.codingbadgers.SurvivalPlus.module.loader.exception.LoadException;
+import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
+import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 
 public class BukkitModuleLoader implements ModuleLoader {
 
@@ -206,6 +208,24 @@ public class BukkitModuleLoader implements ModuleLoader {
 
         updateState(LoadState.ENABLE);
         call(enable());
+        
+        for (Module module : this.getModules()) {
+            Class<? extends PlayerData> playerDataClass = module.getPlayerDataClass();
+            if (playerDataClass != null) {
+                try {
+                    PlayerData data = (PlayerData) playerDataClass.newInstance();
+                    
+                    for (FundamentalPlayer player : SurvivalPlus.Players) {
+                        player.addPlayerData(data.getGroup(), data.getName(), data);
+                    }    
+                } catch (IllegalAccessException ex) {
+                    getLogger().log(Level.INFO, "Failed to add player data " + playerDataClass.getName(), ex);
+                } catch (InstantiationException ex) {
+                    getLogger().log(Level.INFO, "Failed to add player data " + playerDataClass.getName(), ex);
+                }
+            }
+        }        
+        
         updateState(LoadState.POST_ENABLE);
         call(postEnable());
         updateState(LoadState.LOADED);
@@ -219,6 +239,10 @@ public class BukkitModuleLoader implements ModuleLoader {
     public void unload() {
         Preconditions.checkState(state == LoadState.LOADED, "Cannot unload modules before they are loaded");
 
+        for (FundamentalPlayer player : SurvivalPlus.Players) {
+            player.destroyPlayerData();
+        }
+        
         call(disable());
 
         this.modules.clear();

@@ -28,4 +28,9 @@ public class SkillWoodCuttingData extends PlayerSkillData {
         super("WoodCutting");
     }
 
+    @Override
+    public String getName() {
+        return "SkillWoodCuttingData";
+    }
+
 }

@@ -17,9 +17,12 @@
  */
 package uk.codingbadgers.skillz;
 
+import java.util.List;
 import org.bukkit.event.Listener;
 import uk.codingbadgers.SurvivalPlus.module.Module;
+import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.skillz.commands.SkillCommand;
+import uk.codingbadgers.skillz.skill.PlayerSkillData;
 
 public class Skillz extends Module implements Listener {
 
@@ -41,4 +44,22 @@ public class Skillz extends Module implements Listener {
 
     }
 
+    /**
+     * 
+     * @param player
+     * @return 
+     */
+    public int getPlayerLevel(FundamentalPlayer player)
+    {
+        List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
+        
+        float totalLevel = 0;
+        for (PlayerSkillData data : skillData)
+        {
+            totalLevel += data.getLevel();
+        }
+
+        return Math.round(totalLevel / (float)skillData.size());
+    }
+    
 }

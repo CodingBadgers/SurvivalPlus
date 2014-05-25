@@ -106,7 +106,9 @@ public class SkillCommand extends ModuleCommand {
             return;
         }
 
-        List<PlayerSkillData> skillData = player.getAllPlayerData(PlayerSkillData.class);
+        float totalLevel = 0;
+        
+        List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
         Collections.sort(skillData);        
         for (PlayerSkillData data : skillData) {
               
@@ -117,8 +119,10 @@ public class SkillCommand extends ModuleCommand {
             skillMessage += data.getLevel() + "/99,    " + data.getXP() + "xp,    " + data.getXpToNextLevel() + "xp to next level";
             
             Module.sendMessage("Skill", sender, skillMessage);
+            totalLevel += data.getLevel();
         }
 
+        Module.sendMessage("Skill", sender, "Total Level: " + Math.round(totalLevel / (float)skillData.size()));
     }
 
 }

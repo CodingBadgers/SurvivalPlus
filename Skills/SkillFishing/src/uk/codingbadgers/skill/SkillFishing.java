@@ -45,6 +45,7 @@ import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.customflags.CustomFlags;
 import uk.codingbadgers.skill.FishingConfig.FishType;
+import uk.codingbadgers.skill.commands.FishingCommand;
 import uk.codingbadgers.skillz.skill.PlayerSkillData;
 import uk.codingbadgers.skillz.skill.SkillBase;
 
@@ -58,6 +59,14 @@ public class SkillFishing extends SkillBase implements Listener {
      * 
      */
     public SkillFishing() {
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public Map<String, FishType> GetFish() {
+        return m_registeredFish;      
     }
     
     /**
@@ -112,6 +121,7 @@ public class SkillFishing extends SkillBase implements Listener {
         m_customFlags = (CustomFlags) SurvivalPlus.getModuleLoader().getModule("CustomFlags");
         m_customFlags.addCustomFlag(FLAG_FISHING_SPOT_TYPE);
  
+        registerCommand(new FishingCommand(this));        
     }
 
     /**
