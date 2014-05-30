@@ -24,6 +24,7 @@
         <!-- Modules -->
 		<module>Modules/CustomFlags</module>
         <module>Modules/Skillz</module>
+        <!-- <module>Modules/CommandsTest</module> -->
 
         <!-- Skills -->
 		<module>Skills/SkillArchery</module>

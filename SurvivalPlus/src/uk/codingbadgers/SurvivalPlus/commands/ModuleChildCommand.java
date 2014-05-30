@@ -17,6 +17,8 @@
  */
 package uk.codingbadgers.SurvivalPlus.commands;
 
+import uk.codingbadgers.SurvivalPlus.module.Module;
+
 public class ModuleChildCommand extends ModuleCommand {
 
     protected ModuleCommand m_parent;
@@ -30,4 +32,8 @@ public class ModuleChildCommand extends ModuleCommand {
         return m_parent;
     }
 
+    @Override
+    public Module getModule() {
+        return m_parent.getModule();
+    }
 }
