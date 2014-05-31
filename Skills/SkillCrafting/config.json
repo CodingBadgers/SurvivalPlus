@@ -1,0 +1,20 @@
+{
+  "craft-types": [
+    {
+      "material": {
+        "name": "WOOD_PICKAXE",
+        "dataid": 0
+      },
+      "xp": 3,
+      "required-level": 0
+    },
+    {
+      "material": {
+        "name": "WOOD_AXE",
+        "dataid": 0
+      },
+      "xp": 3,
+      "required-level": 0
+    }
+  ]
+}
