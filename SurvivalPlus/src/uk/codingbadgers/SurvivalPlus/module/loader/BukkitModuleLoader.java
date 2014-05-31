@@ -212,10 +212,9 @@ public class BukkitModuleLoader implements ModuleLoader {
         for (Module module : this.getModules()) {
             Class<? extends PlayerData> playerDataClass = module.getPlayerDataClass();
             if (playerDataClass != null) {
-                try {
-                    PlayerData data = (PlayerData) playerDataClass.newInstance();
-                    
+                try {                    
                     for (FundamentalPlayer player : SurvivalPlus.Players) {
+                        PlayerData data = (PlayerData) playerDataClass.newInstance();
                         player.addPlayerData(data.getGroup(), data.getName(), data);
                     }    
                 } catch (IllegalAccessException ex) {
