@@ -75,12 +75,30 @@ public class SkillCommand extends ModuleCommand {
         if (args.length == 1) {
 
             final String subCommand = args[0];
-            if (subCommand.equalsIgnoreCase("levels")) {
-                handleCommandLevels(sender);
+            if (subCommand.equalsIgnoreCase("level")) {
+                handleCommandLevels(sender, false);
                 return true;
             }
 
             return true;
+        }
+        else if (args.length == 2)
+        {
+            final String subCommand = args[0];
+            if (subCommand.equalsIgnoreCase("level")) {
+                
+                final String levelCommand = args[1];
+                if (levelCommand.equalsIgnoreCase("keep"))
+                {
+                    handleCommandLevels(sender, true);
+                }
+                else
+                {
+                    handleCommandSpecificLevel(sender, levelCommand, false);
+                }                
+                
+                return true;
+            }
         }
 
         return true;
@@ -98,7 +116,7 @@ public class SkillCommand extends ModuleCommand {
     /**
      * @param sender
      */
-    private void handleCommandLevels(CommandSender sender) {
+    private void handleCommandLevels(CommandSender sender, boolean keep) {
 
         if (!(sender instanceof Player)) {
             Module.sendMessage("Skill", sender, "This command can only be executed in game.");
@@ -110,26 +128,14 @@ public class SkillCommand extends ModuleCommand {
             Module.sendMessage("Skill", sender, "Something has gone wrong, try re-logging.");
             return;
         }
-
-//        float totalLevel = 0;
-//        
-//        List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
-//        Collections.sort(skillData);        
-//        for (PlayerSkillData data : skillData) {
-//              
-//            String skillMessage = ChatColor.GOLD + "[" + data.getSkillName() + "] " + ChatColor.WHITE;
-//            if (data.getLevel() < 10) {
-//                skillMessage += "0";
-//            }            
-//            skillMessage += data.getLevel() + "/99,    " + data.getXP() + "xp,    " + data.getXpToNextLevel() + "xp to next level";
-//            
-//            Module.sendMessage("Skill", sender, skillMessage);
-//            totalLevel += data.getLevel();
-//        }
-//
-//        Module.sendMessage("Skill", sender, "Total Level: " + Math.round(totalLevel / (float)skillData.size()));
         
         Scoreboard scoreboard = player.getPlayer().getScoreboard();
+        if (scoreboard.getObjective(DisplaySlot.SIDEBAR) != null)
+        {
+            scoreboard.getObjective(DisplaySlot.SIDEBAR).unregister();
+            return;
+        }
+        
         final Objective objective = scoreboard.registerNewObjective("Skillz", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -137,22 +143,94 @@ public class SkillCommand extends ModuleCommand {
         List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
         Collections.sort(skillData);   
         for (PlayerSkillData data : skillData) 
-        {
+        {            
             Score skillScore = objective.getScore(data.getSkillName());
             skillScore.setScore(data.getLevel());    
             totalLevel += data.getLevel();
         }        
         objective.setDisplayName(ChatColor.GOLD + "Total Level " + Math.round(totalLevel / (float)skillData.size()));
         
-        Bukkit.getScheduler().scheduleSyncDelayedTask(m_skillz.getPlugin(), 
-            new Runnable() {
-                @Override
-                public void run() {
-                    objective.unregister();
-                }                
-            }, 
-        20L * 10);
+        if (!keep)
+        {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(m_skillz.getPlugin(), 
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        objective.unregister();
+                    }                
+                }, 
+            20L * 10);
+        }
         
     }
 
+    private void handleCommandSpecificLevel(CommandSender sender, final String skillName, final boolean keep)
+    {
+        if (!(sender instanceof Player)) {
+            Module.sendMessage("Skill", sender, "This command can only be executed in game.");
+            return;
+        }
+
+        FundamentalPlayer player = SurvivalPlus.Players.getPlayer((Player) sender);
+        if (player == null) {
+            Module.sendMessage("Skill", sender, "Something has gone wrong, try re-logging.");
+            return;
+        }
+        
+        Scoreboard scoreboard = player.getPlayer().getScoreboard();
+        if (scoreboard.getObjective(DisplaySlot.SIDEBAR) != null)
+        {
+            scoreboard.getObjective(DisplaySlot.SIDEBAR).unregister();
+            return;
+        }
+        
+        final Objective objective = scoreboard.registerNewObjective("Skillz", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
+        
+        PlayerSkillData skill = null;
+        for (PlayerSkillData data : skillData) 
+        {            
+            if (data.getSkillName().equalsIgnoreCase(skillName)) {
+                skill = data;
+                break;
+            }
+        }
+        
+        Score levelTitle = objective.getScore(ChatColor.YELLOW + "Level");
+        levelTitle.setScore(5);
+        
+        Score level = objective.getScore("" + skill.getLevel());
+        level.setScore(4);
+        
+        Score progressTitle = objective.getScore(ChatColor.YELLOW + "Progress");
+        progressTitle.setScore(3);
+        
+        int currentLevel = skill.getLevel();            
+        Long thisLevelXp = skill.getXpForLevel(currentLevel);
+        Long nextLevelXp = skill.getXpForLevel(currentLevel + 1);
+        Long currentXp = skill.getXP();
+
+        float scalar = 100.0f / (nextLevelXp - thisLevelXp);
+        int percentComplete = (int)((currentXp - thisLevelXp) * scalar);
+        
+        Score progress = objective.getScore(percentComplete + "%");
+        progress.setScore(2);
+        
+        objective.setDisplayName(ChatColor.GOLD + skillName);
+        
+        if (!keep)
+        {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(m_skillz.getPlugin(), 
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        objective.unregister();
+                    }                
+                }, 
+            20L * 10);
+        }
+    }
+    
 }
