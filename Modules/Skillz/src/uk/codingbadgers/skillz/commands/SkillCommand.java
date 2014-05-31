@@ -19,10 +19,15 @@ package uk.codingbadgers.skillz.commands;
 
 import java.util.Collections;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.commands.ModuleCommand;
 import uk.codingbadgers.SurvivalPlus.module.Module;
@@ -106,23 +111,48 @@ public class SkillCommand extends ModuleCommand {
             return;
         }
 
-        float totalLevel = 0;
+//        float totalLevel = 0;
+//        
+//        List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
+//        Collections.sort(skillData);        
+//        for (PlayerSkillData data : skillData) {
+//              
+//            String skillMessage = ChatColor.GOLD + "[" + data.getSkillName() + "] " + ChatColor.WHITE;
+//            if (data.getLevel() < 10) {
+//                skillMessage += "0";
+//            }            
+//            skillMessage += data.getLevel() + "/99,    " + data.getXP() + "xp,    " + data.getXpToNextLevel() + "xp to next level";
+//            
+//            Module.sendMessage("Skill", sender, skillMessage);
+//            totalLevel += data.getLevel();
+//        }
+//
+//        Module.sendMessage("Skill", sender, "Total Level: " + Math.round(totalLevel / (float)skillData.size()));
         
-        List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
-        Collections.sort(skillData);        
-        for (PlayerSkillData data : skillData) {
-              
-            String skillMessage = ChatColor.GOLD + "[" + data.getSkillName() + "] " + ChatColor.WHITE;
-            if (data.getLevel() < 10) {
-                skillMessage += "0";
-            }            
-            skillMessage += data.getLevel() + "/99,    " + data.getXP() + "xp,    " + data.getXpToNextLevel() + "xp to next level";
-            
-            Module.sendMessage("Skill", sender, skillMessage);
-            totalLevel += data.getLevel();
-        }
+        Scoreboard scoreboard = player.getPlayer().getScoreboard();
+        final Objective objective = scoreboard.registerNewObjective("Skillz", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        Module.sendMessage("Skill", sender, "Total Level: " + Math.round(totalLevel / (float)skillData.size()));
+        float totalLevel = 0;
+        List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
+        Collections.sort(skillData);   
+        for (PlayerSkillData data : skillData) 
+        {
+            Score skillScore = objective.getScore(data.getSkillName());
+            skillScore.setScore(data.getLevel());    
+            totalLevel += data.getLevel();
+        }        
+        objective.setDisplayName(ChatColor.GOLD + "Total Level " + Math.round(totalLevel / (float)skillData.size()));
+        
+        Bukkit.getScheduler().scheduleSyncDelayedTask(m_skillz.getPlugin(), 
+            new Runnable() {
+                @Override
+                public void run() {
+                    objective.unregister();
+                }                
+            }, 
+        20L * 10);
+        
     }
 
 }
