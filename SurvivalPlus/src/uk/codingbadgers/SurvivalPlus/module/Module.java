@@ -408,6 +408,15 @@ public abstract class Module extends Loadable implements Listener {
     }
 
     /**
+     * Register a command to this module.
+     *
+     * @param clazz the command
+     */
+    protected void registerCommands(Class<?> clazz) {
+        ModuleCommandHandler.findCommands(this, clazz);
+    }
+
+    /**
      * Get all commands registered to this module
      *
      * @return the commands
@@ -475,8 +484,9 @@ public abstract class Module extends Loadable implements Listener {
      * @param message the message to output
      */
     public void debugConsole(String message) {
-        if (!m_debug)
+        if (!m_debug) {
             return;
+        }
 
         log(Level.INFO, "[Debug] " + message);
     }
