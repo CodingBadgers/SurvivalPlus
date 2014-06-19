@@ -22,18 +22,18 @@
         <module>SurvivalPlus</module>
 
         <!-- Modules -->
-		<module>Modules/CustomFlags</module>
+        <module>Modules/CustomFlags</module>
         <module>Modules/Skillz</module>
         <!-- <module>Modules/CommandsTest</module> -->
 
         <!-- Skills -->
-		<module>Skills/SkillArchery</module>
-		<module>Skills/SkillAttack</module>
-		<module>Skills/SkillDefence</module>
+        <module>Skills/SkillArchery</module>
+        <module>Skills/SkillAttack</module>
+        <module>Skills/SkillDefence</module>
         <module>Skills/SkillLandscaping</module>
         <module>Skills/SkillMining</module>
         <module>Skills/SkillWoodCutting</module>
-		<module>Skills/SkillFishing</module>
+        <module>Skills/SkillFishing</module>
     </modules>
 
     <licenses>
@@ -62,10 +62,10 @@
             <name>Comphenix Repository</name>
             <url>http://repo.comphenix.net/content/repositories/releases/</url>
         </repository>
-		<repository>
-			<id>sk89q-repo</id>
-			<url>http://maven.sk89q.com/repo/</url>
-		</repository>
+            <repository>
+                <id>sk89q-repo</id>
+                <url>http://maven.sk89q.com/repo/</url>
+            </repository>
     </repositories>
 
     <dependencies>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>uk.thecodingbadgers</groupId>
             <artifactId>bDatabaseManager</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -18,10 +18,18 @@
 package uk.codingbadgers.skillz;
 
 import java.util.List;
+import org.bukkit.ChatColor;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 import uk.codingbadgers.SurvivalPlus.module.Module;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.skillz.commands.SkillCommand;
+import uk.codingbadgers.skillz.events.PlayerXPIncrease;
 import uk.codingbadgers.skillz.skill.PlayerSkillData;
 
 public class Skillz extends Module implements Listener {
@@ -39,9 +47,8 @@ public class Skillz extends Module implements Listener {
      */
     @Override
     public void onEnable() {
-
-        this.registerCommand(new SkillCommand(this));
-
+        this.register(this);
+        this.registerCommand(new SkillCommand(this));        
     }
 
     /**
@@ -61,5 +68,61 @@ public class Skillz extends Module implements Listener {
 
         return Math.round(totalLevel / (float)skillData.size());
     }
+    
+    /**
+     * 
+     * @param event 
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void OnPlayerGainXP(PlayerXPIncrease event) {
+             
+        final FundamentalPlayer player = event.getPlayer();
+        final Scoreboard scoreboard = player.getPlayer().getScoreboard();
+
+        if (scoreboard == null) {
+            return;
+        }
+
+        final Objective objective = scoreboard.getObjective(DisplaySlot.SIDEBAR);
+        if (objective == null) {
+            return;
+        }
+        
+        if (!objective.getName().equalsIgnoreCase("SkillSpecific")) {
+            return;
+        }
+        
+        final String skillName = ChatColor.stripColor(objective.getDisplayName());
+        final PlayerSkillData data = event.getData();
+
+        if (!data.getSkillName().equalsIgnoreCase(skillName)) {
+            return;
+        }
+        
+        for (String score : scoreboard.getEntries())
+        {
+            scoreboard.resetScores(score);
+        }
+        
+        Score levelTitle = objective.getScore(ChatColor.YELLOW + "Level");
+        levelTitle.setScore(5);
+        
+        Score level = objective.getScore("" + data.getLevel());
+        level.setScore(4);
+        
+        Score progressTitle = objective.getScore(ChatColor.YELLOW + "Progress");
+        progressTitle.setScore(3);
+        
+        int currentLevel = data.getLevel();            
+        Long thisLevelXp = data.getXpForLevel(currentLevel);
+        Long nextLevelXp = data.getXpForLevel(currentLevel + 1);
+        Long currentXp = data.getXP();
+
+        float scalar = 100.0f / (nextLevelXp - thisLevelXp);
+        int percentComplete = (int)((currentXp - thisLevelXp) * scalar);
+        
+        Score progress = objective.getScore(percentComplete + "%");
+        progress.setScore(2);        
+    }  
     
 }

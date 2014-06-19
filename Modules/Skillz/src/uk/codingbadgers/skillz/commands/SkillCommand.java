@@ -100,6 +100,14 @@ public class SkillCommand extends ModuleCommand {
                 return true;
             }
         }
+        else if (args.length == 3)
+        {
+            final String subCommand = args[0];
+            if (subCommand.equalsIgnoreCase("level")) {
+                handleCommandSpecificLevel(sender, args[1], args[2].equalsIgnoreCase("keep"));               
+                return true;
+            }
+        }
 
         return true;
     }
@@ -136,7 +144,7 @@ public class SkillCommand extends ModuleCommand {
             return;
         }
         
-        final Objective objective = scoreboard.registerNewObjective("Skillz", "dummy");
+        final Objective objective = scoreboard.registerNewObjective("SkillOverview", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         float totalLevel = 0;
@@ -184,7 +192,7 @@ public class SkillCommand extends ModuleCommand {
             return;
         }
         
-        final Objective objective = scoreboard.registerNewObjective("Skillz", "dummy");
+        final Objective objective = scoreboard.registerNewObjective("SkillSpecific", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
@@ -196,6 +204,11 @@ public class SkillCommand extends ModuleCommand {
                 skill = data;
                 break;
             }
+        }
+        
+        if (skill == null) {
+            Module.sendMessage("Skill", sender, "There is no skill of the name '" + skillName + "'.");
+            return;
         }
         
         Score levelTitle = objective.getScore(ChatColor.YELLOW + "Level");

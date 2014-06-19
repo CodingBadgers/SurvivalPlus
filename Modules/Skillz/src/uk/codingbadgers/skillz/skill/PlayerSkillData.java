@@ -23,11 +23,19 @@ import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
 import uk.codingbadgers.SurvivalPlus.player.FundamentalPlayer;
 import uk.codingbadgers.SurvivalPlus.player.PlayerData;
 import uk.codingbadgers.skillz.events.PlayerSkillLevelIncrease;
+import uk.codingbadgers.skillz.events.PlayerXPIncrease;
+import uk.thecodingbadgers.bDatabaseManager.Database.BukkitDatabase;
+import uk.thecodingbadgers.bDatabaseManager.DatabaseTable.DatabaseTable;
 
 /**
  * @author n3wton
  */
 public abstract class PlayerSkillData implements PlayerData, Comparable {
+    
+    /**
+     * The database table for this player data
+     */
+    private DatabaseTable m_databaseTable = null;
     
     /**
      * The name of the skill data
@@ -37,6 +45,10 @@ public abstract class PlayerSkillData implements PlayerData, Comparable {
     @Override
     public void onEnable() {
         
+        BukkitDatabase dbase = SurvivalPlus.getBukkitDatabase();
+        
+        final String tableName = "SurvivalPlus-Skill" + getSkillName();
+        m_databaseTable = dbase.createTable(tableName, SerializablePlayerData.class);
     }
 
     @Override
@@ -64,11 +76,6 @@ public abstract class PlayerSkillData implements PlayerData, Comparable {
      * The current level of xp for this skill
      */
     private Long m_xp = 0L;
-
-    /**
-     * The time the ability was activated
-     */
-    private Long m_abilityActivateTime = 0L;
 
     /**
      * Get the current level of xp
@@ -102,70 +109,42 @@ public abstract class PlayerSkillData implements PlayerData, Comparable {
      * @param amount The amount to add (can be negative)
      */
     public void addXP(Long amount) {
+        final FundamentalPlayer player = SurvivalPlus.getDataOwner(this);
+        
         final int oldLevel = this.getLevel();
         m_xp += amount;
-
+        
+        Bukkit.getPluginManager().callEvent(new PlayerXPIncrease(player, this));
+        
         final int level = this.getLevel();
         if (oldLevel != level) {
-            FundamentalPlayer player = SurvivalPlus.getDataOwner(this);
-            if (player != null) {
-                player.sendMessage(ChatColor.YELLOW + "Your " + ChatColor.GOLD + this.getSkillName() + ChatColor.YELLOW
-                        + " skill has increased to level " + ChatColor.GOLD + level + ChatColor.YELLOW + "!");
+            player.sendMessage(ChatColor.YELLOW + "Your " + ChatColor.GOLD + this.getSkillName() + ChatColor.YELLOW
+                    + " skill has increased to level " + ChatColor.GOLD + level + ChatColor.YELLOW + "!");
+
+            Bukkit.getPluginManager().callEvent(new PlayerSkillLevelIncrease(player, this));
+        }
+        
+        saveData(player);
+    }
+    
+    /**
+     * Save the data to a database
+     */
+    private void saveData(FundamentalPlayer player) {
+
+        SerializablePlayerData data = new SerializablePlayerData();
+        data.PlayerUUID = player.getPlayer().getUniqueId().toString();
+        data.Xp = m_xp;
+        
+        if (m_databaseTable.exists("PlayerUUID=" + data.PlayerUUID))
+        {
+            m_databaseTable.update(data, SerializablePlayerData.class, "PlayerUUID=" + data.PlayerUUID, false);
+        }
+        else
+        {
+            m_databaseTable.insert(data, SerializablePlayerData.class, false);
+        }
                 
-                Bukkit.getPluginManager().callEvent(new PlayerSkillLevelIncrease(player, this));
-            }
-        }
-    }
-
-    /**
-     * @return
-     */
-    public boolean enableAbility() {
-
-        if (isAbilityActive()) {
-            return true;
-        }
-
-        final Long currentTime = System.currentTimeMillis();
-        final Long timeSinceLast = currentTime - m_abilityActivateTime - getAbilityLength();
-
-        if (m_abilityActivateTime == 0 || timeSinceLast > getAbilityCooldown()) {
-            m_abilityActivateTime = currentTime;
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return
-     */
-    public Long getTimeUntilAbilityRefresh() {
-        final Long currentTime = System.currentTimeMillis();
-        final Long timeSinceLast = currentTime - m_abilityActivateTime - getAbilityLength();
-        return getAbilityCooldown() - timeSinceLast;
-    }
-
-    /**
-     * @return
-     */
-    public Long getAbilityCooldown() {
-        return 10L * 60L * 1000L;
-    }
-
-    /**
-     * @return
-     */
-    public Long getAbilityLength() {
-        return 4000L + (getLevel() * 1000L);
-    }
-
-    /**
-     * @return
-     */
-    public boolean isAbilityActive() {
-        Long timeLeft = System.currentTimeMillis() - m_abilityActivateTime;
-        return timeLeft < getAbilityLength();
     }
 
     /**
