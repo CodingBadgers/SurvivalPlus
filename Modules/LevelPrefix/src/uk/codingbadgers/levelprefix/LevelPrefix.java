@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
@@ -79,10 +79,15 @@ public class LevelPrefix extends Module implements Listener {
      * @param event 
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void OnPlayerLogin(PlayerLoginEvent event) 
+    public void OnPlayerJoin(PlayerJoinEvent event) 
     {    
-        final Player player = event.getPlayer();
-        setPlayerScoreboard(player);
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        event.getPlayer().setScoreboard(scoreboard);
+        
+        for (Player other : Bukkit.getOnlinePlayers())
+        {
+            setPlayerScoreboard(other);
+        }
     }
     
     /**
@@ -97,27 +102,27 @@ public class LevelPrefix extends Module implements Listener {
             return;
         }
         
-        FundamentalPlayer funPlayer = SurvivalPlus.Players.getPlayer(player);
-        if (funPlayer == null)
-        {
-            return;
-        }
-        
         Scoreboard scoreboard = player.getScoreboard();
         
-        final String playerTeamName = player.getName().toLowerCase();
-        Team playerTeam = scoreboard.getTeam(playerTeamName);
-        if (playerTeam == null) 
+        for (Player other : Bukkit.getOnlinePlayers())
         {
-            playerTeam = scoreboard.registerNewTeam(playerTeamName);
+            final String playerTeamName = other.getName().toLowerCase();
+            Team playerTeam = scoreboard.getTeam(playerTeamName);
+            if (playerTeam == null) 
+            {
+                playerTeam = scoreboard.registerNewTeam(playerTeamName);
+            }
+            playerTeam.addPlayer(other);
+
+            FundamentalPlayer funPlayer = SurvivalPlus.Players.getPlayer(other);
+            if (funPlayer == null) {
+                continue;
+            }
+            
+            int level = m_skillz.getPlayerLevel(funPlayer);
+            String levelString = level < 10 ? "0" + level : "" + level;   
+            playerTeam.setPrefix("[Lvl " + levelString + "] ");
         }
-        playerTeam.addPlayer(player);
-                
-        int level = m_skillz.getPlayerLevel(funPlayer);
-        String levelString = level < 10 ? "0" + level : "" + level;   
-        
-        playerTeam.setSuffix("");
-        playerTeam.setPrefix("[Lvl " + levelString + "] ");
     }
     
     /**
@@ -127,7 +132,10 @@ public class LevelPrefix extends Module implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void OnPlayerLevelUp(PlayerSkillLevelIncrease event)
     {
-        setPlayerScoreboard(event.getPlayer().getPlayer());
+        for (Player other : Bukkit.getOnlinePlayers())
+        {
+            setPlayerScoreboard(other);
+        }        
     }
     
 }
