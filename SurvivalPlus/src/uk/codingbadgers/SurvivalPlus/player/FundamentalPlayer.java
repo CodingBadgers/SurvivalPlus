@@ -87,6 +87,8 @@ public class FundamentalPlayer {
                 
         groups.put(name, data);
         m_playerData.put(group, groups);
+        
+        data.onEnable(this);
     }
     
     /**
@@ -236,6 +238,9 @@ public class FundamentalPlayer {
         m_player = null;
     }
 
+    /**
+     * Clear all a players player data
+     */
     public void destroyPlayerData() {
         for (Entry<String, Map<String, PlayerData>> entry : m_playerData.entrySet()) {
             for (PlayerData data : entry.getValue().values()) {

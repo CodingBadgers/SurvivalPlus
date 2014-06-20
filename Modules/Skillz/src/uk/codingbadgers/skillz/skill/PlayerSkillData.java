@@ -17,6 +17,7 @@
  */
 package uk.codingbadgers.skillz.skill;
 
+import java.sql.ResultSet;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
@@ -31,6 +32,11 @@ import uk.thecodingbadgers.bDatabaseManager.DatabaseTable.DatabaseTable;
  * @author n3wton
  */
 public abstract class PlayerSkillData implements PlayerData, Comparable {
+        
+    /**
+     * The current level of xp for this skill
+     */
+    private Long m_xp = 0L;
     
     /**
      * The database table for this player data
@@ -43,12 +49,23 @@ public abstract class PlayerSkillData implements PlayerData, Comparable {
     private final String m_skillDataName;
 
     @Override
-    public void onEnable() {
-        
-        BukkitDatabase dbase = SurvivalPlus.getBukkitDatabase();
-        
+    public void onEnable(FundamentalPlayer owner) {
+        BukkitDatabase dbase = SurvivalPlus.getBukkitDatabase();        
         final String tableName = "SurvivalPlus-Skill" + getSkillName();
         m_databaseTable = dbase.createTable(tableName, SerializablePlayerData.class);
+        
+        final String uuid = owner.getPlayer().getUniqueId().toString();
+        
+        ResultSet result = m_databaseTable.selectAll("PlayerUUID='" + uuid + "'");
+        
+        try {
+            if (result != null) {
+                while (result.next()) {
+                    m_xp = result.getLong("Xp");
+                }
+            }
+        }
+        catch (Exception ex) { }
     }
 
     @Override
@@ -71,11 +88,6 @@ public abstract class PlayerSkillData implements PlayerData, Comparable {
     public String getSkillName() {
         return m_skillDataName;
     }
-
-    /**
-     * The current level of xp for this skill
-     */
-    private Long m_xp = 0L;
 
     /**
      * Get the current level of xp
@@ -131,20 +143,11 @@ public abstract class PlayerSkillData implements PlayerData, Comparable {
      * Save the data to a database
      */
     private void saveData(FundamentalPlayer player) {
-
         SerializablePlayerData data = new SerializablePlayerData();
         data.PlayerUUID = player.getPlayer().getUniqueId().toString();
         data.Xp = m_xp;
         
-        if (m_databaseTable.exists("PlayerUUID=" + data.PlayerUUID))
-        {
-            m_databaseTable.update(data, SerializablePlayerData.class, "PlayerUUID=" + data.PlayerUUID, false);
-        }
-        else
-        {
-            m_databaseTable.insert(data, SerializablePlayerData.class, false);
-        }
-                
+        m_databaseTable.update(data, SerializablePlayerData.class, "PlayerUUID='" + data.PlayerUUID + "'", false);
     }
 
     /**

@@ -33,8 +33,9 @@ public interface PlayerData {
     
     /**
      * 
+     * @param owner
      */
-    public void onEnable();
+    public void onEnable(FundamentalPlayer owner);
     
     /**
      * 
