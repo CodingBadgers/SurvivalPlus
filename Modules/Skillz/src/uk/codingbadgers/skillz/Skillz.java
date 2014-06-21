@@ -61,8 +61,7 @@ public class Skillz extends Module implements Listener {
         List<PlayerSkillData> skillData = player.getAllPlayerData("PlayerSkillData");
         
         float totalLevel = 0;
-        for (PlayerSkillData data : skillData)
-        {
+        for (PlayerSkillData data : skillData) {
             totalLevel += data.getLevel();
         }
 
@@ -99,20 +98,23 @@ public class Skillz extends Module implements Listener {
             return;
         }
         
-        for (String score : scoreboard.getEntries())
-        {
+        for (String score : scoreboard.getEntries()) {
             scoreboard.resetScores(score);
         }
         
+        // Level title
         Score levelTitle = objective.getScore(ChatColor.YELLOW + "Level");
-        levelTitle.setScore(5);
+        levelTitle.setScore(6);
         
+        // Actual level
         Score level = objective.getScore("" + data.getLevel());
-        level.setScore(4);
+        level.setScore(5);
         
+        // Progress title
         Score progressTitle = objective.getScore(ChatColor.YELLOW + "Progress");
-        progressTitle.setScore(3);
+        progressTitle.setScore(4);
         
+        // Actual progress %
         int currentLevel = data.getLevel();            
         Long thisLevelXp = data.getXpForLevel(currentLevel);
         Long nextLevelXp = data.getXpForLevel(currentLevel + 1);
@@ -122,7 +124,15 @@ public class Skillz extends Module implements Listener {
         int percentComplete = (int)((currentXp - thisLevelXp) * scalar);
         
         Score progress = objective.getScore(percentComplete + "%");
-        progress.setScore(2);        
+        progress.setScore(3);   
+        
+        // Xp title
+        Score xpTitle = objective.getScore(ChatColor.YELLOW + "XP");
+        xpTitle.setScore(2);
+        
+        // Actual Xp
+        Score xp = objective.getScore(data.getXP() + "xp");
+        xp.setScore(1);
     }  
     
 }

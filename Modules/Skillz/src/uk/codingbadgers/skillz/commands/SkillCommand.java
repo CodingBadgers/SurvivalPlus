@@ -47,6 +47,7 @@ public class SkillCommand extends ModuleCommand {
 
     /**
      * Class constructor
+     * @param skillz The owner module
      */
     public SkillCommand(Skillz skillz) {
         super("skill", "/skill");
@@ -79,8 +80,7 @@ public class SkillCommand extends ModuleCommand {
                 handleCommandLevels(sender, false);
                 return true;
             }
-
-            return true;
+            
         }
         else if (args.length == 2)
         {
@@ -88,12 +88,9 @@ public class SkillCommand extends ModuleCommand {
             if (subCommand.equalsIgnoreCase("level")) {
                 
                 final String levelCommand = args[1];
-                if (levelCommand.equalsIgnoreCase("keep"))
-                {
+                if (levelCommand.equalsIgnoreCase("keep")) {
                     handleCommandLevels(sender, true);
-                }
-                else
-                {
+                } else {
                     handleCommandSpecificLevel(sender, levelCommand, false);
                 }                
                 
@@ -109,6 +106,8 @@ public class SkillCommand extends ModuleCommand {
             }
         }
 
+        // unhandled command, show help
+        handleCommandHelp(sender);
         return true;
     }
 
@@ -117,12 +116,14 @@ public class SkillCommand extends ModuleCommand {
      */
     private void handleCommandHelp(CommandSender sender) {
 
-        Module.sendMessage("Skill", sender, " - /skill levels");
-
+        Module.sendMessage("Skill", sender, " - /skill level [keep]");
+        Module.sendMessage("Skill", sender, " - /skill level <skillname> [keep]");
+        
     }
 
     /**
      * @param sender
+     * @param keep
      */
     private void handleCommandLevels(CommandSender sender, boolean keep) {
 
@@ -172,6 +173,12 @@ public class SkillCommand extends ModuleCommand {
         
     }
 
+    /**
+     * 
+     * @param sender
+     * @param skillName
+     * @param keep 
+     */
     private void handleCommandSpecificLevel(CommandSender sender, final String skillName, final boolean keep)
     {
         if (!(sender instanceof Player)) {
@@ -211,15 +218,19 @@ public class SkillCommand extends ModuleCommand {
             return;
         }
         
+        // Level title
         Score levelTitle = objective.getScore(ChatColor.YELLOW + "Level");
-        levelTitle.setScore(5);
+        levelTitle.setScore(6);
         
+        // Actual level
         Score level = objective.getScore("" + skill.getLevel());
-        level.setScore(4);
+        level.setScore(5);
         
+        // Progress title
         Score progressTitle = objective.getScore(ChatColor.YELLOW + "Progress");
-        progressTitle.setScore(3);
+        progressTitle.setScore(4);
         
+        // Actual progress %
         int currentLevel = skill.getLevel();            
         Long thisLevelXp = skill.getXpForLevel(currentLevel);
         Long nextLevelXp = skill.getXpForLevel(currentLevel + 1);
@@ -229,8 +240,17 @@ public class SkillCommand extends ModuleCommand {
         int percentComplete = (int)((currentXp - thisLevelXp) * scalar);
         
         Score progress = objective.getScore(percentComplete + "%");
-        progress.setScore(2);
+        progress.setScore(3);
         
+        // Xp title
+        Score xpTitle = objective.getScore(ChatColor.YELLOW + "XP");
+        xpTitle.setScore(2);
+        
+        // Actual Xp
+        Score xp = objective.getScore(skill.getXP() + "xp");
+        xp.setScore(1);
+        
+        // Set objective display name
         objective.setDisplayName(ChatColor.GOLD + skillName);
         
         if (!keep)

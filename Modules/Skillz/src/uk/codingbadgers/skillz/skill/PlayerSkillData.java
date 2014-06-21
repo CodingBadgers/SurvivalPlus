@@ -62,11 +62,12 @@ public abstract class PlayerSkillData implements PlayerData, Comparable {
             if (result != null) {
                 while (result.next()) {
                     m_xp = result.getLong("Xp");
-                    Bukkit.getPluginManager().callEvent(new PlayerSkillLevelIncrease(owner, this));
                 }
             }
         }
         catch (Exception ex) { }
+        
+        Bukkit.getPluginManager().callEvent(new PlayerSkillLevelIncrease(owner, this));
     }
 
     @Override
