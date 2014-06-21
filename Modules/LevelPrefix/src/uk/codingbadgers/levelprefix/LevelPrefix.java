@@ -17,9 +17,6 @@
  */
 package uk.codingbadgers.levelprefix;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -27,7 +24,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import uk.codingbadgers.SurvivalPlus.SurvivalPlus;
@@ -42,11 +38,6 @@ public class LevelPrefix extends Module implements Listener {
      * The skillz module
      */
     Skillz m_skillz = null;
-    
-    /**
-     * A map between a player and their current team
-     */
-    Map<UUID, Team> m_playerToTeam = new HashMap<UUID, Team>();
     
     /**
      * Called when the module is disabled.
@@ -83,23 +74,6 @@ public class LevelPrefix extends Module implements Listener {
      * @param event 
      */
     @EventHandler(priority = EventPriority.NORMAL)
-    public void OnPlayerLeave(PlayerQuitEvent event) {
-        final Player player = event.getPlayer();
-        
-        if (m_playerToTeam.containsKey(player.getUniqueId())) {
-            Team team = m_playerToTeam.get(player.getUniqueId());
-            if (team.hasPlayer(player)) {
-                team.removePlayer(player);
-            }
-            m_playerToTeam.remove(player.getUniqueId());
-        }
-    }
-
-    /**
-     * 
-     * @param event 
-     */
-    @EventHandler(priority = EventPriority.NORMAL)
     public void OnPlayerJoin(PlayerJoinEvent event) 
     {         
         // Every player needs there own scoreboard
@@ -113,7 +87,7 @@ public class LevelPrefix extends Module implements Listener {
                     // Update everybodies scoreboard
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         setPlayerScoreboard(player);
-                    }                    
+                    }                 
                 }
             }, 
             1L);
@@ -132,8 +106,10 @@ public class LevelPrefix extends Module implements Listener {
         
         Scoreboard scoreboard = player.getScoreboard();
         
+        // if they still have the bukkit scoreboad, give them there own
         if (scoreboard == Bukkit.getScoreboardManager().getMainScoreboard()) {
-            return; // Havn't got there own scoreboard yet
+            scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+            player.setScoreboard(scoreboard);
         }
 
         for (Player other : Bukkit.getOnlinePlayers())
@@ -147,20 +123,6 @@ public class LevelPrefix extends Module implements Listener {
             // Get the name for this level
             final int level = m_skillz.getPlayerLevel(funPlayer);
             final String playerTeamName = "Level_" + level;
-
-            // remove player from old team
-            if (m_playerToTeam.containsKey(other.getUniqueId())) {
-                Team oldTeam = m_playerToTeam.get(other.getUniqueId());                
-                if (oldTeam.hasPlayer(other)) {
-                    if (oldTeam.getName().equalsIgnoreCase(playerTeamName)) {
-                        // Already on this team, nothing to do
-                        continue;
-                    }
-                    oldTeam.removePlayer(other);
-                } else {
-                    this.log(Level.WARNING, "The player to team map was out of date! something changed a players team.");
-                }
-            }
             
             // Get the scoreboard team, or create a new one if required
             Team playerTeam = scoreboard.getTeam(playerTeamName);
@@ -173,10 +135,9 @@ public class LevelPrefix extends Module implements Listener {
                 playerTeam.setAllowFriendlyFire(true);
                 playerTeam.setCanSeeFriendlyInvisibles(false);
             }
-                        
+                   
             // Add the player to the levels team
             playerTeam.addPlayer(other);
-            m_playerToTeam.put(other.getUniqueId(), playerTeam);
         }
     }
     
@@ -189,7 +150,7 @@ public class LevelPrefix extends Module implements Listener {
     {
         for (Player player : Bukkit.getOnlinePlayers()) {
             setPlayerScoreboard(player);
-        }        
+        }   
     }
     
 }
